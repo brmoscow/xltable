@@ -10,7 +10,7 @@ XLTable documentation
 #############
 About XLTable
 #############
-...
+XLTable - OLAP server for the new data stack. Allows you to work with ClickHouse, BigQuery, Snowflake from an Excel pivot table.
 
 #############
 Install
@@ -26,9 +26,3 @@ documentation for details.
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
-   docs/install   
-   install
-   ...
-
-
