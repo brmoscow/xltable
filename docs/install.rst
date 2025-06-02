@@ -1,11 +1,12 @@
-Usage
-=====
 
-Installation
-------------
 
-To use Lumache, first install it using pip:
+Install
+=====================
 
-.. code-block:: console
 
-   (.venv) $ pip install lumache
+
+Add your content using ``reStructuredText`` syntax. See the
+`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
+documentation for details.
+
+
