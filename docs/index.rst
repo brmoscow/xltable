@@ -28,15 +28,18 @@ Below are instructions for self-installation for the Ubuntu operating system and
 
 1. Prepare ubuntu server with minimum requirements: hard drive - 100 gb, ram - 16 gb.
 
+
 2. Make sure that the Ubuntu server has access to the ClickHouse server on port 8443 and that the client machines with Excel have access to the Ubuntu server on port 80.
+
 
 3. Installing Python, Supervisor, Nginx:
 
-.. code-block::
+.. code-block:: bash
 
-$ sudo apt-get -y update
-$ sudo apt-get -y install python3 python3-venv python3-dev
-$ sudo apt-get -y install supervisor nginx git
+   $ sudo apt-get -y update
+   $ sudo apt-get -y install python3 python3-venv python3-dev
+   $ sudo apt-get -y install supervisor nginx git
+
 
 
 
