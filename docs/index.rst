@@ -57,7 +57,7 @@ Copy XLTable distribution files to the olap folder. Example of copying from Wind
 
    scp -r c:\win_local_folder\* user@server_ip:/usr/olap
 
-Creating a python environment and installing the required python packages:
+Creating a Python environment and installing the required Python packages:
 
 .. code-block:: bash
 
@@ -168,6 +168,13 @@ Create a table in the ClickHouse database and place the OLA Pub structure there.
       FROM db.stores
 
    ' AS definition
+
+#####################
+Connection from Excel
+#####################
+
+On the Data tab in Excel, click From Other Sources, and then click From Analysis Services.
+Enter the server name in format http://name_or_ip_xltable_server, enter username and password, and then select a cube.
 
 #######
 Support
