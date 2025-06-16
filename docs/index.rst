@@ -84,12 +84,14 @@ Installing Yandex certificates:
 Set up connections with ClickHouse:
 
 .. code-block:: bash
+
    $ cd /usr/olap/setting
    $ nano settings.json
 
 Add supervisor configuration:
 
 .. code-block:: bash
+   
    $ cd /etc/supervisor/conf.d
    $ sudo nano olap.conf
 
