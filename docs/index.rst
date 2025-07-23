@@ -158,12 +158,6 @@ Definition OLAP cubes
 The structure of the OLAP cube is described using SQL queries. 
 The OLAP cube is a set of SQL queries that describe the sources, measures, and dimensions of the data.
 
-Important points:
-- All field names (exaple: as sale_qty) in tables and their translations (exaple: --translation=`Sale Qty`) must be unique
-- All table names (exaple: FROM olap_test.Sales sales) in the OLAP structure must be unique
-- The definition field must contain a valid SQL query with the OLAP structure
-- The definition field must be a single line, so you need to remove line breaks and indentation from the SQL query
-
 Create a table in the ClickHouse database and place the OLAP structure there. 
 Example:
 
@@ -213,6 +207,14 @@ Example:
       FROM olap_test.Times times
 
    ' AS definition
+
+-----------------
+Important points:
+-----------------
+- All field names (exaple: as sale_qty) in tables and their translations (exaple: --translation=`Sale Qty`) must be unique
+- All table names (exaple: FROM olap_test.Sales sales) in the OLAP structure must be unique
+- The definition field must contain a valid SQL query with the OLAP structure
+- The definition field must be a single line, so you need to remove line breaks and indentation from the SQL query
 
 #####################
 Connection from Excel
