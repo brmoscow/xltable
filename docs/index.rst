@@ -37,14 +37,15 @@ Nearest roadmap
 - Access control at the level of dimensions, measures and members
 
 #############
-License
+Testing and purchasing
 #############
 XLTable is a product of the company CloudReports. For testing and purchasing, write to us by email help@cloudreports.kz.
 
 #############
 Install
 #############
-In the nearest future XLTable will be available as a ready-to-deploy virtual machine image in Yandex Сloud.
+XLTable available as a ready-to-deploy virtual machine image in Yandex Сloud:
+https://yandex.cloud/ru/marketplace/products/cloudreports/xltable
 
 Below are instructions for self-installation for the Ubuntu operating system and ClickHouse. 
 
