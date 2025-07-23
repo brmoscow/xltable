@@ -21,9 +21,25 @@ XLTable - OLAP server for the new data stack. Allows you to work with ClickHouse
 XLTable can be deployed in the cloud or inside your network perimeter on a Linux server. XLTAble receives requests from Excel via the XMLA protocol and returns data from the columnar database you use.
 
 #############
+Functions:
+#############
+– All work with data is at the database level (for example, ClickHouse)
+- Support for multiple groups of measures and dimensions from different tables in one cube
+- Support for hierarchies
+- Caching of query results
+- Authorization for multiple users by password
+- Query logging
+
+#############
+Nearest roadmap
+#############
+- Integration with Active Directory
+- Access control at the level of dimensions, measures and members
+
+#############
 License
 #############
-XLTable is a product of the company CloudReports. For purchasing or testing, write to us by email help@cloudreports.kz.
+XLTable is a product of the company CloudReports. For testing and purchasing, write to us by email help@cloudreports.kz.
 
 #############
 Install
@@ -95,11 +111,11 @@ Add supervisor configuration:
    $ cd /etc/supervisor/conf.d
    $ sudo nano olap.conf
 
-   # paste this code into the file
+   # paste this code into the file and change <you_user>
    [program:olap]
    command=/usr/olap/venv/bin/gunicorn -b localhost:5000 -w 4 main:app -t 60 --keep-alive 60
    directory=/usr/olap
-   user=bradmin
+   user=<you_user>
    autostart=true
    autorestart=true
    stopasgroup=true
@@ -138,36 +154,62 @@ Configure Nginx:
 #####################
 Definition OLAP cubes
 #####################
+The structure of the OLAP cube is described using SQL queries. 
+The OLAP cube is a set of SQL queries that describe the sources, measures, and dimensions of the data.
 
-Create a table in the ClickHouse database and place the OLA Pub structure there. Example:
+Important points:
+- all field names (exaple: as sale_qty) in tables and their translations (exaple: --translation=`Sale Qty`) must be unique
+- all table names (exaple: FROM olap_test.Sales sales) in the OLAP structure must be unique
+- the definition field must contain a valid SQL query with the OLAP structure
+- the definition field must be a single line, so you need to remove line breaks and indentation from the SQL query
+
+Create a table in the ClickHouse database and place the OLAP structure there. 
+Example:
 
 .. code-block:: sql
 
    CREATE OR REPLACE TABLE db.olap_definition 
    ENGINE = MergeTree() ORDER BY id AS
 
-   SELECT 'olap_table1' AS id,
+   SELECT 'myOLAPcube' AS id,
    '	
-      --olap_source Stock
-      SELECT
-      --olap_measures
-         avg(stock_qty) as avg_stock_qty --translation=`Avg stock`
-      FROM db.stock
-      LEFT JOIN db.stores on stock.store = stores.id
-
       --olap_source Sale
       SELECT
       --olap_measures
-         sum(sale_qty) as sum_sale_qty --translation=`Sale`
-      FROM db.sale
-      LEFT JOIN db.stores on sale.store = stores.id
+      sum(sales.sale_qty) as sale_qty --translation=`Sale Qty`
+      ,sum(sales.sale_sum) as sale_sum --translation=`Sale Sum` 
+      FROM olap_test.Sales sales
+      LEFT JOIN olap_test.Stores stores on sales.store = stores.id
+      LEFT JOIN olap_test.Models models on sales.model = models.id
+      LEFT JOIN olap_test.Times times on sales.date_sale = times.day_str
+
+      --olap_source Stock
+      SELECT
+      --olap_measures
+      avg(stock.stock_qty) as stock_qty --translation=`Stock Avg Qty`
+      FROM olap_test.Stock stock
+      LEFT JOIN olap_test.Stores stores on stock.store = stores.id
+      LEFT JOIN olap_test.Models models on stock.model = models.id
 
       --olap_source Stores
       SELECT
       --olap_dimensions
-         id --translation=`Number`
-         ,cat --translation=`Сategory`
-      FROM db.stores
+      stores.store_name as store_name --translation=`Store`
+      FROM olap_test.Stores stores
+
+      --olap_source SKU
+      SELECT
+      --olap_dimensions
+      models.model_name as model_name --translation=`SKU`
+      FROM olap_test.Models models
+
+      --olap_source Dates
+      SELECT
+      --olap_dimensions
+      times.year_str as year_str --hierarchy=`Date` --translation=`Year`
+      ,times.month_str as month_str --hierarchy=`Date` --translation=`Month` 
+      ,times.day_str as day_str --hierarchy=`Date` --translation=`Day` 
+      FROM olap_test.Times times
 
    ' AS definition
 
