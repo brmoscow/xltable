@@ -23,7 +23,7 @@ XLTable can be deployed in the cloud or inside your network perimeter on a Linux
 #############
 Functions:
 #############
-– All work with data is at the database level (for example, ClickHouse)
+- All work with data is at the database level (for example, ClickHouse)
 - Support for multiple groups of measures and dimensions from different tables in one cube
 - Support for hierarchies
 - Caching of query results
@@ -158,10 +158,10 @@ The structure of the OLAP cube is described using SQL queries.
 The OLAP cube is a set of SQL queries that describe the sources, measures, and dimensions of the data.
 
 Important points:
-- all field names (exaple: as sale_qty) in tables and their translations (exaple: --translation=`Sale Qty`) must be unique
-- all table names (exaple: FROM olap_test.Sales sales) in the OLAP structure must be unique
-- the definition field must contain a valid SQL query with the OLAP structure
-- the definition field must be a single line, so you need to remove line breaks and indentation from the SQL query
+- All field names (exaple: as sale_qty) in tables and their translations (exaple: --translation=`Sale Qty`) must be unique
+- All table names (exaple: FROM olap_test.Sales sales) in the OLAP structure must be unique
+- The definition field must contain a valid SQL query with the OLAP structure
+- The definition field must be a single line, so you need to remove line breaks and indentation from the SQL query
 
 Create a table in the ClickHouse database and place the OLAP structure there. 
 Example:
