@@ -23,17 +23,20 @@ XLTable can be deployed in the cloud or inside your network perimeter on a Linux
 #############
 Functions:
 #############
+- Support ClickHouse, BigQuery, Snowflake
 - All work with data is at the database level (for example, ClickHouse)
 - Support for multiple groups of measures and dimensions from different tables in one cube
 - Support for hierarchies
 - Caching of query results
 - Authorization for multiple users by password
 - Query logging
+- Integration with Active Directory
+- Access control at the level of dimensions, measures and members
 
 #############
 Nearest roadmap
 #############
-- Integration with Active Directory
+- Support Trino, YDB, Greenplum
 - Access control at the level of dimensions, measures and members
 
 #############
@@ -51,15 +54,14 @@ Below are instructions for self-installation for the Ubuntu operating system and
 
 Prepare Ubuntu server with minimum requirements: hard drive - 100 gb, ram - 16 gb.
 
-Make sure that the Ubuntu server has access to the ClickHouse server on port 8443 and that the client machines with Excel have access to the Ubuntu server on port 80.
+Make sure that the Ubuntu server has access to the ClickHouse server on port 8443 and that the client machines with Excel have access to the Ubuntu server on port 80 or 443.
 
-Installing Python, Supervisor, Nginx:
+Installing Supervisor, Nginx and some other:
 
 .. code-block:: bash
 
    $ sudo apt-get -y update
-   $ sudo apt-get -y install python3 python3-venv python3-dev
-   $ sudo apt-get -y install supervisor nginx git
+   $ sudo apt-get -y install supervisor nginx git p7zip-full
 
 Create olap folder:
 
@@ -68,41 +70,40 @@ Create olap folder:
    $ sudo mkdir /usr/olap
    $ sudo chmod a+rwx /usr/olap 
 
-Copy XLTable distribution files to the olap folder. Example of copying from Windows:
+Copy XLTable distribution file to the olap folder. Example of copying from Windows:
 
 .. code-block:: bash
 
-   scp -r c:\win_local_folder\* user@server_ip:/usr/olap
+   scp -r c:\win_local_folder\xltable.7z user@server_ip:/usr/olap
 
-Creating a Python environment and installing the required Python packages:
-
-.. code-block:: bash
-
-   cd /usr/olap
-   $ python3 -m venv venv
-   $ source venv/bin/activate
-   (venv) $ pip install -r requirements.txt
-   (venv) $ pip install gunicorn
-
-Installing Yandex certificates:
+Unpacking the distribution file and grant execution rights:
 
 .. code-block:: bash
 
-   $ sudo mkdir --parents /usr/local/share/ca-certificates/Yandex/ && \
-   $ sudo wget "https://storage.yandexcloud.net/cloud-certs/RootCA.pem" \
+   $ cd /usr/olap
+   $ 7z x xltable.7z
+   $ cd /usr/olap/xltable
+   $ chmod +x main.bin
+
+Installing Yandex certificates if needed for ClickHouse connection:
+
+.. code-block:: bash
+
+   sudo mkdir --parents /usr/local/share/ca-certificates/Yandex/ && \
+   sudo wget "https://storage.yandexcloud.net/cloud-certs/RootCA.pem" \
       --output-document /usr/local/share/ca-certificates/Yandex/RootCA.crt && \
-   $ sudo wget "https://storage.yandexcloud.net/cloud-certs/IntermediateCA.pem" \
+   sudo wget "https://storage.yandexcloud.net/cloud-certs/IntermediateCA.pem" \
       --output-document /usr/local/share/ca-certificates/Yandex/IntermediateCA.crt && \
-   $ sudo chmod 655 \
+   sudo chmod 655 \
       /usr/local/share/ca-certificates/Yandex/RootCA.crt \
       /usr/local/share/ca-certificates/Yandex/IntermediateCA.crt && \
-   $ sudo update-ca-certificates
+   sudo update-ca-certificates
 
 Set up connections with ClickHouse:
 
 .. code-block:: bash
 
-   $ cd /usr/olap/setting
+   $ cd /usr/olap/xltable/setting
    $ nano settings.json
 
 Add supervisor configuration:
@@ -114,8 +115,8 @@ Add supervisor configuration:
 
    # paste this code into the file and change <you_user>
    [program:olap]
-   command=/usr/olap/venv/bin/gunicorn -b localhost:5000 -w 4 main:app -t 60 --keep-alive 60
-   directory=/usr/olap
+   command=/usr/olap/xltable/main.bin
+   directory=/usr/olap/xltable
    user=<you_user>
    autostart=true
    autorestart=true
@@ -132,7 +133,7 @@ Configure Nginx:
    $ sudo rm /etc/nginx/sites-enabled/default
    $ sudo nano olap
 
-   # paste this code into the file
+   # paste this code into the file, change if necessary 80 to 443 for https
    server {      
       listen 80;
       server_name _;
@@ -171,8 +172,8 @@ Example:
       --olap_source Sale
       SELECT
       --olap_measures
-      sum(sales.sale_qty) as sale_qty --translation=`Sale Qty`
-      ,sum(sales.sale_sum) as sale_sum --translation=`Sale Sum` 
+       sum(sales.sale_qty) as sale_qty --translation=`Sale Qty` --format=`#,##0;-#,##0`
+      ,sum(sales.sale_sum) as sale_sum --translation=`Sale Sum` --format=`#,##0.00;-#,##0.00`
       FROM olap_test.Sales sales
       LEFT JOIN olap_test.Stores stores on sales.store = stores.id
       LEFT JOIN olap_test.Models models on sales.model = models.id
@@ -181,7 +182,7 @@ Example:
       --olap_source Stock
       SELECT
       --olap_measures
-      avg(stock.stock_qty) as stock_qty --translation=`Stock Avg Qty`
+       avg(stock.stock_qty) as stock_qty --translation=`Stock Avg Qty` --format=`#,##0;-#,##0`
       FROM olap_test.Stock stock
       LEFT JOIN olap_test.Stores stores on stock.store = stores.id
       LEFT JOIN olap_test.Models models on stock.model = models.id
@@ -189,19 +190,19 @@ Example:
       --olap_source Stores
       SELECT
       --olap_dimensions
-      stores.store_name as store_name --translation=`Store`
+       stores.store_name as store_name --translation=`Store`
       FROM olap_test.Stores stores
 
       --olap_source SKU
       SELECT
       --olap_dimensions
-      models.model_name as model_name --translation=`SKU`
+       models.model_name as model_name --translation=`SKU`
       FROM olap_test.Models models
 
       --olap_source Dates
       SELECT
       --olap_dimensions
-      times.year_str as year_str --hierarchy=`Date` --translation=`Year`
+       times.year_str as year_str --hierarchy=`Date` --translation=`Year`
       ,times.month_str as month_str --hierarchy=`Date` --translation=`Month` 
       ,times.day_str as day_str --hierarchy=`Date` --translation=`Day` 
       FROM olap_test.Times times
