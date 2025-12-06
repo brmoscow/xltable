@@ -23,7 +23,7 @@ XLTable can be deployed in the cloud or inside your network perimeter on a Linux
 #############
 Functions:
 #############
-- Support ClickHouse, BigQuery, Snowflake
+- Support ClickHouse, BigQuery, Snowflake, Trino
 - All work with data is at the database level (for example, ClickHouse)
 - Support for multiple groups of measures and dimensions from different tables in one cube
 - Support for hierarchies
@@ -36,8 +36,7 @@ Functions:
 #############
 Nearest roadmap
 #############
-- Support Trino, YDB, Greenplum
-- Access control at the level of dimensions, measures and members
+- Support YDB, Greenplum, other databases
 
 #############
 Testing and purchasing
@@ -153,6 +152,14 @@ Configure Nginx:
    
    $ sudo service nginx reload
 
+-----------------
+Important points:
+-----------------
+- After each changing the settings.json file, need to restart the service using the command:
+   
+.. code-block:: bash
+   $ sudo supervisorctl reload
+
 #####################
 Definition OLAP cubes
 #####################
@@ -230,4 +237,4 @@ Support
 
 Telegram: https://t.me/brsystems 
 
-Email: help@cloudreports.kz
+Email: help@xltable.com
