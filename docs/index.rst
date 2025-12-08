@@ -214,6 +214,24 @@ Example:
       ,times.day_str as day_str --hierarchy=`Date` --translation=`Day` 
       FROM olap_test.Times times
 
+      --olap_user_role
+      --olap_user_groups
+      group_name_full_access
+      --olap_measures_visible
+      all
+      --olap_dimensions_visible
+      all
+      --olap_access_filters
+
+      --olap_user_role
+      --olap_user_groups
+      group_name_part_access
+      --olap_measures_visible
+      sale_qty
+      --olap_dimensions_visible
+      Stores, model_name
+      --olap_access_filters
+      store_name in (`Store A`)
    ' AS definition
 
 -----------------
@@ -235,6 +253,6 @@ Enter the server name in format http://name_or_ip_xltable_server, enter username
 Support
 #######
 
-Telegram: https://t.me/brsystems 
+Telegram: https://t.me/XLTable 
 
 Email: help@xltable.com
