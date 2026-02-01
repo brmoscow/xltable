@@ -16,7 +16,7 @@ analytics tool while working with large datasets stored in modern data platforms
 ------------------------------------------------------------
 
 What is XLTable
-===============
+---------------
 
 XLTable enables business users to analyze large datasets using familiar
 Excel Pivot Tables, while IT teams define and manage analytical models centrally.
@@ -36,7 +36,7 @@ who require both flexibility and governance.
 ------------------------------------------------------------
 
 How it works (Architecture)
-===========================
+---------------------------
 
 XLTable is positioned between Excel and analytical databases
 and serves as an OLAP and semantic layer.
@@ -46,7 +46,7 @@ XLTable receives MDX queries from Pivot Tables and translates them
 into optimized SQL queries executed directly in the database.
 
 Architecture flow
------------------
+^^^^^^^^^^^^^^^^^
 
 1. Excel sends analytical requests (MDX)
 2. XLTable applies semantic model and security rules
@@ -61,36 +61,36 @@ This approach ensures that:
 ------------------------------------------------------------
 
 Deployment steps
-================
+----------------
 
 A typical XLTable deployment consists of several simple stages.
 Most installations can be completed in less than one hour.
 
 1. Prepare infrastructure
--------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Prepare a Linux or Windows server according to system requirements.
 XLTable can be deployed on-premise or in the cloud.
 
 2. Install XLTable
-------------------
+^^^^^^^^^^^^^^^^^^
 
 Install XLTable service and configure basic system settings.
 
 3. Configure database connections
----------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Define connections to analytical databases such as ClickHouse or Trino.
 Connection settings are stored centrally.
 
 4. Define OLAP cubes
--------------------
+^^^^^^^^^^^^^^^^^^^^
 
 Create OLAP cube definitions using SQL-based configuration files.
 Define dimensions, measures, calculated fields and access rules.
 
 5. Connect Excel
-----------------
+^^^^^^^^^^^^^^^^
 
 Connect Excel Pivot Tables to XLTable using XMLA
 and start analyzing data immediately.
@@ -98,19 +98,19 @@ and start analyzing data immediately.
 ------------------------------------------------------------
 
 System requirements
-===================
+-------------------
 
 XLTable is designed for enterprise environments
 and supports both physical and virtual deployments.
 
 Operating systems
------------------
+^^^^^^^^^^^^^^^^^
 
 - Linux (Ubuntu 20.04+ recommended)
 - Windows Server 2019+
 
 Hardware requirements
----------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 Minimum:
 - 4 CPU cores
@@ -123,7 +123,7 @@ Recommended:
 - SSD storage
 
 Network requirements
---------------------
+^^^^^^^^^^^^^^^^^^^^
 
 - Stable network connection between XLTable server and analytical databases
 - Network access for Excel clients to XLTable server by 80 or 443 ports
@@ -132,7 +132,8 @@ Network requirements
 System requirements may vary depending on data volume,
 number of users and complexity of OLAP models.
 
+------------------------------------------------------------
 
 Testing and purchasing
-======================
+----------------------
 For testing and purchasing, contact us by email help@xltable.com
