@@ -136,4 +136,4 @@ number of users and complexity of OLAP models.
 
 Testing and purchasing
 ----------------------
-For testing and purchasing, contact us by email help@xltable.com
+For testing and purchasing, contact us by email help@xltable.com or Telegram https://t.me/XLTable 

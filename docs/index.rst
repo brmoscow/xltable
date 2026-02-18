@@ -45,4 +45,4 @@ Links
 
 - Project website: https://xltable.com
 - Telegram: https://t.me/XLTable
-- Support: help@xltable.com
+- Email: help@xltable.com
