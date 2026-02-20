@@ -58,7 +58,7 @@ Unpacking the distribution file and grant execution rights:
    cd /usr/olap/xltable
    chmod +x main.bin
 
-Set up connections with database (configuration examples in the folder /usr/olap/xltable/setting):
+Set up connections with database (configuration examples in the folder ``/usr/olap/xltable/setting``):
 
 .. code-block:: bash
 
@@ -146,7 +146,7 @@ Install XLTable
 ^^^^^^^^^^^^^^^
 
 Copy XLTable distribution file into the working directory and unpacking it.
-Set up connections with database (configuration examples in the folder c:\olap\xltable\setting):
+Set up connections with database (configuration examples in the folder ``c:\olap\xltable\setting``):
 
 Configure the IIS site as a reverse proxy on the local port http://127.0.0.1:5000/{R:0} and add the REMOTE_USER header to the request.
 
@@ -307,4 +307,4 @@ Example structure for Trino connection:
         "http_scheme": "https",
         "verify": false
     },  
-    
+
