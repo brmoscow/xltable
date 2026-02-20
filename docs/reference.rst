@@ -9,6 +9,8 @@ working with cube definitions and system configuration.
 
 ------------------------------------------------------------
 
+.. _sql_tags:
+
 SQL tags
 --------
 
@@ -49,7 +51,11 @@ Tag reference
 
    * - hide
      - Hides a measure or dimension from the list of fields in Excel.
-
+   
+   * - hierarchy   
+     - After the tag, you must specify the name of the hierarchy to which the field belongs. 
+       Fields with the same hierarchy name will be grouped together in Excel.
+       
    * - olap_access_filters
      - Marks the beginning of a block defining security filters for a specific user role.
 
@@ -92,6 +98,8 @@ Tag reference
    * - format
      - Defines the display format of a measure in Excel Pivot Tables.
 
+.. _unified_example:
+
 Unified example
 ^^^^^^^^^^^^^^^
 
@@ -115,8 +123,8 @@ as a reference when creating new OLAP cubes in XLTable.
     --olap_source Sales
     SELECT
     --olap_measures
-     sum(sales.qty) as sales_qty --translation=`Sales Quantity` --format=`#,##0;-#,##0`
-    ,sum(sales.sum) as sales_sum --translation=`Sales Amount` --format=`#,##0.00;-#,##0.00` --hide 
+     sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity` --format=`#,##0;-#,##0`
+    ,sum(sales.sum) as sales_sum_sum --translation=`Sales Amount` --format=`#,##0.00;-#,##0.00` --hide 
     FROM db.Sales sales
     LEFT JOIN db.Stores stores on sales.store = stores.id
     LEFT JOIN db.Models models on sales.model = models.id
@@ -125,8 +133,8 @@ as a reference when creating new OLAP cubes in XLTable.
     --olap_source Sales last year
     SELECT
     --olap_measures
-     sum(ssalesly.qty) as salesly_qty --translation=`Sales last year Quantity` --format=`#,##0;-#,##0`
-    ,sum(salesly.sum) as salesly_sum --translation=`Sales last year Amount` --format=`#,##0.00;-#,##0.00` --hide 
+     sum(ssalesly.qty) as salesly_sum_qty --translation=`Sales last year Quantity` --format=`#,##0;-#,##0`
+    ,sum(salesly.sum) as salesly_sum_sum --translation=`Sales last year Amount` --format=`#,##0.00;-#,##0.00` --hide 
     FROM db.Sales salesly
     LEFT JOIN db.Stores stores on salesly.store = stores.id
     LEFT JOIN db.Models models on salesly.model = models.id
@@ -190,6 +198,8 @@ as a reference when creating new OLAP cubes in XLTable.
 
 
 ------------------------------------------------------------
+
+.. _jinja_var:
 
 Jinja context variables
 -----------------------
@@ -310,7 +320,7 @@ Parameter reference
      - —
 
    * - WRITE_LOG
-     - Enables or disables logging of XLTable operations.
+     - Enables or disables logging of XLTable operations. Log files will be located in the folder  ``...\xltable\xml``.
      - false
 
    * - USERS

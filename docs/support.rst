@@ -1,6 +1,7 @@
 Support
 =======
 
-Telegram: https://t.me/XLTable 
+If you have any questions or problems, please use these contacts:
 
-Email: help@xltable.com
+- Telegram: https://t.me/XLTable 
+- Email: help@xltable.com
