@@ -101,7 +101,7 @@ Tag reference
 .. _unified_example:
 
 Unified example
-^^^^^^^^^^^^^^^
+---------------
 
 All tags listed in the table above are used together in a single cube definition example below.
 
