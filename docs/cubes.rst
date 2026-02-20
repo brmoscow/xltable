@@ -50,6 +50,11 @@ When a user connects from Excel:
 3. After selection, XLTable builds the list of measures and dimensions
 4. Excel displays them in Pivot Table fields
 
+Unified example
+---------------
+
+Follow this link for an example of creating an olap cube for a ClickHouse database: :ref:`unified_example` .
+
 Cube definition rules
 ---------------------
 
@@ -387,6 +392,3 @@ Everything in XLTable cubes is defined using SQL:
 - metadata
 - security
 
-Unified example
----------------
-See: :ref:`unified_example`

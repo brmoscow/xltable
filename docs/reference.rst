@@ -119,6 +119,10 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
 
     SELECT 'myOLAPcube' AS id,
     '	
+    with calendar as (
+        SELECT * FROM db.Times where times.year_str in ('2023', '2024')
+    )
+
     --olap_cube
     --olap_calculated_fields Calculated fields
     (sales_qty/stock_avg_qty) as calc_turnover --translation=`Turnover` --format=`#,##0;-#,##0`
@@ -133,7 +137,7 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     FROM db.Sales sales
     LEFT JOIN db.Stores stores on sales.store = stores.id
     LEFT JOIN db.Models models on sales.model = models.id
-    LEFT JOIN db.Times times on sales.date_sale = times.day_str
+    LEFT JOIN calendar times on sales.date_sale = times.day_str
 
     --olap_source Sales last year
     SELECT
@@ -143,7 +147,7 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     FROM db.Sales salesly
     LEFT JOIN db.Stores stores on salesly.store = stores.id
     LEFT JOIN db.Models models on salesly.model = models.id
-    LEFT JOIN db.Times times on salesly.date_sale = times.day_str  
+    LEFT JOIN calendar times on salesly.date_sale = times.day_str  
 
     --olap_source Stock
     SELECT
@@ -187,7 +191,7 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     ,toQuarter(toDate(times.day_str)) as times_quarter_str --hierarchy=`Dates` --translation=`Quarter`
     ,times.month_str as times_month_str --hierarchy=`Dates` --translation=`Month` 
     ,times.day_str as times_day_str --hierarchy=`Dates` --translation=`Day` 
-    FROM db.Times times
+    FROM calendar times
 
     --olap_user_role
     --olap_user_groups
