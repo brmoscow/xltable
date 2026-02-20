@@ -388,5 +388,5 @@ Everything in XLTable cubes is defined using SQL:
 - security
 
 Unified example
-^^^^^^^^^^^^^^^
+---------------
 See: :ref:`unified_example`

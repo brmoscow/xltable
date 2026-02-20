@@ -110,10 +110,15 @@ and how they describe cube structure, measures, dimensions, security rules
 and visibility settings.
 
 The script represents a complete cube definition and can be used
-as a reference when creating new OLAP cubes in XLTable.
+as a reference when creating new OLAP cubes XLTable for ClickHouse.
 
 .. code-block:: sql
 
+    CREATE OR REPLACE TABLE db.olap_definition 
+    ENGINE = MergeTree() ORDER BY id AS
+
+    SELECT 'myOLAPcube' AS id,
+    '	
     --olap_cube
     --olap_calculated_fields Calculated fields
     (sales_qty/stock_avg_qty) as calc_turnover --translation=`Turnover` --format=`#,##0;-#,##0`
@@ -195,7 +200,7 @@ as a reference when creating new OLAP cubes in XLTable.
     all
     --olap_access_filters
     regions_name in (`North`, `South`)
-
+    ' AS definition
 
 ------------------------------------------------------------
 
