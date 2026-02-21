@@ -1,3 +1,9 @@
+.. image:: _static/xllogo_blue.png
+   :alt: XLTable Logo
+   :align: center
+   :width: 400px
+   
+
 XLTable Documentation
 =====================
 

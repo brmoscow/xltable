@@ -13,6 +13,11 @@ providing centralized control over data models, access rights and performance.
 It is designed for organizations that want to keep Excel as the main
 analytics tool while working with large datasets stored in modern data platforms.
 
+.. image:: _static/xltable_idea.png
+   :alt: XLTable Idea
+   :align: center
+   :width: 400px
+
 ------------------------------------------------------------
 
 What is XLTable

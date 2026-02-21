@@ -9,7 +9,7 @@
 project = 'XLTable'
 copyright = '2026, BR Systems'
 author = 'BR Systems'
-release = '0.1'
+release = '0.2'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -26,3 +26,4 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 html_theme = 'alabaster'
 html_static_path = ['_static']
+html_logo = "_static/xllogo_icon.png"
