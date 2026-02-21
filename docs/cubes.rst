@@ -53,7 +53,7 @@ When a user connects from Excel:
 Unified example
 ---------------
 
-Follow this link for an example of creating an olap cube for a ClickHouse database: :ref:`unified_example` .
+Follow this link for an example of creating an OLAP cube for a ClickHouse database: :ref:`unified_example` .
 
 Cube definition rules
 ---------------------
@@ -66,7 +66,7 @@ Examples:
 - olap_measures
 - olap_dimensions
 
-See also: :ref:`sql_tags`
+See the full list of tags: :ref:`sql_tags`
 
 Measure group design
 ^^^^^^^^^^^^^^^^^^^^
@@ -129,8 +129,16 @@ Example:
 
    sum(sales.sale_qty) as sales_sum_qty --translation=`Sales Quantity` --format=`#,##0;-#,##0`
 
+Important: we place each measure on a new line, separated by commas.
+Next, use the ``olap_measures`` tag before the list of measures to identify them for the OLAP cube.
+This tag must be preceded by a ``SELECT`` statement, creating a standalone script that you can run in your database to see the results. 
+Finally, add the ``olap_source`` tag followed by the measure group name on the same line; this tells the system whether the section contains a measure group or a dimension.
+
+
 Dimension design
 ^^^^^^^^^^^^^^^^
+
+We suggest reviewing the definition of measure groups first, as they are very similar to dimensions.
 
 Dimensions define the analytical context for measures.
 
@@ -148,8 +156,8 @@ Example:
    --olap_source Stores
    SELECT
    --olap_dimensions
-       stores.id as store_id,
-       stores.store_name as store_name
+       stores.id as store_id
+      ,stores.store_name as store_name
    FROM db.Stores stores
 
 Dimension metadata tags
@@ -162,6 +170,11 @@ Example:
 .. code-block:: sql
 
    stores.store_name as store_name --translation=`Store`
+
+Place the ``olap_dimensions`` tag before the attribute list, preceded by a SELECT statement to make the script executable. 
+Above the SELECT statement, add the ``olap_source`` tag followed by the dimension name as it should appear in the Excel PivotTable. 
+You can define multiple measure groups and dimensions this way, starting each with olap_source and separating the scripts with a blank line.
+
 
 Hierarchies
 ^^^^^^^^^^^
@@ -280,6 +293,8 @@ Access filters:
 SQL generation logic
 --------------------
 
+In short, XLTable works as follows: when a user selects fields in an Excel PivotTable, Excel sends an MDX query to the OLAP server. The server parses the MDX and, based on the cube's definition, generates several SQL queries to the database. To build efficient OLAP cubes, it is essential to understand how these SQL queries are constructed.
+
 When a user selects fields in Excel:
 
 1. Excel sends an MDX query
@@ -294,10 +309,13 @@ If multiple measure groups exist:
 - results are merged using FULL JOIN
 - shared dimension attributes are used as join keys
 
+Put simply, SQL generation follows a basic principle: the queries executed are exactly what is defined in the cube metadata.
 Enable logging in settings.json → WRITE_LOG to inspect generated SQL.
 
 Jinja scripts
 -------------
+
+When working with Big Data, performance and database load are critical. This means your SQL queries must be both accurate and efficient. Furthermore, users often require complex metrics that exceed the standard capabilities of OLAP cube measures. Jinja templates allow you to control SQL syntax without limitations, dynamically adapting the queries based on the user's selected fields and filters in Excel.
 
 Jinja scripts allow modifying generated SQL dynamically.
 
@@ -307,12 +325,22 @@ Use cases:
 - conditional SQL logic
 - advanced metrics
 
+Example of a Jinja script modifying SQL:
+
+.. code-block:: sql
+
+   --olap_jinja
+   {{ sql_text | replace("salesly.date_sale", "addYears(salesly.date_sale, 1)") }}
+
+The principle is simple: Jinja scripts are defined within the cube and applied to modify the generated SQL query. You can define scripts for specific measure groups, dimensions, or the entire cube. A script assigned to a measure group only affects its specific SQL segment, while a cube-level script applies to the overall query.
+
 Execution order:
 
 1. measure group Jinja
 2. dimension Jinja
 3. cube-level Jinja
 
+Jinja scripts take the SQL query text and the context data as inputs. This context includes the cube definition, user-selected fields, active filters, and other metadata essential for modifying the query dynamically.
 See: :ref:`jinja_var`
 
 Best practices for cube design

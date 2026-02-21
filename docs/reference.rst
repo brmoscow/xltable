@@ -73,6 +73,9 @@ Tag reference
 
    * - olap_dimensions_visible
      - Marks the beginning of a block listing dimension attributes available to a specific user role.
+   
+   * - olap_jinja
+     - Marks the beginning of a block with Jinja template logic that modifies SQL scripts.
 
    * - olap_measures
      - Marks the beginning of a block listing measures.
