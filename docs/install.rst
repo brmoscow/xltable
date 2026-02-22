@@ -68,56 +68,68 @@ Set up connections with database (configuration examples in the folder ``/usr/ol
 Add supervisor configuration:
 
 .. code-block:: bash
-   
-   cd /etc/supervisor/conf.d
-   sudo nano olap.conf
 
-   # paste this code into the file and change <you_user>
+   sudo nano /etc/supervisor/conf.d/olap.conf
+
+Paste the following content (replace ``<your_user>`` with the actual Linux username):
+
+.. code-block:: ini
+
    [program:olap]
    command=/usr/olap/xltable/main.bin
    directory=/usr/olap/xltable
-   user=<you_user>
+   user=<your_user>
    autostart=true
    autorestart=true
    stopasgroup=true
    killasgroup=true
 
-   $ sudo supervisorctl reload
-
-Configure Nginx:
+Reload Supervisor to apply the configuration:
 
 .. code-block:: bash
 
-   cd /etc/nginx/sites-enabled
-   sudo rm /etc/nginx/sites-enabled/default
-   sudo nano olap
+   sudo supervisorctl reload
 
-   # paste this code into the file, change if necessary 80 to 443 for https
-   server {      
+Configure Nginx as a reverse proxy:
+
+.. code-block:: bash
+
+   sudo rm /etc/nginx/sites-enabled/default
+   sudo nano /etc/nginx/sites-enabled/olap
+
+Paste the following content (change ``80`` to ``443`` for HTTPS):
+
+.. code-block:: nginx
+
+   server {
       listen 80;
       server_name _;
-            
+
       access_log /var/log/olap_access.log;
       error_log /var/log/olap_error.log;
 
-      location / {      
+      location / {
          proxy_pass http://localhost:5000;
          proxy_redirect off;
          proxy_set_header Host $host;
          proxy_set_header X-Real-IP $remote_addr;
          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       }
-
    }
-   
-   sudo service nginx reload
 
-Important points:
-- After each changing the settings.json file, need to restart the service using the command:
-   
+Reload Nginx:
+
 .. code-block:: bash
 
-   $ sudo supervisorctl reload
+   sudo service nginx reload
+
+.. note::
+
+   After each change to the ``settings.json`` file, restart the service:
+
+   .. code-block:: bash
+
+      sudo supervisorctl reload
 
 
 ------------------------------------------------------------
@@ -159,12 +171,13 @@ Installing the service XLTable using NSSM (Non-Sucking Service Manager):
 
 Enable required authentication in IIS.
 
-Important points:
-- After each changing the settings.json file, need to restart the service using the command:
-   
-.. code-block:: bash
+.. note::
 
-   nssm restart XLTable
+   After each change to the ``settings.json`` file, restart the service:
+
+   .. code-block:: bash
+
+      nssm restart XLTable
 
 ------------------------------------------------------------
 

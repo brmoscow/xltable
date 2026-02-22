@@ -145,7 +145,7 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     --olap_source Sales last year
     SELECT
     --olap_measures
-     sum(ssalesly.qty) as salesly_sum_qty --translation=`Sales last year Quantity` --format=`#,##0;-#,##0`
+     sum(salesly.qty) as salesly_sum_qty --translation=`Sales last year Quantity` --format=`#,##0;-#,##0`
     ,sum(salesly.sum) as salesly_sum_sum --translation=`Sales last year Amount` --format=`#,##0.00;-#,##0.00` --hide 
     FROM db.Sales salesly
     LEFT JOIN db.Stores stores on salesly.store = stores.id

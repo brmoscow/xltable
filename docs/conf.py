@@ -27,3 +27,19 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 html_theme = 'alabaster'
 html_static_path = ['_static']
 html_logo = "_static/xllogo_icon.png"
+
+html_theme_options = {
+    'description': 'OLAP server connecting Excel Pivot Tables to modern analytical databases.',
+    'github_user': '',
+    'fixed_sidebar': True,
+    'sidebar_collapse': False,
+    'show_powered_by': False,
+}
+
+html_sidebars = {
+    '**': [
+        'about.html',
+        'navigation.html',
+        'searchbox.html',
+    ]
+}

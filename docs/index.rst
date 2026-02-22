@@ -42,8 +42,10 @@ Start with these sections to deploy XLTable and connect Excel:
    :caption: Documentation
 
    overview
-   install
+   quickstart
+   install   
    cubes
+   excel
    reference
    support
 
