@@ -154,7 +154,7 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     LEFT JOIN db.Stores stores on sales.store = stores.id
     LEFT JOIN db.Models models on sales.model = models.id
     LEFT JOIN calendar times on sales.date_sale = times.day_str
-    LEFT JOIN db.Currencies curr on sales.currency = curr.id --relationship=`PART-SOURCE`
+    LEFT JOIN db.Currencies curr on sales.currency = curr.id --relationship=`part-source`
 
     --olap_source Sales last year
     SELECT
