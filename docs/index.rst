@@ -43,10 +43,11 @@ Start with these sections to deploy XLTable and connect Excel:
 
    overview
    quickstart
-   install   
+   install
    cubes
    excel
    reference
+   clickhouse_sample
    support
 
 Links

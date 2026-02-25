@@ -203,4 +203,5 @@ Next steps
 - :doc:`install` — complete installation guide for Linux and Windows
 - :doc:`cubes` — full OLAP cube definition reference
 - :doc:`reference` — settings.json parameters and SQL tag reference
+- :doc:`clickhouse_sample` — ready-to-run ClickHouse script with sample tables, test data, and the ``myOLAPcube`` cube
 - :doc:`support` — troubleshooting and contact information

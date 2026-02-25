@@ -242,6 +242,49 @@ Example structure:
 
 ------------------------------------------------------------
 
+Admin panel
+-----------
+
+XLTable includes a built-in admin panel for monitoring and managing the server.
+
+URL
+^^^
+
+The admin panel is available at:
+
+.. code-block:: text
+
+   http://<server>/admin
+
+Access is protected by a separate set of credentials defined in ``OWNERS``
+(independent from regular ``USERS``).
+
+Configure admin credentials
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Add the ``OWNERS`` section to ``settings.json``:
+
+.. code-block:: json
+
+   "OWNERS": {"admin": "secret_password"}
+
+.. note::
+
+   ``OWNERS`` credentials are completely separate from ``USERS``.
+   A user defined in ``USERS`` cannot access the admin panel,
+   and an owner cannot connect as a regular Excel user.
+
+Features
+^^^^^^^^
+
+The admin panel provides:
+
+- **Service status** — confirms the server is running and shows the active database backend.
+- **Documentation** — direct link to the XLTable documentation.
+- **Clear Cache** — removes all cached session data. Users will need to re-authenticate after the cache is cleared.
+
+------------------------------------------------------------
+
 Database connections
 --------------------
 

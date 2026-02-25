@@ -93,10 +93,23 @@ Tag reference
      - Marks the beginning of a block defining a user role.
 
    * - relationship
-     - Defines the relationship type between a measure, a group of measures and a dimension.
+     - Defines the join type for a ``LEFT JOIN`` clause within an ``olap_source`` block.
+       Valid values:
+
+       - ``many-to-many`` — join where the dimension table relates to multiple source rows.
+       - ``one-table`` — all measures are in one table; dimension columns are selected directly without a join.
+       - ``part-source`` — the ``LEFT JOIN`` is treated as part of the current ``olap_source`` block rather than a cross-source relationship.
+         Use this to attach extra tables (CTEs, lookup tables) that belong to the same source and should not create a new join path to other sources.
 
    * - translation
      - Defines the localized name of a measure or dimension attribute displayed in Excel.
+
+   * - folder
+     - Overrides the display folder for a field in the Excel field list.
+       By default, fields are grouped under a folder named after their ``olap_source``.
+       Use this tag to place a field into a differently named folder.
+
+       Syntax: ``--folder='Folder Name'``
 
    * - format
      - Defines the display format of a measure in Excel Pivot Tables.
@@ -136,11 +149,12 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     SELECT
     --olap_measures
      sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity` --format=`#,##0;-#,##0`
-    ,sum(sales.sum) as sales_sum_sum --translation=`Sales Amount` --format=`#,##0.00;-#,##0.00` --hide 
+    ,sum(sales.sum) as sales_sum_sum --translation=`Sales Amount` --format=`#,##0.00;-#,##0.00` --hide
     FROM db.Sales sales
     LEFT JOIN db.Stores stores on sales.store = stores.id
     LEFT JOIN db.Models models on sales.model = models.id
     LEFT JOIN calendar times on sales.date_sale = times.day_str
+    LEFT JOIN db.Currencies curr on sales.currency = curr.id --relationship=`PART-SOURCE`
 
     --olap_source Sales last year
     SELECT
@@ -164,7 +178,7 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     SELECT
     --olap_dimensions
      stores.id as store_id --translation=`Store ID`
-    ,stores.name as stores_name --translation=`Store`
+    ,stores.name as stores_name --translation=`Store` --folder='Distribution'
     FROM db.Stores stores
     LEFT JOIN db.Regions regions on stores.region = regions.id
 
@@ -355,6 +369,12 @@ Parameter reference
    * - CONVERT_FIELDS_TO_STRING
      - Forces conversion of certain fields to string type before returning results.
      - true
+
+   * - OWNERS
+     - Defines administrator credentials for accessing the admin panel (``/admin``).
+       Admin accounts are independent from regular ``USERS`` and have access to
+       service management operations such as clearing the cache.
+     - —
 
    * - CREDENTIAL_ACTIVE_DIRECTORY
      - Defines connection parameters for Active Directory authentication.
