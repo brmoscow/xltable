@@ -364,3 +364,17 @@ Example structure for Trino connection:
         "verify": false
     },  
 
+StarRocks
+^^^^^^^^^^
+
+Example structure for StarRocks connection:
+
+.. code-block:: json
+
+    "SERVER_DB": "StarRocks",
+    "CREDENTIAL_DB": {
+        "host": "...",
+        "port": ...,
+        "user": "...",
+        "password": "...",        
+    },  

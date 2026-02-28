@@ -65,6 +65,118 @@ This approach ensures that:
 
 ------------------------------------------------------------
 
+Comparison with SSAS
+--------------------
+
+The table below lists the main features of Microsoft SQL Server Analysis Services (SSAS)
+and indicates which of them are available in XLTable.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 60 20 20
+
+   * - Feature
+     - SSAS
+     - XLTable
+   * - **Data Modeling**
+     -
+     -
+   * - Multidimensional cubes (dimensions, measures, hierarchies)
+     - ✓
+     - ✓
+   * - Tabular models (in-memory columnar)
+     - ✓
+     -
+   * - Calculated members and calculated measures
+     - ✓
+     - ✓
+   * - Named sets
+     - ✓
+     -
+   * - KPIs (Key Performance Indicators)
+     - ✓
+     -
+   * - Perspectives (virtual cube subsets)
+     - ✓
+     -
+   * - Translations (multilingual metadata)
+     - ✓
+     - ✓
+   * - **Query Languages**
+     -
+     -
+   * - MDX (Multidimensional Expressions)
+     - ✓
+     - ✓
+   * - DAX (Data Analysis Expressions)
+     - ✓
+     -
+   * - XMLA protocol
+     - ✓
+     - ✓
+   * - **Performance & Storage**
+     -
+     -
+   * - In-memory (VertiPaq) caching
+     - ✓
+     - ✓
+   * - Partitions
+     - ✓
+     - ✓
+   * - Pre-computed aggregations
+     - ✓
+     -
+   * - Proactive caching
+     - ✓
+     - ✓
+   * - DirectQuery (pass-through to source database)
+     - ✓
+     -
+   * - **Security**
+     -
+     -
+   * - Role-based access control
+     - ✓
+     - ✓
+   * - Row-level / cell-level security
+     - ✓
+     - ✓
+   * - Dimension security
+     - ✓
+     - ✓
+   * - Active Directory / LDAP integration
+     - ✓
+     - ✓
+   * - **Client Integration**
+     -
+     -
+   * - Excel PivotTable connectivity
+     - ✓
+     - ✓
+   * - Power BI connectivity
+     - ✓
+     -
+   * - Management tools (SSMS)
+     - ✓
+     - ✓
+   * - Drillthrough (cell to detail rows)
+     - ✓
+     - ✓
+   * - **Administration**
+     -
+     -
+   * - Full data processing (ETL-like refresh)
+     - ✓
+     - ✓
+   * - Incremental processing
+     - ✓
+     - ✓
+   * - Admin / monitoring interface
+     - ✓
+     - ✓
+
+------------------------------------------------------------
+
 Deployment steps
 ----------------
 
