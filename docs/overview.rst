@@ -223,7 +223,7 @@ and supports both physical and virtual deployments.
 Operating systems
 ^^^^^^^^^^^^^^^^^
 
-- Linux (Ubuntu 20.04+ recommended)
+- Linux (Ubuntu 24.04+ recommended)
 - Windows Server 2019+
 
 Hardware requirements

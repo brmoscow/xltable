@@ -14,7 +14,7 @@ Linux
 -----
 
 XLTable can be installed on modern Linux distributions.
-Ubuntu 20.04+ is recommended for production environments.
+Ubuntu 24.04+ is recommended for production environments.
 
 Prerequisites
 ^^^^^^^^^^^^^

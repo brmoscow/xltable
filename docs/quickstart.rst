@@ -19,7 +19,7 @@ Prerequisites
 
 Before starting, make sure you have:
 
-- A Linux server (Ubuntu 20.04+ recommended) with sudo access
+- A Linux server (Ubuntu 24.04+ recommended) with sudo access
 - An analytical database (ClickHouse, BigQuery, Snowflake or Trino)
 - Microsoft Excel (Microsoft 365 or Excel 2016+)
 - XLTable distribution file (contact help@xltable.com to obtain it)
@@ -102,22 +102,23 @@ Connect to your ClickHouse database and run the following to create a simple sal
    --olap_measures
     sum(sales.amount) as sales_sum_amount --translation=`Revenue` --format=`#,##0.00;-#,##0.00`
    ,count(sales.id) as sales_count_id --translation=`Order Count` --format=`#,##0;-#,##0`
-   FROM db.sales sales --relationship=`one-table`
 
    --olap_source Dates
    SELECT
    --olap_dimensions
     sales.year as sales_year --hierarchy=`Date` --translation=`Year`
    ,sales.month as sales_month --hierarchy=`Date` --translation=`Month`
-   FROM db.sales sales --relationship=`one-table`
-
+   
    --olap_user_role
    --olap_user_groups
    olap_users
+   --olap_calculated_fields_visible
+   all
    --olap_measures_visible
    all
    --olap_dimensions_visible
    all
+   --olap_access_filters
    ' AS definition
 
 For a full example with multiple measure groups and dimensions, see :ref:`unified_example`.

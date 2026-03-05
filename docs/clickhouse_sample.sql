@@ -182,32 +182,30 @@ with calendar as (
 )
 
 --olap_cube
-
 --olap_calculated_fields Calculated fields
 (sales_sum_qty / stock_avg_qty) as calc_turnover --translation=`Turnover` --format=`#,##0.00;-#,##0.00`
-
 --olap_jinja
-{{ sql_text | replace("salesly.date_sale", "addYears(salesly.date_sale, 1)") }}
+{{ sql_text | replace("salesly.date_sale", "toString(toDate(salesly.date_sale) - INTERVAL 1 YEAR)") }}
 
 --olap_source Sales
 SELECT
 --olap_measures
  sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity`      --format=`#,##0;-#,##0`
 ,sum(sales.sum) as sales_sum_sum --translation=`Sales Amount`        --format=`#,##0.00;-#,##0.00`
-FROM db.Sales  sales
-LEFT JOIN db.Stores  stores ON sales.store     = stores.id
-LEFT JOIN db.Models  models ON sales.model     = models.id
-LEFT JOIN calendar   times  ON sales.date_sale = times.day_str
+FROM db.Sales sales
+LEFT JOIN db.Stores stores ON sales.store = stores.id
+LEFT JOIN db.Models models ON sales.model = models.id
+LEFT JOIN calendar times ON sales.date_sale = times.day_str
 
 --olap_source Sales last year
 SELECT
 --olap_measures
  sum(salesly.qty) as salesly_sum_qty --translation=`Sales last year Quantity` --format=`#,##0;-#,##0`
 ,sum(salesly.sum) as salesly_sum_sum --translation=`Sales last year Amount`   --format=`#,##0.00;-#,##0.00`
-FROM db.Sales  salesly
-LEFT JOIN db.Stores  stores ON salesly.store     = stores.id
-LEFT JOIN db.Models  models ON salesly.model     = models.id
-LEFT JOIN calendar   times  ON salesly.date_sale = times.day_str
+FROM db.Sales salesly
+LEFT JOIN db.Stores stores ON salesly.store = stores.id
+LEFT JOIN db.Models models ON salesly.model = models.id
+LEFT JOIN calendar times ON salesly.date_sale = times.day_str
 
 --olap_source Stock
 SELECT
@@ -220,7 +218,7 @@ LEFT JOIN db.Models models ON stock.model = models.id
 --olap_source Stores
 SELECT
 --olap_dimensions
- stores.id   as store_id    --translation=`Store ID`
+ stores.id as store_id    --translation=`Store ID`
 ,stores.name as stores_name --translation=`Store`
 FROM db.Stores stores
 LEFT JOIN db.Regions regions ON stores.region = regions.id
@@ -247,10 +245,10 @@ FROM db.Models models
 --olap_source Dates
 SELECT
 --olap_dimensions
- times.year_str                   as times_year_str    --hierarchy=`Dates` --translation=`Year`
+ times.year_str as times_year_str --hierarchy=`Dates` --translation=`Year`
 ,toQuarter(toDate(times.day_str)) as times_quarter_str --hierarchy=`Dates` --translation=`Quarter`
-,times.month_str                  as times_month_str   --hierarchy=`Dates` --translation=`Month`
-,times.day_str                    as times_day_str     --hierarchy=`Dates` --translation=`Day`
+,times.month_str as times_month_str --hierarchy=`Dates` --translation=`Month`
+,times.day_str as times_day_str --hierarchy=`Dates` --translation=`Day`
 FROM calendar times
 
 --olap_user_role
@@ -262,4 +260,5 @@ all
 all
 --olap_dimensions_visible
 all
+--olap_access_filters
 ' AS definition;
