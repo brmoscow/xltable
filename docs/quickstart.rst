@@ -89,39 +89,7 @@ Step 3: Create a minimal OLAP cube
 
 XLTable reads cube definitions from a table named ``olap_definition`` in your database.
 
-Connect to your ClickHouse database and run the following to create a simple sales cube:
-
-.. code-block:: sql
-
-   CREATE OR REPLACE TABLE db.olap_definition
-   ENGINE = MergeTree() ORDER BY id AS
-   SELECT 'SalesCube' AS id,
-   '
-   --olap_source Sales
-   SELECT
-   --olap_measures
-    sum(sales.amount) as sales_sum_amount --translation=`Revenue` --format=`#,##0.00;-#,##0.00`
-   ,count(sales.id) as sales_count_id --translation=`Order Count` --format=`#,##0;-#,##0`
-
-   --olap_source Dates
-   SELECT
-   --olap_dimensions
-    sales.year as sales_year --hierarchy=`Date` --translation=`Year`
-   ,sales.month as sales_month --hierarchy=`Date` --translation=`Month`
-   
-   --olap_user_role
-   --olap_user_groups
-   olap_users
-   --olap_calculated_fields_visible
-   all
-   --olap_measures_visible
-   all
-   --olap_dimensions_visible
-   all
-   --olap_access_filters
-   ' AS definition
-
-For a full example with multiple measure groups and dimensions, see :ref:`unified_example`.
+For a ready-to-run example with sample tables, test data, and a complete cube definition, see :doc:`clickhouse_sample`.
 
 ------------------------------------------------------------
 
