@@ -132,6 +132,31 @@ Reload Nginx:
       sudo supervisorctl reload
 
 
+Upgrading version
+^^^^^^^^^^^^^^^^^
+
+Copy the archive with the new version to the server:
+
+.. code-block:: bash
+
+   scp -r c:\win_local_folder\xltable.7z user@server_ip:/usr/olap
+
+Save the configuration and license, then extract the update on the server:
+
+.. code-block:: bash
+
+   cd /usr/olap
+   cp /usr/olap/xltable/setting/*.json /usr/olap
+   cp /usr/olap/xltable/*.lic /usr/olap
+   rm -r xltable
+   7z x xltable.7z
+   cd /usr/olap/xltable
+   chmod +x main.bin
+   cp /usr/olap/*.json /usr/olap/xltable/setting
+   cp /usr/olap/*.lic /usr/olap/xltable
+
+   sudo supervisorctl reload
+
 ------------------------------------------------------------
 
 Windows
