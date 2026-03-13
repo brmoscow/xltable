@@ -20,7 +20,7 @@ To diagnose issues, enable logging in ``settings.json``:
 
    "WRITE_LOG": true
 
-Log files are written to the ``xltable/xml`` folder.
+Log files are written to the ``xltable/log`` folder.
 After enabling, restart the service and reproduce the issue, then inspect the log files.
 
 Excel connection issues
