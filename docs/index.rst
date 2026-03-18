@@ -49,6 +49,7 @@ Start with these sections to deploy XLTable and connect Excel:
    reference
    clickhouse_sample
    support
+   backlog
 
 Links
 =====

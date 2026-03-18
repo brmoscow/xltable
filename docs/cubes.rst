@@ -83,6 +83,17 @@ Example:
        sum(sales.sale_qty) as sales_sum_qty
    FROM db.Sales sales
 
+The order of blocks within an ``olap_source`` section is mandatory:
+
+.. code-block:: text
+
+   --olap_source <Name>         ← 1. source name
+   SELECT                       ← 2. SELECT keyword (on its own line)
+   --olap_measures              ← 3. section type (or --olap_dimensions)
+       <field list>             ← 4. fields with aliases and tags
+   FROM <table> <alias>         ← 5. main table
+   LEFT JOIN ...                ← 6. joins (optional)
+
 Important rules:
 
 - table aliases must be unique across the cube
@@ -120,7 +131,7 @@ Measure metadata tags
 
 Additional tags may be defined on the same line:
 
-- translation — display name in Excel
+- translation — display name in Excel (optional; if omitted, the field alias is used as the display name)
 - format — numeric format in Pivot Tables
 
 Example:
@@ -163,7 +174,7 @@ Example:
 Dimension metadata tags
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Attributes may include tags such as translation.
+Attributes may include tags such as translation (optional; if omitted, the field alias is used as the display name).
 
 Example:
 
@@ -185,10 +196,10 @@ Example:
 
 .. code-block:: sql
 
-   times.year as year --hierarchy=`Dates`
-   times.quarter as quarter --hierarchy=`Dates`
-   times.month as month --hierarchy=`Dates`   
-   times.day as day  --hierarchy=`Dates`
+   times.year as times_year --hierarchy=`Dates`
+   times.quarter as times_quarter --hierarchy=`Dates`
+   times.month as times_month --hierarchy=`Dates`   
+   times.day as times_day  --hierarchy=`Dates`
 
 Relationships
 ^^^^^^^^^^^^^
@@ -217,7 +228,7 @@ many-to-many:
 
 .. code-block:: sql
 
-   LEFT JOIN db.Managers managers ON sales.store_id = managers.store_id --relationship='many-to-many'
+   LEFT JOIN db.Managers managers ON sales.store_id = managers.store_id --relationship=`many-to-many``
 
 Many-to-many relationships follow the classic Analysis Services model, where dimensions lack a unique key. Instead, a single measure group value maps to multiple dimension rows. For example, multiple managers can be assigned to the same store, causing overlapping results when filtering.
 
@@ -228,9 +239,9 @@ one-table:
    --olap_source Sales
    SELECT ...
    FROM db.sales sales
-   LEFT JOIN db.sales sales --relationship='one-table'
+   LEFT JOIN db.sales sales --relationship=`one-table`
 
-For denormalized sources like ClickHouse, use the relationship='one-table' tag to link measures and dimensions within a single table. This bypasses the unique alias rule and the LEFT JOIN operation. The OLAP server will query the flat table directly; no ON clause or join columns are required.
+For denormalized sources like ClickHouse, use the relationship=`one-table` tag to link measures and dimensions within a single table. This bypasses the unique alias rule and the LEFT JOIN operation. The OLAP server will query the flat table directly; no ON clause or join columns are required.
 
 Calculated fields
 -----------------

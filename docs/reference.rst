@@ -103,13 +103,14 @@ Tag reference
 
    * - translation
      - Defines the localized name of a measure or dimension attribute displayed in Excel.
+       The value must be unique within the cube.
 
    * - folder
      - Overrides the display folder for a field in the Excel field list.
        By default, fields are grouped under a folder named after their ``olap_source``.
        Use this tag to place a field into a differently named folder.
 
-       Syntax: ``--folder='Folder Name'``
+       Syntax: ``--folder=`Folder Name```
 
    * - format
      - Defines the display format of a measure in Excel Pivot Tables.
@@ -178,7 +179,7 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     SELECT
     --olap_dimensions
      stores.id as store_id --translation=`Store ID`
-    ,stores.name as stores_name --translation=`Store` --folder='Distribution'
+    ,stores.name as stores_name --translation=`Store` --folder=`Distribution`
     FROM db.Stores stores
     LEFT JOIN db.Regions regions on stores.region = regions.id
 

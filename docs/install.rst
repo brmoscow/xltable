@@ -114,6 +114,9 @@ Paste the following content (change ``80`` to ``443`` for HTTPS):
          proxy_set_header Host $host;
          proxy_set_header X-Real-IP $remote_addr;
          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+         proxy_connect_timeout 300s;
+         proxy_send_timeout 300s;
+         proxy_read_timeout 300s;
       }
    }
 
