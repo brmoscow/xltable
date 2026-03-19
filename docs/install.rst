@@ -63,7 +63,38 @@ Set up connections with database (configuration examples in the folder ``/usr/ol
 .. code-block:: bash
 
    cd /usr/olap/xltable/setting
+   cp settings_clickhouse_example.json settings.json
    nano settings.json
+
+Example of a minimal settings.json:
+
+.. code-block:: bash
+
+  {    
+    "SERVER_DB": "ClickHouse",
+    "CREDENTIAL_DB": {
+        "user": "...",
+        "password": "...",
+        "host": "...",
+        "port": "8443",
+        "secure": "True"
+    },
+    "WRITE_LOG": false,
+    "OWNERS": {"admin": "pass1"},
+    "USERS": {"name": "password"},
+    "USER_GROUPS": {"name": ["group_name"]},
+    "MAX_ROWS": 100000,
+    "LDAP_CACHE_TIMEOUT": 300,
+    "CONVERT_FIELDS_TO_STRING": true,
+    "CREDENTIAL_ACTIVE_DIRECTORY": {
+        "server_address": "..",
+        "domain": "..",
+        "domain_full": "..",
+        "username": "..",
+        "password": "..",
+        "access_group": ".."
+       }
+   }
 
 Add supervisor configuration:
 
