@@ -14,24 +14,18 @@ Linux
 -----
 
 XLTable can be installed on modern Linux distributions.
-Ubuntu 24.04+ is recommended for production environments.
+Ubuntu 22.04+ is recommended for production environments.
 
 Prerequisites
 ^^^^^^^^^^^^^
 
-- Linux server with sudo access
+- Ubuntu 22.04+ server with ``sudo`` access
 - Network access to analytical databases
 - Open ports 80 or 443 for Excel clients
+- XLTable distribution zip placed in ``/usr/olap/`` (e.g. ``xltable-1.0.0-ubuntu.zip``)
 
 Prepare system
 ^^^^^^^^^^^^^^
-
-Update system packages and install required system packages:
-
-.. code-block:: bash
-
-   sudo apt-get update
-   sudo apt-get -y install supervisor nginx git p7zip-full
 
 Create working directory:
 
@@ -43,34 +37,37 @@ Create working directory:
 Install XLTable
 ^^^^^^^^^^^^^^^
 
-Copy XLTable distribution file into the working directory. Example of copying from Windows:
+Copy XLTable distribution zip to the server:
 
 .. code-block:: bash
 
-   scp -r c:\win_local_folder\xltable.7z user@server_ip:/usr/olap
+   scp xltable-*-ubuntu.zip user@server:/usr/olap/
 
-Unpacking the distribution file and grant execution rights:
+Run the install script:
 
 .. code-block:: bash
 
-   cd /usr/olap
-   7z x xltable.7z
-   cd /usr/olap/xltable
-   chmod +x main.bin
+   bash install_xltable.sh
+
+The script will:
+
+- Install ``supervisor``, ``nginx``, ``unzip``
+- Extract xltable to ``/usr/olap/xltable/``
+- Create ``/usr/olap/xltable/setting/settings.json`` from the example (if missing)
+- Configure supervisor to autostart the service
+- Configure nginx as a reverse proxy on port 80
 
 Set up connections with database (configuration examples in the folder ``/usr/olap/xltable/setting``):
 
 .. code-block:: bash
 
-   cd /usr/olap/xltable/setting
-   cp settings_clickhouse_example.json settings.json
-   nano settings.json
+   nano /usr/olap/xltable/setting/settings.json
 
 Example of a minimal settings.json:
 
-.. code-block:: bash
+.. code-block:: json
 
-  {    
+  {
     "SERVER_DB": "ClickHouse",
     "CREDENTIAL_DB": {
         "user": "...",
@@ -96,100 +93,57 @@ Example of a minimal settings.json:
        }
    }
 
-Add supervisor configuration:
-
-.. code-block:: bash
-
-   sudo nano /etc/supervisor/conf.d/olap.conf
-
-Paste the following content (replace ``<your_user>`` with the actual Linux username):
-
-.. code-block:: ini
-
-   [program:olap]
-   command=/usr/olap/xltable/main.bin
-   directory=/usr/olap/xltable
-   user=<your_user>
-   autostart=true
-   autorestart=true
-   stopasgroup=true
-   killasgroup=true
-
-Reload Supervisor to apply the configuration:
-
-.. code-block:: bash
-
-   sudo supervisorctl reload
-
-Configure Nginx as a reverse proxy:
-
-.. code-block:: bash
-
-   sudo rm /etc/nginx/sites-enabled/default
-   sudo nano /etc/nginx/sites-enabled/olap
-
-Paste the following content (change ``80`` to ``443`` for HTTPS):
-
-.. code-block:: nginx
-
-   server {
-      listen 80;
-      server_name _;
-
-      access_log /var/log/olap_access.log;
-      error_log /var/log/olap_error.log;
-
-      location / {
-         proxy_pass http://localhost:5000;
-         proxy_redirect off;
-         proxy_set_header Host $host;
-         proxy_set_header X-Real-IP $remote_addr;
-         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-         proxy_connect_timeout 300s;
-         proxy_send_timeout 300s;
-         proxy_read_timeout 300s;
-      }
-   }
-
-Reload Nginx:
-
-.. code-block:: bash
-
-   sudo service nginx reload
-
 .. note::
 
    After each change to the ``settings.json`` file, restart the service:
 
    .. code-block:: bash
 
-      sudo supervisorctl reload
+      sudo supervisorctl restart olap
 
 
 Upgrading version
 ^^^^^^^^^^^^^^^^^
 
-Copy the archive with the new version to the server:
+Copy the new distribution zip to the server (remove or replace any previous zip first):
 
 .. code-block:: bash
 
-   scp -r c:\win_local_folder\xltable.7z user@server_ip:/usr/olap
+   scp xltable-*-ubuntu.zip user@server:/usr/olap/
 
-Save the configuration and license, then extract the update on the server:
+Run the update script:
 
 .. code-block:: bash
 
-   cd /usr/olap
-   cp /usr/olap/xltable/setting/*.json /usr/olap
-   cp /usr/olap/xltable/*.lic /usr/olap
-   rm -r xltable
-   7z x xltable.7z
-   cd /usr/olap/xltable
-   chmod +x main.bin
-   cp /usr/olap/*.json /usr/olap/xltable/setting
-   cp /usr/olap/*.lic /usr/olap/xltable
+   bash update_xltable.sh
 
-   sudo supervisorctl reload
+The script will:
+
+- Verify the zip integrity
+- Back up ``settings.json`` and ``.lic`` license files
+- Replace the xltable installation
+- Restore the backed-up config and license files
+- Reload supervisor
+
+Service Management
+^^^^^^^^^^^^^^^^^^
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 50
+
+   * - Action
+     - Command
+   * - Start
+     - ``sudo supervisorctl start olap``
+   * - Stop
+     - ``sudo supervisorctl stop olap``
+   * - Restart
+     - ``sudo supervisorctl restart olap``
+   * - Status
+     - ``sudo supervisorctl status olap``
+   * - Logs
+     - ``sudo tail -f /var/log/supervisor/olap*.log``
 
 ------------------------------------------------------------
 
