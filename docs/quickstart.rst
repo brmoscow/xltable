@@ -20,7 +20,7 @@ Prerequisites
 Before starting, make sure you have:
 
 - A Linux server (Ubuntu 22.04+ recommended) with sudo access
-- An analytical database (ClickHouse, BigQuery, Snowflake or Trino)
+- An analytical database (ClickHouse, BigQuery, Snowflake, Trino or StarRocks)
 - Microsoft Excel (Microsoft 365 or Excel 2016+)
 - XLTable distribution file (contact help@xltable.com to obtain it)
 
@@ -29,13 +29,6 @@ Before starting, make sure you have:
 Step 1: Install XLTable
 -----------------------
 
-Prepare the server and install required packages:
-
-.. code-block:: bash
-
-   sudo apt-get update
-   sudo apt-get -y install supervisor nginx p7zip-full
-
 Create the working directory:
 
 .. code-block:: bash
@@ -43,13 +36,25 @@ Create the working directory:
    sudo mkdir /usr/olap
    sudo chmod a+rwx /usr/olap
 
-Copy the distribution file to the server and extract it:
+Copy the distribution zip to the server:
 
 .. code-block:: bash
 
-   scp xltable.7z user@your_server_ip:/usr/olap
-   cd /usr/olap && 7z x xltable.7z
-   chmod +x /usr/olap/xltable/main.bin
+   scp xltable-*-ubuntu.zip user@your_server_ip:/usr/olap/
+
+Run the install script:
+
+.. code-block:: bash
+
+   bash install_xltable.sh
+
+The script will:
+
+- Install ``supervisor``, ``nginx``, ``unzip``
+- Extract xltable to ``/usr/olap/xltable/``
+- Create ``/usr/olap/xltable/setting/settings.json`` from the example (if missing)
+- Configure supervisor to autostart the service
+- Configure nginx as a reverse proxy on port 80
 
 ------------------------------------------------------------
 
@@ -70,15 +75,24 @@ Example for ClickHouse:
    {
        "SERVER_DB": "ClickHouse",
        "CREDENTIAL_DB": {
-           "user": "default",
-           "password": "your_password",
-           "host": "your_clickhouse_host",
+           "user": "...",
+           "password": "...",
+           "host": "...",
            "port": "8443",
            "secure": "True"
        },
+       "OWNERS": {"admin": "pass1"},
        "USERS": {"analyst": "password123"},
        "USER_GROUPS": {"analyst": ["olap_users"]}
    }
+
+.. note::
+
+   After each change to the ``settings.json`` file, restart the service:
+
+   .. code-block:: bash
+
+      sudo supervisorctl restart olap
 
 For other database types, see :doc:`install`.
 
@@ -96,62 +110,24 @@ For a ready-to-run example with sample tables, test data, and a complete cube de
 Step 4: Start the service
 --------------------------
 
-Create a Supervisor configuration file:
+The install script starts the service automatically. To manage it manually:
 
-.. code-block:: bash
+.. list-table::
+   :header-rows: 1
+   :widths: 20 50
 
-   sudo nano /etc/supervisor/conf.d/olap.conf
-
-Paste the following content (replace ``<your_user>`` with the actual Linux username):
-
-.. code-block:: ini
-
-   [program:olap]
-   command=/usr/olap/xltable/main.bin
-   directory=/usr/olap/xltable
-   user=<your_user>
-   autostart=true
-   autorestart=true
-   stopasgroup=true
-   killasgroup=true
-
-Reload Supervisor to start the service:
-
-.. code-block:: bash
-
-   sudo supervisorctl reload
-
-Configure Nginx as a reverse proxy:
-
-.. code-block:: bash
-
-   sudo nano /etc/nginx/sites-enabled/olap
-
-Paste the following content:
-
-.. code-block:: nginx
-
-   server {
-       listen 80;
-       server_name _;
-
-       location / {
-           proxy_pass http://localhost:5000;
-           proxy_redirect off;
-           proxy_set_header Host $host;
-           proxy_set_header X-Real-IP $remote_addr;
-           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-           proxy_connect_timeout 300s;
-           proxy_send_timeout 300s;
-           proxy_read_timeout 300s;
-       }
-   }
-
-Reload Nginx:
-
-.. code-block:: bash
-
-   sudo service nginx reload
+   * - Action
+     - Command
+   * - Start
+     - ``sudo supervisorctl start olap``
+   * - Stop
+     - ``sudo supervisorctl stop olap``
+   * - Restart
+     - ``sudo supervisorctl restart olap``
+   * - Status
+     - ``sudo supervisorctl status olap``
+   * - Logs
+     - ``sudo tail -f /var/log/supervisor/olap*.log``
 
 ------------------------------------------------------------
 

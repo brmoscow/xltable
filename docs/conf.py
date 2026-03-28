@@ -9,7 +9,7 @@
 project = 'XLTable'
 copyright = '2026, BR Systems'
 author = 'BR Systems'
-release = '0.2'
+release = '2.0.10'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

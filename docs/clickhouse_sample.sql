@@ -185,7 +185,7 @@ with calendar as (
 --olap_calculated_fields Calculated fields
 (sales_sum_qty / stock_avg_qty) as calc_turnover --translation=`Turnover` --format=`#,##0.00;-#,##0.00`
 --olap_jinja
-{{ sql_text | replace("salesly.date_sale", "toString(toDate(salesly.date_sale) - INTERVAL 1 YEAR)") }}
+{{ sql_text | replace("salesly.date_sale", "toString(toDate(salesly.date_sale) + INTERVAL 1 YEAR)") }}
 
 --olap_source Sales
 SELECT
