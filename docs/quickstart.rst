@@ -20,7 +20,7 @@ Prerequisites
 Before starting, make sure you have:
 
 - A Linux server (Ubuntu 22.04+ recommended) with sudo access
-- An analytical database (ClickHouse, BigQuery, Snowflake, Trino or StarRocks)
+- An analytical database (ClickHouse, BigQuery, Snowflake, Trino, StarRocks or Databricks)
 - Microsoft Excel (Microsoft 365 or Excel 2016+)
 - XLTable distribution file (contact help@xltable.com to obtain it)
 

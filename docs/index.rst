@@ -31,6 +31,8 @@ Supported data sources
 - BigQuery
 - Snowflake
 - Trino
+- StarRocks
+- Databricks
 
 Getting started
 ===============

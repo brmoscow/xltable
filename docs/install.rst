@@ -311,6 +311,8 @@ Currently supported connection types:
 - BigQuery
 - Snowflake
 - Trino
+- StarRocks
+- Databricks
 
 For each database type, the corresponding configuration section must be
 defined in ``settings.json``.
@@ -389,5 +391,25 @@ Example structure for StarRocks connection:
         "host": "...",
         "port": ...,
         "user": "...",
-        "password": "...",        
-    },  
+        "password": "...",
+    },
+
+Databricks
+^^^^^^^^^^
+
+Example structure for Databricks connection:
+
+.. code-block:: json
+
+    "SERVER_DB": "Databricks",
+    "CREDENTIAL_DB": {
+        "server_hostname": "adb-xxxxxxxxxxxx.azuredatabricks.net",
+        "http_path": "/sql/1.0/warehouses/xxxxxxxxxxxx",
+        "access_token": "dapi...",
+        "catalog": "..."
+    },
+
+``server_hostname`` and ``http_path`` can be found in the Databricks workspace
+under **SQL Warehouses → Connection details**.
+``access_token`` is a personal access token generated in **User Settings → Developer → Access tokens**.
+``catalog`` is optional; if omitted, ``hive_metastore`` is used.
