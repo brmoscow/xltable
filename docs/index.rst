@@ -50,6 +50,7 @@ Start with these sections to deploy XLTable and connect Excel:
    excel
    reference
    clickhouse_sample
+   bigquery_sample
    support
    changelog
    backlog   
