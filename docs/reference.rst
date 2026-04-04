@@ -114,6 +114,44 @@ Tag reference
 
    * - format
      - Defines the display format of a measure in Excel Pivot Tables.
+       The value follows the standard **Excel number format** syntax.
+       A semicolon separates the positive and negative patterns: ``positive;negative``.
+
+       .. list-table::
+          :header-rows: 1
+          :widths: 38 31 31
+
+          * - Format string
+            - Positive value
+            - Negative value
+          * - ``#,##0;-#,##0``
+            - 1,234
+            - -1,234
+          * - ``#,##0.00;-#,##0.00``
+            - 1,234.56
+            - -1,234.56
+          * - ``#,##0.0;-#,##0.0``
+            - 1,234.6
+            - -1,234.6
+          * - ``0%``
+            - 56%
+            - -56%
+          * - ``0.0%``
+            - 56.3%
+            - -56.3%
+          * - ``0.00%``
+            - 56.34%
+            - -56.34%
+          * - ``#,##0;(#,##0)``
+            - 1,234
+            - (1,234)
+          * - ``#,##0.00;(#,##0.00)``
+            - 1,234.56
+            - (1,234.56)
+
+       The format string is stored in the cube definition and applied by Excel
+       when the field is placed on a Pivot Table. Leaving the tag out lets
+       Excel apply its default general format.
 
 .. _unified_example:
 
