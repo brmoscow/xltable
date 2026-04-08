@@ -4,19 +4,19 @@ Frequently Asked Questions
 Quick navigation
 ----------------
 
-- `How is an XLTable pilot usually organized? <#pilot-flow>`_
-- `What are common infrastructure requirements and ports? <#infrastructure-and-ports>`_
+- `What are the minimum system requirements and required ports? <#minimum-requirements-and-ports>`_
+- `Installation on Ubuntu 22.04 fails with a GLIBC 2.38 dependency error. What should I do? <#glibc-238-on-ubuntu-2204>`_
 
-.. _pilot-flow:
+.. _minimum-requirements-and-ports:
 
-How is an XLTable pilot usually organized?
--------------------------------------------
+What are the minimum system requirements and required ports?
+------------------------------------------------------------
 
-A practical pilot flow is: the customer provides the target cube structure and source data, the customer deploys XLTable on their server, the XLTable team or integrator prepares and tunes ``olap_definition``, and business users validate results and performance in Excel.
+Typical baseline requirements are Ubuntu 22.04 or 24.04, 2-8 vCPU, 16-32 GB RAM, and 50-100 GB disk. Network access usually includes XLTable -> ClickHouse (often port 8443) and Excel clients -> XLTable (ports 80/443). In restricted environments, access may be available only through VPN and HTTPS.
 
-.. _infrastructure-and-ports:
+.. _glibc-238-on-ubuntu-2204:
 
-What are common infrastructure requirements and ports?
-------------------------------------------------------
+Installation on Ubuntu 22.04 fails with a GLIBC 2.38 dependency error. What should I do?
+-------------------------------------------------------------------------------------------
 
-Typical pilot environments use Ubuntu 22.04 or 24.04 with 2-8 vCPU, 16-32 GB RAM, and 50-100 GB disk. Network paths usually include XLTable to ClickHouse (often port 8443), and Excel clients to XLTable over 80 or 443, often through VPN and HTTPS.
+The standard build may have been compiled against a newer GNU C library. Recommended options are either upgrading to Ubuntu 24.04 or requesting a vendor build specifically prepared for Ubuntu 22.04 (including the corresponding installation or upgrade package).
