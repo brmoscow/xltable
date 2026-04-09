@@ -131,7 +131,7 @@ CREATE OR REPLACE TABLE `olap.olap_definition` AS
 SELECT 'myOLAPcube' AS id,
 """
 with calendar as (
-    SELECT * FROM `olap.Times` WHERE year_str IN ('2023', '2024')
+    SELECT * FROM olap.Times WHERE year_str IN ('2023', '2024')
 )
 
 --olap_cube
@@ -145,9 +145,9 @@ SELECT
 --olap_measures
  sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity`      --format=`#,##0;-#,##0`
 ,sum(sales.sum) as sales_sum_sum --translation=`Sales Amount`        --format=`#,##0.00;-#,##0.00`
-FROM `olap.Sales` sales
-LEFT JOIN `olap.Stores` stores ON sales.store = stores.id
-LEFT JOIN `olap.Models` models ON sales.model = models.id
+FROM olap.Sales sales
+LEFT JOIN olap.Stores stores ON sales.store = stores.id
+LEFT JOIN olap.Models models ON sales.model = models.id
 LEFT JOIN calendar times ON sales.date_sale = times.day_str
 
 --olap_source Sales last year
@@ -155,45 +155,45 @@ SELECT
 --olap_measures
  sum(salesly.qty) as salesly_sum_qty --translation=`Sales last year Quantity` --format=`#,##0;-#,##0`
 ,sum(salesly.sum) as salesly_sum_sum --translation=`Sales last year Amount`   --format=`#,##0.00;-#,##0.00`
-FROM `olap.Sales` salesly
-LEFT JOIN `olap.Stores` stores ON salesly.store = stores.id
-LEFT JOIN `olap.Models` models ON salesly.model = models.id
+FROM olap.Sales salesly
+LEFT JOIN olap.Stores stores ON salesly.store = stores.id
+LEFT JOIN olap.Models models ON salesly.model = models.id
 LEFT JOIN calendar times ON salesly.date_sale = times.day_str
 
 --olap_source Stock
 SELECT
 --olap_measures
  avg(stock.qty) as stock_avg_qty --translation=`Average Stock Quantity`
-FROM `olap.Stock` stock
-LEFT JOIN `olap.Stores` stores ON stock.store = stores.id
-LEFT JOIN `olap.Models` models ON stock.model = models.id
+FROM olap.Stock stock
+LEFT JOIN olap.Stores stores ON stock.store = stores.id
+LEFT JOIN olap.Models models ON stock.model = models.id
 
 --olap_source Stores
 SELECT
 --olap_dimensions
  stores.id as store_id      --translation=`Store ID`
 ,stores.name as stores_name --translation=`Store`
-FROM `olap.Stores` stores
-LEFT JOIN `olap.Regions` regions ON stores.region = regions.id
+FROM olap.Stores stores
+LEFT JOIN olap.Regions regions ON stores.region = regions.id
 
 --olap_source Regions
 SELECT
 --olap_dimensions
  regions.name as regions_name --translation=`Region`
-FROM `olap.Regions` regions
-LEFT JOIN `olap.Managers` managers ON regions.id = managers.region --relationship=`many-to-many`
+FROM olap.Regions regions
+LEFT JOIN olap.Managers managers ON regions.id = managers.region --relationship=`many-to-many`
 
 --olap_source Managers
 SELECT
 --olap_dimensions
  managers.name as managers_name --translation=`Manager`
-FROM `olap.Managers` managers
+FROM olap.Managers managers
 
 --olap_source Models
 SELECT
 --olap_dimensions
  models.name as models_name --translation=`Model`
-FROM `olap.Models` models
+FROM olap.Models models
 
 --olap_source Dates
 SELECT
