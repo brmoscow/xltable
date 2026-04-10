@@ -53,6 +53,7 @@ Start with these sections to deploy XLTable and connect Excel:
    bigquery_sample
    snowflake_sample
    support
+   support_knowledge_base
    changelog
    backlog   
 
