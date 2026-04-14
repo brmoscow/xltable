@@ -49,6 +49,11 @@ Tag reference
    * - Tag
      - Description
 
+   * - definition_check_on
+     - When present in the cube definition, enforces mandatory syntax validation
+       of the cube definition before connecting to data.
+       If validation fails, the connection is not established and an error is returned.
+
    * - hide
      - Hides a measure or dimension from the list of fields in Excel.
    

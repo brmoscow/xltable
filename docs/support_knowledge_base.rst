@@ -1,11 +1,6 @@
 Frequently Asked Questions (Support)
 ====================================
 
-Reference links:
-
-- https://xltable.com/
-- https://xltable-olap.readthedocs.io/en/latest/
-
 .. contents:: Quick navigation
    :local:
    :depth: 1

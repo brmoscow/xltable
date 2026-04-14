@@ -1,6 +1,13 @@
 Version History
 ===============
 
+Version 2.0.11 — 2026-04-01
+----------------------------
+
+- **Databricks Connector** — added support for Databricks as a data source.
+- **OLAP cube syntax validation** — new function for validating cube definition syntax before loading.
+- **Windows 10 and 11 support** — added the ability to run on Windows 10 and 11 operating systems.
+
 Version 2.0.10 — 2026-03-19
 ----------------------------
 
