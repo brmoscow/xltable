@@ -73,17 +73,30 @@ Example for ClickHouse:
 .. code-block:: json
 
    {
-       "SERVER_DB": "ClickHouse",
-       "CREDENTIAL_DB": {
-           "user": "...",
-           "password": "...",
-           "host": "...",
-           "port": "8443",
-           "secure": "True"
-       },
-       "OWNERS": {"admin": "pass1"},
-       "USERS": {"analyst": "password123"},
-       "USER_GROUPS": {"analyst": ["olap_users"]}
+      "SERVER_DB": "ClickHouse",
+      "CREDENTIAL_DB": {
+         "user": "..",
+         "password": "..",
+         "host": "..",
+         "port": "8443",
+         "secure": "True",
+         "query_timeout": 300
+      },
+      "WRITE_LOG": false,
+      "MAX_ROWS": 100000,
+      "CONVERT_FIELDS_TO_STRING": true,
+      "USERS": {"user1": "pass1", "user2": "pass2"},
+      "USER_GROUPS": {"user1": ["olap_users", "olap_admins"], "user2": ["olap_users"]},
+      "ADMIN_GROUPS": ["olap_admins"],
+      "CREDENTIAL_ACTIVE_DIRECTORY": {
+         "server_address": "..",
+         "domain": "..",
+         "domain_full": "..",
+         "username": "..",
+         "password": "..",
+         "access_groups": ["..", ".."]
+      },
+      "LDAP_CACHE_TIMEOUT": 300
    }
 
 .. note::

@@ -70,28 +70,29 @@ Example of a minimal settings.json:
   {
     "SERVER_DB": "ClickHouse",
     "CREDENTIAL_DB": {
-        "user": "...",
-        "password": "...",
-        "host": "...",
+        "user": "..",
+        "password": "..",
+        "host": "..",
         "port": "8443",
-        "secure": "True"
+        "secure": "True",
+        "query_timeout": 300
     },
     "WRITE_LOG": false,
-    "OWNERS": {"admin": "pass1"},
-    "USERS": {"name": "password"},
-    "USER_GROUPS": {"name": ["group_name"]},
     "MAX_ROWS": 100000,
-    "LDAP_CACHE_TIMEOUT": 300,
     "CONVERT_FIELDS_TO_STRING": true,
+    "USERS": {"user1": "pass1", "user2": "pass2"},
+    "USER_GROUPS": {"user1": ["olap_users", "olap_admins"], "user2": ["olap_users"]},
+    "ADMIN_GROUPS": ["olap_admins"],
     "CREDENTIAL_ACTIVE_DIRECTORY": {
         "server_address": "..",
         "domain": "..",
         "domain_full": "..",
         "username": "..",
         "password": "..",
-        "access_group": ".."
-       }
-   }
+        "access_groups": ["..", ".."]
+    },
+    "LDAP_CACHE_TIMEOUT": 300
+  }
 
 .. note::
 
@@ -150,47 +151,88 @@ Service Management
 Windows
 -------
 
-XLTable can be installed on Windows Server.
-Windows Server 2019+ is recommended for production environments.
+XLTable can be installed on Windows Server 2019+.
 
 Prerequisites
 ^^^^^^^^^^^^^
 
-- Windows Server 2019+ with administrator privileges
+**IIS Roles and Features** (Server Manager → Add Roles and Features):
+
+- Role: **Web Server (IIS)**
+- Under **Web Server → Application Development**: enable **CGI** (also enables FastCGI)
+- Under **Web Server → Security**: enable **Windows Authentication** and **Basic Authentication**
+
 - Network access to analytical databases
 - Open ports 80 or 443 for Excel clients
 
-Prepare system
-^^^^^^^^^^^^^^
+Installation
+^^^^^^^^^^^^
 
-- Install IIS (Web Server role).
-- Install URL Rewrite and ARR (Application Request Routing).
-- Create working directory: ``c:\olap``
+**1. Install Python 3.12.6**
 
-Install XLTable
-^^^^^^^^^^^^^^^
+Download and install Python 3.12.6 for Windows (64-bit). During installation, check **"Add Python to PATH"**.
 
-Copy XLTable distribution file into the working directory and unpacking it.
-Set up connections with database (configuration examples in the folder ``c:\olap\xltable\setting``):
-
-Configure the IIS site as a reverse proxy on the local port http://127.0.0.1:5000/{R:0} and add the REMOTE_USER header to the request.
-
-Installing the service XLTable using NSSM (Non-Sucking Service Manager):
+**2. Create the application folder**
 
 .. code-block:: bash
-   
-   nssm install XLTable "C:\olap\xltable\main.exe"
-   nssm start XLTable
 
-Enable required authentication in IIS.
+   mkdir C:\olap
 
-.. note::
+**3. Extract the distribution archive**
 
-   After each change to the ``settings.json`` file, restart the service:
+Copy the distribution archive into ``C:\olap``, then extract it:
 
-   .. code-block:: bash
+.. code-block:: bash
 
-      nssm restart XLTable
+   cd C:\olap
+   tar -xf xltable-2.0.11-windows_server.zip
+
+The application folder will be at ``C:\olap\xltable\``.
+
+**4. Create a virtual environment**
+
+.. code-block:: bash
+
+   cd C:\olap\xltable
+   python -m venv .venv
+
+**5. Install dependencies**
+
+.. code-block:: bash
+
+   C:\olap\xltable\.venv\Scripts\pip install -r requirements.txt
+
+**6. Configure settings**
+
+Edit the configuration file ``C:\olap\xltable\setting\settings.json`` and fill in all required fields (database connections, license path, etc.).
+
+**7. Configure IIS with web.config**
+
+Use the file ``C:\olap\xltable\web.config``. It configures FastCGI to run the application via the virtual environment Python interpreter.
+
+Authentication is set to **Windows Authentication** and **Basic Authentication** (anonymous access disabled).
+
+**8. Register the FastCGI application in IIS**
+
+Open **IIS Manager → server node → FastCGI Settings → Add Application**:
+
+- **Full Path:** ``C:\olap\xltable\.venv\Scripts\python.exe``
+- **Arguments:** ``C:\olap\xltable\.venv\Lib\site-packages\wfastcgi.py``
+
+**9. Verify**
+
+Open the admin panel in a browser at ``http://localhost/admin``.
+
+In Excel, connect to the server at ``http://<server-name>/``.
+
+Update
+^^^^^^
+
+1. Stop the IIS application pool (IIS Manager → Application Pools → Stop)
+2. Back up ``settings.json`` and the license file ``.lic``
+3. Extract the new distribution archive into ``C:\olap\xltable\``, overwriting existing files
+4. Restore the backed-up ``settings.json`` and ``.lic``
+5. Start the application pool
 
 ------------------------------------------------------------
 
@@ -222,7 +264,8 @@ Example structure:
 .. code-block:: json
 
    "USERS": {"user1": "pass1", "user2": "pass2"},
-   "USER_GROUPS": {"user1": ["olap_users"], "user2": ["olap_admins"]},
+   "USER_GROUPS": {"user1": ["olap_users", "olap_admins"], "user2": ["olap_users"]},
+   "ADMIN_GROUPS": ["olap_admins"],
 
 Active Directory integration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -269,23 +312,19 @@ The admin panel is available at:
 
    http://<server>/admin
 
-Access is protected by a separate set of credentials defined in ``OWNERS``
-(independent from regular ``USERS``).
+Access is granted to users who belong to a group listed in ``ADMIN_GROUPS``.
 
-Configure admin credentials
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Configure admin access
+^^^^^^^^^^^^^^^^^^^^^^
 
-Add the ``OWNERS`` section to ``settings.json``:
+Add the ``ADMIN_GROUPS`` section to ``settings.json``:
 
 .. code-block:: json
 
-   "OWNERS": {"admin": "secret_password"}
+   "ADMIN_GROUPS": ["olap_admins"]
 
-.. note::
-
-   ``OWNERS`` credentials are completely separate from ``USERS``.
-   A user defined in ``USERS`` cannot access the admin panel,
-   and an owner cannot connect as a regular Excel user.
+To access the admin panel, log in as a user whose group is listed in ``ADMIN_GROUPS``.
+For local users, the group is assigned via ``USER_GROUPS``; for AD users — via Active Directory group membership.
 
 Features
 ^^^^^^^^

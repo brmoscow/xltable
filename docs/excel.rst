@@ -17,10 +17,7 @@ Adding an Analysis Services data source
 
    In older Excel versions: **Data** → **From Other Sources** → **From Analysis Services**.
 
-3. In the **Server name** field, enter the XLTable server address:
-
-   - Basic authentication: ``http://your_server_ip``
-   - Active Directory authentication: ``http://your_server_ip/ad``
+3. In the **Server name** field, enter the XLTable server address: ``http://your_server_ip``
 
 4. In the **Log on credentials** section, select **Use the following User Name and Password**
    and enter the credentials configured in ``settings.json``.
@@ -53,12 +50,6 @@ Active Directory (Windows authentication)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Used when ``CREDENTIAL_ACTIVE_DIRECTORY`` is configured in ``settings.json``.
-
-Use the server address with the ``/ad`` suffix:
-
-.. code-block::
-
-   http://your_server_ip/ad
 
 Select **Use Windows Authentication** in the connection wizard.
 Excel will use the current domain session credentials automatically —
