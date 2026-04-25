@@ -1,4 +1,4 @@
-Frequently Asked Questions (Support)
+FAQ
 ====================================
 
 .. contents:: Quick navigation
