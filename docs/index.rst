@@ -1,8 +1,3 @@
-.. image:: _static/xllogo_blue.png
-   :alt: XLTable Logo
-   :align: center
-   :width: 400px
-   
 
 XLTable Documentation
 =====================
@@ -40,7 +35,7 @@ Getting started
 Start with these sections to deploy XLTable and connect Excel:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Documentation
 
    overview
