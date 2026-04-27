@@ -81,6 +81,39 @@ Set ``WRITE_LOG=true`` in ``settings.json``, restart the service, and check XLTa
 
 You can also inspect queries in ClickHouse via ``system.query_log`` using the ``log_comment`` marker.
 
+How do I specify multiple users in settings.json?
+-------------------------------------------------
+
+Use this format:
+
+.. code-block:: json
+
+   "USERS": {
+     "user1": "password1",
+     "user2": "password2"
+   },
+   "USER_GROUPS": {
+     "user1": ["group_name"],
+     "user2": ["group_name"]
+   }
+
+How can I view the query history of XLTable users in ClickHouse?
+----------------------------------------------------------------
+
+Use the following SQL query:
+
+.. code-block:: sql
+
+   SELECT
+       event_time,
+       query,
+       user,
+       query_duration_ms
+   FROM system.query_log
+   WHERE log_comment LIKE 'user:%, app:xltable'
+   ORDER BY event_time DESC
+   LIMIT 10;
+
 Data in storage updates frequently; we need to refresh cache. Is configurable cache TTL planned?
 --------------------------------------------------------------------------------------------------
 
@@ -93,6 +126,11 @@ Documentation:
 
 - https://xltable-olap.readthedocs.io/en/latest/excel.html#refreshing-data
 - https://xltable-olap.readthedocs.io/en/latest/install.html#admin-panel
+
+Why are cube changes not visible to users after updating the cube?
+------------------------------------------------------------------
+
+The cache must be cleared. You can do this in the Admin Panel (``http://<server>/admin``) for all users, or by clicking Refresh in Excel for an individual user.
 
 Excel queries run too long or timeout; a ClickHouse view is slow while a physical table is faster.
 ----------------------------------------------------------------------------------------------------
@@ -110,6 +148,18 @@ Compare systems with identical dimensions, filters, and subtotal settings.
 
 SQL generation logic:
 https://xltable-olap.readthedocs.io/en/latest/cubes.html#sql-generation-logic
+
+How does XLTable generate SQL from a cube definition: are all CTEs executed or only the required ones?
+-----------------------------------------------------------------------------------------------------
+
+XLTable generates a query based on the current context of the fields selected in Excel. Only the required tables and fields are used, not the entire model.
+
+For CTEs, only the parts actually used in the query participate in execution.
+
+Useful documentation sections:
+
+- https://xltable-olap.readthedocs.io/en/latest/cubes.html#cte
+- https://xltable-olap.readthedocs.io/en/latest/cubes.html#sql-generation-logic
 
 The XLTable service does not start automatically after server reboot.
 ----------------------------------------------------------------------
@@ -182,3 +232,8 @@ Installation instructions:
 https://xltable-olap.readthedocs.io/en/latest/install.html#windows
 
 For pilots, Linux deployment is usually simpler. Windows is typically chosen when IT policy requires IIS and Microsoft domain integration.
+
+Can XLTable be connected from LibreOffice or OpenOffice?
+-------------------------------------------------------
+
+Currently, the service works only with Excel. Support for other clients is planned for the future.
