@@ -74,7 +74,8 @@ Example of a minimal settings.json:
         "password": "..",
         "host": "..",
         "port": "8443",
-        "secure": "True",
+        "secure": true,
+        "verify": true,
         "query_timeout": 300
     },
     "WRITE_LOG": false,
@@ -369,7 +370,9 @@ Example structure for ClickHouse connection:
         "password": "...",
         "host": "...",
         "port": "8443",
-        "secure": "True"
+        "secure": true,
+        "verify": true,
+        "query_timeout": 300
     },
 
 BigQuery

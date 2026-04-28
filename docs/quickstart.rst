@@ -79,7 +79,8 @@ Example for ClickHouse:
          "password": "..",
          "host": "..",
          "port": "8443",
-         "secure": "True",
+         "secure": true,
+         "verify": true,
          "query_timeout": 300
       },
       "WRITE_LOG": false,

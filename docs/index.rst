@@ -46,7 +46,8 @@ Start with these sections to deploy XLTable and connect Excel:
    reference
    clickhouse_sample
    bigquery_sample
-   snowflake_sample   
+   snowflake_sample
+   trino_sample
    faq
    support
    changelog
