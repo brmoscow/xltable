@@ -353,6 +353,7 @@ Currently supported connection types:
 - Trino
 - StarRocks
 - Databricks
+- Greenplum
 
 For each database type, the corresponding configuration section must be
 defined in ``settings.json``.
@@ -455,3 +456,21 @@ Example structure for Databricks connection:
 under **SQL Warehouses → Connection details**.
 ``access_token`` is a personal access token generated in **User Settings → Developer → Access tokens**.
 ``catalog`` is optional; if omitted, ``hive_metastore`` is used.
+
+Greenplum
+^^^^^^^^^^
+
+Example structure for Greenplum connection:
+
+.. code-block:: json
+
+    "SERVER_DB": "Greenplum",
+    "CREDENTIAL_DB": {
+        "host": "...",
+        "port": 6432,
+        "sslmode": "require",
+        "dbname": "...",
+        "user": "...",
+        "password": "...",
+        "target_session_attrs": "read-write"
+    },

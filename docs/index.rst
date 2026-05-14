@@ -28,6 +28,7 @@ Supported data sources
 - Trino
 - StarRocks
 - Databricks
+- Greenplum
 
 Getting started
 ===============
@@ -48,6 +49,7 @@ Start with these sections to deploy XLTable and connect Excel:
    bigquery_sample
    snowflake_sample
    trino_sample
+   greenplum_sample
    faq
    support
    changelog

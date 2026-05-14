@@ -197,7 +197,7 @@ Install XLTable service and configure basic system settings.
 3. Configure database connections
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Define connections to analytical databases such as ClickHouse or Trino.
+Define connections to analytical databases such as ClickHouse, Trino or Greenplum.
 Connection settings are stored centrally.
 
 4. Define OLAP cubes
