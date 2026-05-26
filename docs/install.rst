@@ -435,6 +435,8 @@ Example structure for StarRocks connection:
         "port": ...,
         "user": "...",
         "password": "...",
+        "ssl_ca": "...",
+        "ssl_disabled": false
     },
 
 Databricks

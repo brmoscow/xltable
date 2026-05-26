@@ -1,6 +1,13 @@
 Version History
 ===============
 
+Version 2.0.12 — 2026-05-22
+----------------------------
+
+- **Greenplum Connector** — added support for Greenplum as a data source.
+- **HTTP gzip compression** — server HTTP responses now support gzip compression, reducing the amount of data transferred.
+- **Faster XMLA response building** — significantly improved performance when generating XMLA responses with a large number of rows.
+
 Version 2.0.11 — 2026-04-01
 ----------------------------
 
