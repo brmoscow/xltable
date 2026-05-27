@@ -348,11 +348,35 @@ The principle is simple: Jinja scripts are defined within the cube and applied t
 Execution order:
 
 1. measure group Jinja
-2. dimension Jinja
-3. cube-level Jinja
+2. cube-level Jinja
 
 Jinja scripts take the SQL query text and the context data as inputs. This context includes the cube definition, user-selected fields, active filters, and other metadata essential for modifying the query dynamically.
 See: :ref:`jinja_var`
+
+Below are some additional examples of using scripts.
+
+Example of a Jinja script with "if-else" statement:
+
+.. code-block:: sql
+
+   --olap_jinja
+   {% if "invoice_id" in sql_text %}
+       {{ sql_text | replace("FROM db.sale_by_days", "FROM db.sale_by_invoices") }}
+   {% else %}
+       {{ sql_text }}
+   {% endif %}
+
+Adding conditions "where" by default:
+
+.. code-block:: sql
+
+   --olap_jinja
+   {% set sql_where = "where sale.year=2025 " %}
+   {% if jinja_context["sale"]["sql_text_where"] %}
+      {% set sql_where = jinja_context["sale"]["sql_text_where"] ~ " and sale.year=2025 " %}
+   {% endif %}
+   {{ sql_text | replace("FROM db.sale sale", "FROM db.sale sale " ~ sql_where) }}
+
 
 Best practices for cube design
 ------------------------------
