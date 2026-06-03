@@ -276,7 +276,7 @@ Jinja context variables
 
 XLTable uses Jinja templating to generate dynamic SQL based on the current Excel request.
 
-For each query, XLTable passes a dictionary called ``jinja_context`` into the Jinja template.
+For each query, XLTable passes a dictionary called ``context`` into the Jinja template.
 This dictionary contains:
 
 - cube definition and metadata
@@ -322,7 +322,7 @@ Key reference
 Dynamic source keys (<source_key>)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Source keys in ``jinja_context`` are derived from the table alias
+Source keys in ``context`` are derived from the table alias
 defined in the SQL query of the cube source.
 
 For example:
@@ -333,11 +333,11 @@ For example:
    SELECT ...
    FROM db.Sales sales
 
-In this case, the key ``sales`` will appear in ``jinja_context``:
+In this case, the key ``sales`` will appear in ``context``:
 
 .. code-block:: python
 
-   jinja_context = {
+   context = {
        ...
        'sales': {
            'sql_text_select': '...',

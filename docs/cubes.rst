@@ -372,8 +372,8 @@ Adding conditions "where" by default:
 
    --olap_jinja
    {% set sql_where = "where sale.year=2025 " %}
-   {% if jinja_context["sale"]["sql_text_where"] %}
-      {% set sql_where = jinja_context["sale"]["sql_text_where"] ~ " and sale.year=2025 " %}
+   {% if context["sale"]["sql_text_where"] %}
+      {% set sql_where = context["sale"]["sql_text_where"] ~ " and sale.year=2025 " %}
    {% endif %}
    {{ sql_text | replace("FROM db.sale sale", "FROM db.sale sale " ~ sql_where) }}
 
