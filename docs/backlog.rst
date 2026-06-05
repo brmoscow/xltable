@@ -2,7 +2,7 @@ Backlog
 =======
 
 This section lists features and improvements planned for development
-over the next 9 months (Q2–Q4 2026).
+in 2026.
 
 .. list-table::
    :header-rows: 1
