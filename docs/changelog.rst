@@ -1,6 +1,11 @@
 Version History
 ===============
 
+Stay up to date with the latest releases by following us on
+`Telegram <https://t.me/XLTable>`_ or `X <https://x.com/XLTable>`_.
+
+------------------------------------------------------------
+
 Version 2.0.12 — 2026-05-22
 ----------------------------
 

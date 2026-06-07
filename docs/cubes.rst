@@ -282,24 +282,19 @@ Example:
    --olap_user_role
    --olap_user_groups
    finance_users
-
-Visibility:
-
-.. code-block:: sql
-
    --olap_calculated_fields_visible
    all
    --olap_measures_visible
    sales_sum
    --olap_dimensions_visible
    region, store
-
-Access filters:
-
-.. code-block:: sql
-
    --olap_access_filters
    region = 'EU'
+
+The ``olap_user_role`` tag marks the beginning of a role definition; multiple roles can be defined.
+Under ``olap_user_groups``, list the user groups that belong to this role.
+Under the ``..._visible`` tags, list the measure groups, dimensions, individual measures, or dimension attributes visible to this role.
+Under ``olap_access_filters``, define the row-level filters applied to this role.
 
 SQL generation logic
 --------------------

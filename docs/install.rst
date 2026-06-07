@@ -347,7 +347,7 @@ on their side. All database connections are defined centrally in the
 
 Currently supported connection types:
 
-- ClickHouse
+- ClickHouse (starting from version 22.5)
 - BigQuery
 - Snowflake
 - Trino

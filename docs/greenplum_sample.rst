@@ -194,8 +194,21 @@ connection block:
            "password": "<password>",
            "target_session_attrs": "read-write"
        },
-       "USERS": {"analyst": "password123"},
-       "USER_GROUPS": {"analyst": ["olap_users"]}
+       "WRITE_LOG": false,
+       "MAX_ROWS": 100000,
+       "CONVERT_FIELDS_TO_STRING": true,
+       "USERS": {"user1": "pass1", "user2": "pass2"},
+       "USER_GROUPS": {"user1": ["olap_users", "olap_admins"], "user2": ["olap_users"]},
+       "ADMIN_GROUPS": ["olap_admins"],
+       "CREDENTIAL_ACTIVE_DIRECTORY": {
+          "server_address": "..",
+          "domain": "..",
+          "domain_full": "..",
+          "username": "..",
+          "password": "..",
+          "access_groups": ["..", ".."]
+        },
+       "LDAP_CACHE_TIMEOUT": 300
    }
 
 XLTable automatically discovers all cubes stored in the ``olap_definition``
@@ -217,7 +230,7 @@ Step 4: Connect Excel
 
 1. Open Excel and go to **Data → Get Data → From Database → From Analysis Services**.
 2. Enter the server URL: ``http://your_server_ip``
-3. Log in with ``analyst / password123``.
+3. Log in with ``user1 / pass1``.
 4. Select ``myOLAPcube``.
 5. Drag any measures and dimensions onto the Pivot Table — done.
 

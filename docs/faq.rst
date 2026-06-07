@@ -237,3 +237,56 @@ Can XLTable be connected from LibreOffice or OpenOffice?
 -------------------------------------------------------
 
 Currently, the service works only with Excel. Support for other clients is planned for the future.
+
+Excel cannot connect to the server.
+------------------------------------
+
+- Verify the server address is reachable from the client machine (port 80 or 443).
+- Check that Nginx is running: ``sudo service nginx status``.
+- Check that XLTable is running: ``sudo supervisorctl status``.
+
+I get an authentication error in Excel.
+-----------------------------------------
+
+- Verify the username and password in ``settings.json`` under the ``USERS`` key.
+- If using Active Directory, verify the ``CREDENTIAL_ACTIVE_DIRECTORY`` settings.
+- After any changes to ``settings.json``, restart the service.
+
+The Pivot Table shows no data.
+--------------------------------
+
+- Confirm the ``olap_definition`` table exists in the database and contains at least one cube definition.
+- Enable logging and check the generated SQL queries for errors.
+- Verify the database credentials in ``CREDENTIAL_DB`` have read access to the relevant tables.
+
+Queries are slow.
+------------------
+
+- Enable ``WRITE_LOG`` to inspect the generated SQL and identify bottlenecks.
+- Pre-aggregate data in the database where possible.
+- Reduce the number of dimensions selected in the Pivot Table.
+
+Too many rows are returned in the Pivot Table.
+-----------------------------------------------
+
+- The default row limit is 50,000. Adjust ``MAX_ROWS`` in ``settings.json`` if needed.
+- Add filters in the Pivot Table to reduce the result set.
+
+The XLTable service does not start on Linux.
+---------------------------------------------
+
+Check the Supervisor logs:
+
+.. code-block:: bash
+
+   sudo supervisorctl tail olap
+
+The XLTable service does not start on Windows.
+------------------------------------------------
+
+Check the Windows Event Log or run the service binary directly from a command prompt
+to see the error output:
+
+.. code-block:: bash
+
+   C:\olap\xltable\main.exe

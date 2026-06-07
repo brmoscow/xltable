@@ -414,10 +414,8 @@ Parameter reference
      - Forces conversion of certain fields to string type before returning results.
      - true
 
-   * - OWNERS
-     - Defines administrator credentials for accessing the admin panel (``/admin``).
-       Admin accounts are independent from regular ``USERS`` and have access to
-       service management operations such as clearing the cache.
+   * - ADMIN_GROUPS
+     - Defines user groups for accessing the admin panel (``/admin``).
      - —
 
    * - CREDENTIAL_ACTIVE_DIRECTORY
