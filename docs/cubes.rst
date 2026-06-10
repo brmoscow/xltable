@@ -397,7 +397,7 @@ When all data resides in one flat table, use ``relationship=\`one-table\``` to l
    SELECT
    --olap_dimensions
     sales.store as sales_store --translation=`Store`
-   FROM db.Sales sales
+   FROM db.Sales sales 
 
 Measures and dimensions from separate tables with one-table relationship
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
