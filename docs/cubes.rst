@@ -373,7 +373,7 @@ Adding conditions "where" by default:
    {{ sql_text | replace("FROM db.sale sale", "FROM db.sale sale " ~ sql_where) }}
 
 
-Examples
+Some examples
 --------
 
 This section contains examples of the most common cube configuration scenarios.
@@ -404,7 +404,7 @@ Measures and dimensions from separate tables with one-table relationship
 
 Use this pattern when measures and dimensions live in different tables but the dimension data
 is fully repeated in each fact row — no separate key join is needed.
-The ``relationship=\`one-table\``` tag tells XLTable to query each table independently
+The ``relationship=`one-table``` tag tells XLTable to query each table independently
 and match dimension values directly from the fact rows, bypassing a traditional JOIN.
 
 This is the recommended approach when filter value lookups (the lists of values shown in Excel slicers)
