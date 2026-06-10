@@ -358,6 +358,11 @@ Currently supported connection types:
 For each database type, the corresponding configuration section must be
 defined in ``settings.json``.
 
+.. note::
+
+   To connect to the database, a single service account with **read-only** access is sufficient.
+   XLTable uses this account for all queries; no write permissions are required.
+
 ClickHouse
 ^^^^^^^^^^
 

@@ -373,6 +373,67 @@ Adding conditions "where" by default:
    {{ sql_text | replace("FROM db.sale sale", "FROM db.sale sale " ~ sql_where) }}
 
 
+Examples
+--------
+
+This section contains examples of the most common cube configuration scenarios.
+
+Cube from a single denormalized table
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When all data resides in one flat table, use ``relationship=\`one-table\``` to link measures and dimensions without a real join:
+
+.. code-block:: sql
+
+   --olap_source Sales
+   SELECT
+   --olap_measures
+    sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity`      --format=`#,##0;-#,##0`
+   ,sum(sales.sum) as sales_sum_sum --translation=`Sales Amount`        --format=`#,##0.00;-#,##0.00`
+   FROM db.Sales sales
+   LEFT JOIN db.Sales sales --relationship=`one-table`
+
+   --olap_source Stores
+   SELECT
+   --olap_dimensions
+    sales.store as sales_store --translation=`Store`
+   FROM db.Sales sales
+
+Measures and dimensions from separate tables with one-table relationship
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Use this pattern when measures and dimensions live in different tables but the dimension data
+is fully repeated in each fact row — no separate key join is needed.
+The ``relationship=\`one-table\``` tag tells XLTable to query each table independently
+and match dimension values directly from the fact rows, bypassing a traditional JOIN.
+
+This is the recommended approach when filter value lookups (the lists of values shown in Excel slicers)
+should run against a small, fast dimension table, while the main aggregation query runs against
+a large denormalized fact table. Keeping the two queries separate avoids scanning the entire
+fact table just to populate a filter dropdown.
+
+.. note::
+
+   The dimension field used for matching (``store`` in this example) must exist in both tables —
+   in the dimension table for the filter lookup, and in the fact table for applying the filter to the main query.
+
+.. code-block:: sql
+
+   --olap_source Sales
+   SELECT
+   --olap_measures
+    sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity`      --format=`#,##0;-#,##0`
+   ,sum(sales.sum) as sales_sum_sum --translation=`Sales Amount`        --format=`#,##0.00;-#,##0.00`
+   FROM db.Sales sales
+   LEFT JOIN db.Stores stores --relationship=`one-table`
+
+   --olap_source Stores
+   SELECT
+   --olap_dimensions
+   FROM db.Stores stores
+
+------------------------------------------------------------
+
 Best practices for cube design
 ------------------------------
 
