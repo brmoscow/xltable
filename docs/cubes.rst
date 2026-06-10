@@ -430,6 +430,7 @@ fact table just to populate a filter dropdown.
    --olap_source Stores
    SELECT
    --olap_dimensions
+   store as sales_store --translation=`Store`
    FROM db.Stores stores
 
 ------------------------------------------------------------
