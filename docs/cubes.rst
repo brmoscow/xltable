@@ -381,7 +381,7 @@ This section contains examples of the most common cube configuration scenarios.
 Cube from a single denormalized table
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-When all data resides in one flat table, use ``relationship=\`one-table\``` to link measures and dimensions without a real join:
+When all data resides in one flat table, use ``relationship=`one-table``` to link measures and dimensions without a real join:
 
 .. code-block:: sql
 
