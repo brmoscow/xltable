@@ -289,7 +289,7 @@ Example:
    --olap_dimensions_visible
    region, store
    --olap_access_filters
-   region = 'EU'
+   region in (`EU`, `NA`)
 
 The ``olap_user_role`` tag marks the beginning of a role definition; multiple roles can be defined.
 Under ``olap_user_groups``, list the user groups that belong to this role.
