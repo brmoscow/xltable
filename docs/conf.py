@@ -34,7 +34,7 @@ html_theme_options = {
     'fixed_sidebar': True,
     'sidebar_collapse': False,
     'show_powered_by': False,
-    'analytics_id': 'G-GCCZ18W88M',  
+    'analytics_id': 'G-0F2P9FSN3D',  
     'analytics_anonymize_ip': False,
 }
 
