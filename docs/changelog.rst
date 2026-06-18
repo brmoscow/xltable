@@ -6,6 +6,15 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
+Version 2.0.13 — 2026-06-18
+----------------------------
+
+- **Extended Jinja context** — Jinja templates now receive additional context variables (``user``, ``now``, ``request`` and per-source SQL fragments) for row-level security and dynamic query logic.
+- **SQL and XML escaping** — hardened escaping of user names, member values and identifiers across all connectors to prevent SQL injection and malformed XMLA responses.
+- **Many-to-many fix** — corrected SQL generation for ``many-to-many`` relationships.
+- **Connector fixes** — multiple fixes across database connectors, including ``ILIKE`` support for BigQuery.
+- **MCP connector (in development)** — early support for an MCP connector, currently under active development.
+
 Version 2.0.12 — 2026-05-22
 ----------------------------
 

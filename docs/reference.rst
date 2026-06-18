@@ -185,7 +185,7 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
 
     --olap_cube
     --olap_calculated_fields Calculated fields
-    (sales_qty/stock_avg_qty) as calc_turnover --translation=`Turnover` --format=`#,##0;-#,##0`
+    (sales_sum_qty/stock_avg_qty) as calc_turnover --translation=`Turnover` --format=`#,##0;-#,##0`
     --olap_jinja
     {{ sql_text | replace("salesly.date_sale", "addYears(salesly.date_sale, 1)") }}
 
@@ -260,7 +260,7 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     --olap_calculated_fields_visible
     all
     --olap_measures_visible
-    sales_qty, stock_avg_qty
+    sales_sum_qty, stock_avg_qty
     --olap_dimensions_visible
     all
     --olap_access_filters
@@ -312,6 +312,15 @@ Key reference
    * - dimension_axis1_levels
      - List of dimension levels placed by the user on Excel Axis 1 (typically Columns).
 
+   * - user
+     - Information about the user executing the current request: ``name``, ``groups`` and a SQL-safe, quoted variant ``name_sql`` ready to be inserted directly into SQL.
+
+   * - now
+     - Server date/time of the current request, exposed as ready-to-use parts: ``date``, ``datetime``, ``year``, ``quarter``, ``month`` and ``day``.
+
+   * - request
+     - Convenience flat lists of what the client selected in Excel for the current request, split by type (``measures``, ``calculated_fields``, ``dimensions``, ``all_levels``, ``filters``) plus ``filter_values`` with the comma-separated values chosen for each filter. Avoids walking the nested ``cube_definition``.
+
    * - <source_key>
      - Dynamic key for each OLAP source (measure group). The key name equals the source table alias/name (for example ``sales``, ``stock``, ``stores``).
        Each source entry contains source-specific SQL fragments such as ``sql_text_select``, ``sql_text_select_inside``, ``sql_text_where``, ``sql_text_group`` and ``sql_text``.
@@ -359,6 +368,96 @@ Each source key contains SQL fragments for that source:
 - ``sql_text_group``: GROUP BY fragment (often GROUPING SETS)
 - ``sql_text``: full generated SQL for the source
 
+User context (user)
+^^^^^^^^^^^^^^^^^^^
+
+The ``user`` key contains information about the user who executes the current request.
+It is useful for implementing row-level security or user-specific logic directly in Jinja.
+
+.. code-block:: python
+
+   context = {
+       ...
+       'user': {
+           'name': 'jdoe',                 # user login/name
+           'groups': ['managers', 'all'],  # list of security groups
+           'name_sql': "'jdoe'"            # SQL-safe, quoted user name
+       }
+   }
+
+- ``name``: raw user name (login).
+- ``groups``: list of security groups assigned to the user.
+- ``name_sql``: the user name already escaped and wrapped in single quotes,
+  ready to be inserted directly into SQL.
+
+.. warning::
+
+   When building SQL conditions from the user name, always use ``user.name_sql``.
+   The raw ``user.name`` is not escaped and inserting it directly into SQL may
+   lead to SQL injection.
+
+For usage examples see :ref:`jinja_scripts`.
+
+Current date/time (now)
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``now`` key contains the server date and time captured at the moment the request
+is processed. It is useful for relative date filtering (current year, quarter, today, etc.).
+
+.. code-block:: python
+
+   context = {
+       ...
+       'now': {
+           'date': '2026-06-17',
+           'datetime': '2026-06-17 14:35:02',
+           'year': 2026,
+           'quarter': 2,
+           'month': 6,
+           'day': 17
+       }
+   }
+
+For usage examples see :ref:`jinja_scripts`.
+
+Client request (request)
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``request`` key provides ready-to-use flat lists of what the client selected
+in Excel for the current request. It is a convenience shortcut so templates do not
+have to walk the nested ``cube_definition`` to discover what was requested.
+
+Level names match the ``translation`` (localized display name) of each measure or
+dimension attribute.
+
+.. code-block:: python
+
+   context = {
+       ...
+       'request': {
+           'measures': ['Sales Quantity', 'Sales last year Amount'],
+           'calculated_fields': ['Turnover'],
+           'dimensions': ['Store', 'Model'],
+           'all_levels': ['Model', 'Store', 'Sales Quantity', 'Sales last year Amount'],
+           'filters': ['Year', 'Supervisor'],
+           'filter_values': {'Year': '2025 1, 2025 3, 2025 4, 2024', 'Supervisor': 'Ryan Howard, Michael Scott'}
+       }
+   }
+
+- ``measures``: selected measures.
+- ``calculated_fields``: selected calculated fields.
+- ``dimensions``: selected dimension levels (placed on rows or columns).
+- ``all_levels``: every level present in the SELECT clause (measures, calculated fields and dimensions), in selection order.
+- ``filters``: dimension levels the user filtered on in Excel (the WHERE conditions).
+- ``filter_values``: dictionary mapping each filtered level to a comma-separated string of the values selected by the user. For multi-level hierarchy members the parts of a member are joined with a space. When the user selected everything, the value is ``'[All]'``.
+
+.. warning::
+
+   ``filter_values`` contains raw, unescaped user input. Do not insert it directly
+   into SQL — use it for display/logic only, or escape it yourself.
+
+For usage examples see :ref:`jinja_scripts`.
+
 ------------------------------------------------------------
 
 settings.json schema
@@ -390,7 +489,7 @@ Parameter reference
      - —
 
    * - WRITE_LOG
-     - Enables or disables logging of XLTable operations. Log files will be located in the folder  ``...\xltable\xml``.
+     - Enables or disables logging of XLTable operations. Log files will be located in the folder  ``...\xltable\log``.
      - false
 
    * - USERS

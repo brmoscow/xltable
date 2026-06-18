@@ -20,7 +20,7 @@ Prerequisites
 Before starting, make sure you have:
 
 - A Linux server (Ubuntu 22.04+ recommended) with sudo access
-- An analytical database (ClickHouse, BigQuery, Snowflake, Trino, StarRocks or Databricks)
+- An analytical database (ClickHouse, BigQuery, Snowflake, Trino, StarRocks, Databricks or Greenplum)
 - Microsoft Excel (Microsoft 365 or Excel 2016+)
 - XLTable distribution file (contact help@xltable.com to obtain it)
 
@@ -151,7 +151,7 @@ Step 5: Connect Excel
 1. Open Excel and go to **Data → Get Data → From Database → From Analysis Services**.
 2. Enter the server URL: ``http://your_server_ip``
 3. Enter the username and password configured in ``settings.json``.
-4. Select the ``SalesCube`` cube.
+4. Select the ``myOLAPcube`` cube.
 5. Click **Finish** — your Pivot Table is ready.
 
 Connection to XLTable is identical to connecting to Microsoft SQL Server Analysis Services (SSAS).

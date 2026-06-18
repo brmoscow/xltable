@@ -192,7 +192,6 @@ connection block:
           "access_groups": ["..", ".."]
         },
        "LDAP_CACHE_TIMEOUT": 300
-       ...
    }
 
 XLTable automatically discovers all cubes stored in the ``olap_definition``

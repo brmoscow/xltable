@@ -69,8 +69,8 @@ use the following OLEDB connection string:
 
 Replace ``http://your_server_ip`` with the actual server address.
 
-This connection string is compatible with Excel, Power BI Desktop,
-and any other OLAP client that supports the MSOLAP provider.
+This connection string is used by Excel through the MSOLAP provider.
+XLTable currently targets Excel as its client application.
 
 ------------------------------------------------------------
 

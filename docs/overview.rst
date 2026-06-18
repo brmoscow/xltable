@@ -87,7 +87,7 @@ and indicates which of them are available in XLTable.
    * - Tabular models (in-memory columnar)
      - ✓
      -
-   * - Calculated members and calculated measures
+   * - Calculated measures (calculated fields)
      - ✓
      - ✓
    * - Named sets
@@ -99,7 +99,7 @@ and indicates which of them are available in XLTable.
    * - Perspectives (virtual cube subsets)
      - ✓
      -
-   * - Translations (multilingual metadata)
+   * - Field display names (translations)
      - ✓
      - ✓
    * - **Query Languages**
@@ -117,28 +117,28 @@ and indicates which of them are available in XLTable.
    * - **Performance & Storage**
      -
      -
-   * - In-memory (VertiPaq) caching
+   * - Query result caching
      - ✓
      - ✓
    * - Partitions
      - ✓
-     - ✓
+     -
    * - Pre-computed aggregations
      - ✓
      -
    * - Proactive caching
      - ✓
-     - ✓
+     -
    * - DirectQuery (pass-through to source database)
      - ✓
-     -
+     - ✓
    * - **Security**
      -
      -
    * - Role-based access control
      - ✓
      - ✓
-   * - Row-level / cell-level security
+   * - Row-level security
      - ✓
      - ✓
    * - Dimension security
@@ -158,19 +158,19 @@ and indicates which of them are available in XLTable.
      -
    * - Management tools (SSMS)
      - ✓
-     - ✓
+     -
    * - Drillthrough (cell to detail rows)
      - ✓
-     - ✓
+     -
    * - **Administration**
      -
      -
    * - Full data processing (ETL-like refresh)
      - ✓
-     - ✓
+     -
    * - Incremental processing
      - ✓
-     - ✓
+     -
    * - Admin / monitoring interface
      - ✓
      - ✓

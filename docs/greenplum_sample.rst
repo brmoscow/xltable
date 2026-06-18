@@ -111,7 +111,7 @@ against your Greenplum instance using one of the options below.
 .. code-block:: bash
 
    psql "host=<your_greenplum_host> \
-         port=5432 \
+         port=6432 \
          dbname=<database> \
          user=<user> \
          password=<password> \
@@ -123,7 +123,7 @@ against your Greenplum instance using one of the options below.
 .. code-block:: bash
 
    psql "host=<your_greenplum_host> \
-         port=5432 \
+         port=6432 \
          dbname=<database> \
          user=<user> \
          password=<password>" \
@@ -133,7 +133,7 @@ against your Greenplum instance using one of the options below.
 
 .. code-block:: bash
 
-   psql postgresql://<user>:<password>@<your_greenplum_host>:5432/<database>?sslmode=require \
+   psql postgresql://<user>:<password>@<your_greenplum_host>:6432/<database>?sslmode=require \
      -f greenplum_sample.sql
 
 After a successful run the output should contain no errors.

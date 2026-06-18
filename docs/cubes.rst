@@ -228,7 +228,7 @@ many-to-many:
 
 .. code-block:: sql
 
-   LEFT JOIN db.Managers managers ON sales.store_id = managers.store_id --relationship=`many-to-many``
+   LEFT JOIN db.Managers managers ON sales.store_id = managers.store_id --relationship=`many-to-many`
 
 Many-to-many relationships follow the classic Analysis Services model, where dimensions lack a unique key. Instead, a single measure group value maps to multiple dimension rows. For example, multiple managers can be assigned to the same store, causing overlapping results when filtering.
 
@@ -318,6 +318,8 @@ If multiple measure groups exist:
 Put simply, SQL generation follows a basic principle: the queries executed are exactly what is defined in the cube metadata.
 Enable logging in settings.json → WRITE_LOG to inspect generated SQL.
 
+.. _jinja_scripts:
+
 Jinja scripts
 -------------
 
@@ -371,6 +373,33 @@ Adding conditions "where" by default:
       {% set sql_where = context["sale"]["sql_text_where"] ~ " and sale.year=2025 " %}
    {% endif %}
    {{ sql_text | replace("FROM db.sale sale", "FROM db.sale sale " ~ sql_where) }}
+
+Row-level security by user — restrict rows to the current user when they belong to the ``managers`` group
+(see :ref:`jinja_var` for the ``user`` key; always use ``user.name_sql`` to avoid SQL injection):
+
+.. code-block:: sql
+
+   --olap_jinja
+   {% if 'managers' in context.user.groups %}
+   {{ sql_text | replace("WHERE", "WHERE managers.login = " ~ context.user.name_sql ~ " AND ") }}
+   {% endif %}
+
+Relative date filtering — limit data to the current year using the ``now`` key:
+
+.. code-block:: sql
+
+   --olap_jinja
+   {{ sql_text | replace("WHERE", "WHERE times.year_str = '" ~ context.now.year ~ "' AND ") }}
+
+Conditional logic on the client request — add an extra column only when a specific
+calculated field was requested (see the ``request`` key):
+
+.. code-block:: sql
+
+   --olap_jinja
+   {% if 'Turnover' in context.request.calculated_fields %}
+   {{ sql_text | replace("FROM", ", some_extra_column FROM") }}
+   {% endif %}
 
 
 Some examples
