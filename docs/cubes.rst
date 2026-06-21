@@ -22,6 +22,36 @@ the overall logic will feel familiar.
 In Analysis Services, cube structure is designed in a graphical environment and then deployed.
 In XLTable, cube structure is defined using SQL scripts.
 
+Anatomy of a cube definition
+----------------------------
+
+Before diving into individual tags, keep two ideas in mind.
+
+**Every block is a runnable SELECT.** A cube definition is a sequence of ordinary
+SQL ``SELECT`` statements annotated with tags inside comments. Any single block can
+be copied into a database client and executed as-is — it returns real rows. This is
+the key mental model: you are writing normal SQL first, and the tags only tell
+XLTable how to assemble those queries into an OLAP cube.
+
+**A definition follows a fixed top-to-bottom order.** The blocks always appear in
+this sequence:
+
+.. code-block:: text
+
+   WITH <cte> AS (...)            ← 1. CTEs (optional, shared by the whole cube)
+   --olap_cube                    ← 2. cube-level block:
+   --olap_calculated_fields ...        calculated fields and
+   --olap_jinja ...                    cube-level Jinja (optional)
+   --olap_source <MeasureGroup>   ← 3. measure groups (one or more)
+   ...
+   --olap_source <Dimension>      ← 4. dimensions (one or more)
+   ...
+   --olap_user_role               ← 5. user roles / access rules (optional)
+   ...
+
+Blocks are separated by a blank line. Refer back to this map as you read the
+sections below.
+
 Cube definition storage
 -----------------------
 
@@ -68,6 +98,36 @@ Examples:
 
 See the full list of tags: :ref:`sql_tags`
 
+How to write tag values
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+A tag is written inside a SQL comment and starts with ``--``. There are two ways a
+tag carries a value, depending on the tag.
+
+**Block tags — value is the rest of the line.** For tags such as ``olap_source``,
+the value is everything that follows the tag on the same line, taken literally up to
+the end of the line. Spaces are part of the value, so no quoting is needed:
+
+.. code-block:: sql
+
+   --olap_source Sales last year
+
+Here the source name is ``Sales last year`` — all three words.
+
+**Inline tags — value after** ``=`` **in backticks.** Field-level tags such as
+``translation``, ``format``, ``hierarchy`` and ``folder`` attach to a single field
+and take their value after an ``=`` sign, wrapped in backtick characters:
+
+.. code-block:: sql
+
+   stores.name as stores_name --translation=`Store` --folder=`Distribution`
+
+The backticks mark where the value begins and ends, which is what lets a value
+contain spaces (``Sales Quantity``) or punctuation (``#,##0;-#,##0``). Backticks are
+used deliberately instead of single or double quotes so the value never clashes with
+``'...'`` and ``"..."`` string literals that may appear in the field expression
+itself. Multiple inline tags can be placed on the same line, each separated by a space.
+
 Measure group design
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -80,8 +140,13 @@ Example:
    --olap_source Sales
    SELECT
    --olap_measures
-       sum(sales.sale_qty) as sales_sum_qty
+       sum(sales.qty) as sales_sum_qty
    FROM db.Sales sales
+
+The ``SELECT`` keyword is **mandatory**, not a stylistic choice: each
+``olap_source`` block must be a complete, runnable SELECT statement. This lets you
+copy any block into a database client and execute it as-is to verify it returns the
+expected rows before XLTable ever uses it.
 
 The order of blocks within an ``olap_source`` section is mandatory:
 
@@ -112,7 +177,7 @@ Example:
 
 .. code-block:: sql
 
-   sum(sales.sale_qty) as sales_sum_qty
+   sum(sales.qty) as sales_sum_qty
 
 Naming recommendation:
 
@@ -138,7 +203,7 @@ Example:
 
 .. code-block:: sql
 
-   sum(sales.sale_qty) as sales_sum_qty --translation=`Sales Quantity` --format=`#,##0;-#,##0`
+   sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity` --format=`#,##0;-#,##0`
 
 Important: we place each measure on a new line, separated by commas.
 Next, use the ``olap_measures`` tag before the list of measures to identify them for the OLAP cube.
@@ -176,6 +241,10 @@ Dimension metadata tags
 
 Attributes may include tags such as translation (optional; if omitted, the field alias is used as the display name).
 
+The ``translation`` value must be **unique within the cube** — it is the display name
+Excel shows for the field, and duplicates would make two different fields
+indistinguishable in the PivotTable field list.
+
 Example:
 
 .. code-block:: sql
@@ -201,6 +270,8 @@ Example:
    times.month as times_month --hierarchy=`Dates`   
    times.day as times_day  --hierarchy=`Dates`
 
+.. _relationships:
+
 Relationships
 ^^^^^^^^^^^^^
 
@@ -217,6 +288,11 @@ Rules:
 
 - always use LEFT JOIN
 - joins must be explicit
+
+A dimension is linked to a measure group through a **shared table alias**: the
+alias used in the measure group's ``LEFT JOIN`` (for example ``LEFT JOIN db.Stores stores``)
+must match the alias of the dimension's own source (``--olap_source Stores ... FROM db.Stores stores``).
+XLTable connects the two on that identical alias, so keep aliases consistent across the cube.
 
 Measure groups support both direct and indirect dimension relationships. Each link must be defined on a new line.
 Indirect connections occur when a dimension links to a measure group via an intermediary dimension.
@@ -243,22 +319,63 @@ one-table:
 
 For denormalized sources like ClickHouse, use the relationship=`one-table` tag to link measures and dimensions within a single table. This bypasses the unique alias rule and the LEFT JOIN operation. The OLAP server will query the flat table directly; no ON clause or join columns are required.
 
+part-source:
+
+.. code-block:: sql
+
+   --olap_source Sales
+   SELECT ...
+   FROM db.Sales sales
+   LEFT JOIN db.Currencies curr on sales.currency = curr.id --relationship=`part-source`
+
+By default, a ``LEFT JOIN`` whose alias matches another ``olap_source`` is treated as
+a relationship to that other source (see :ref:`Relationships <relationships>`). Use
+``relationship=`part-source``` when the joined table is **not** a separate cube source
+but simply an extra table that belongs to the current source — a lookup table or a
+helper join needed to compute its measures or attributes (for example attaching a
+``Currencies`` reference to convert amounts).
+
+The join is then treated as part of the current ``olap_source`` block only: it does
+**not** register the table as a cube-wide source and does **not** create a new join
+path that other measure groups or dimensions could connect through. Use it whenever
+you need an auxiliary table inside one source without exposing it to the rest of the cube.
+
 Calculated fields
 -----------------
 
 Calculated fields are virtual measures computed from other measures.
+
+They are declared once for the whole cube, in a block that starts with the
+``olap_cube`` tag followed by an ``olap_calculated_fields`` tag (whose value is
+the folder name shown in the Excel field list).
 
 Example:
 
 .. code-block:: sql
 
    --olap_cube
-   (sales_qty/stock_avg_qty) as turnover --translation=`Turnover`
+   --olap_calculated_fields Calculated fields
+   (sales_sum_qty/stock_avg_qty) as turnover --translation=`Turnover`
+
+A calculated field may combine measures from **different** measure groups: the
+per-group results are merged with a FULL JOIN before the expression is applied,
+so any measure alias defined in the cube can be referenced here.
+
+.. note::
+
+   Because the inputs come from different measure groups, a measure may be
+   ``NULL`` (no matching rows) or zero for a given cell. Always guard division
+   against ``NULL`` and zero, for example
+   ``(sales_sum_qty / nullIf(stock_avg_qty, 0)) as turnover``.
 
 CTE
 ---
 
 CTE scripts define temporary datasets used in cube SQL.
+
+A CTE is declared once, at the very top of the cube definition (before the
+``olap_cube`` block). It is shared across the whole cube: every measure group and
+dimension source can reference it, just like a real table.
 
 Example:
 
@@ -268,7 +385,9 @@ Example:
        SELECT ...
    )
 
-CTEs can serve as data sources for both measure groups and dimensions.
+CTEs can serve as data sources for both measure groups and dimensions — reference
+the CTE name in a ``FROM`` or ``LEFT JOIN`` clause and give it an alias as usual
+(for example ``LEFT JOIN calendar times``).
 
 User roles
 ----------
@@ -296,6 +415,11 @@ Under ``olap_user_groups``, list the user groups that belong to this role.
 Under the ``..._visible`` tags, list the measure groups, dimensions, individual measures, or dimension attributes visible to this role.
 Under ``olap_access_filters``, define the row-level filters applied to this role.
 
+Do not confuse the two visibility mechanisms: the ``--hide`` tag hides a field
+**globally**, for everyone (typically a helper measure used only inside calculated
+fields), whereas the ``..._visible`` tags control visibility **per role** — each role
+sees only the measures, dimensions and attributes listed for it.
+
 SQL generation logic
 --------------------
 
@@ -317,6 +441,27 @@ If multiple measure groups exist:
 
 Put simply, SQL generation follows a basic principle: the queries executed are exactly what is defined in the cube metadata.
 Enable logging in settings.json → WRITE_LOG to inspect generated SQL.
+
+Validation and debugging
+------------------------
+
+Two facilities help you confirm a cube definition is correct and inspect what
+XLTable actually runs against the database.
+
+**Check the definition before connecting** — add the ``definition_check_on`` tag to
+the cube definition. When present, XLTable performs a mandatory syntax validation of
+the whole definition before connecting to data; if validation fails, the connection
+is refused and an error is returned, so a broken definition never reaches users.
+
+**Inspect the generated SQL** — set ``WRITE_LOG`` to ``true`` in ``settings.json``.
+XLTable then writes every generated SQL query to the log folder
+(``...\xltable\log``), letting you see the exact statements produced for the user's
+field selection. This is the fastest way to debug unexpected results or performance
+issues. Remember to restart the service after changing ``settings.json``.
+
+A practical workflow is: run each ``olap_source`` block on its own in a database
+client (every block is a runnable SELECT), then enable ``definition_check_on`` and
+``WRITE_LOG`` to validate the full definition and review the final SQL.
 
 .. _jinja_scripts:
 
@@ -403,7 +548,7 @@ calculated field was requested (see the ``request`` key):
 
 
 Some examples
---------
+-------------
 
 This section contains examples of the most common cube configuration scenarios.
 

@@ -180,7 +180,7 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     SELECT 'myOLAPcube' AS id,
     '	
     with calendar as (
-        SELECT * FROM db.Times where times.year_str in ('2023', '2024')
+        SELECT * FROM db.Times where year_str in ('2023', '2024')
     )
 
     --olap_cube

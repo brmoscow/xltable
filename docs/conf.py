@@ -7,9 +7,9 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'XLTable'
-copyright = '2026, BR Systems'
+copyright = '2026, BR Systems, Astana, Kazakhstan'
 author = 'BR Systems'
-release = '2.0.11'
+release = '2.0.13'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
