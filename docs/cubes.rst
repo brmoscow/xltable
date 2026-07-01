@@ -368,6 +368,70 @@ so any measure alias defined in the cube can be referenced here.
    against ``NULL`` and zero, for example
    ``(sales_sum_qty / nullIf(stock_avg_qty, 0)) as turnover``.
 
+.. _drillthrough:
+
+Drillthrough
+------------
+
+Drillthrough returns the raw detail rows behind an aggregated cell. When a user
+double-clicks a value in an Excel Pivot Table, Excel sends a ``DRILLTHROUGH``
+request and XLTable answers with a flat table of detail rows — the individual fact
+records that were summed into that cell.
+
+You declare which columns those detail rows contain **per measure group**, with the
+``olap_drillthrough`` tag placed inside an ``olap_source`` block, after its
+``LEFT JOIN`` clauses:
+
+.. code-block:: sql
+
+   --olap_source Sales
+   SELECT
+   --olap_measures
+    sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity`
+   ,sum(sales.sum) as sales_sum_sum --translation=`Sales Amount`
+   FROM db.Sales sales
+   LEFT JOIN db.Stores stores ON sales.store = stores.id
+   LEFT JOIN db.Models models ON sales.model = models.id
+   LEFT JOIN calendar times ON sales.date_sale = times.day_str
+   --olap_drillthrough
+   stores_name, models_name, times_day_str, sales_sum_qty, sales_sum_sum
+
+The tag value is a **comma-separated list of fields already defined in the cube**.
+Each entry may be the field's SQL alias (``stores_name``) or its ``translation``
+display name (``Store``) — both resolve to the same field. Order is preserved: the
+columns appear in the detail table in the order listed.
+
+How it works:
+
+- **Per measure group.** Each measure group has its own list, because each has its
+  own granularity. Drilling a ``Sales`` cell returns Sales detail; drilling an
+  ``Average Stock Quantity`` cell returns Stock detail.
+- **The clicked measure picks the group.** The measure in the drilled cell selects
+  which ``olap_source`` (fact table) the detail rows come from.
+- **Measures are returned raw.** A measure listed here is emitted as its underlying
+  column with the aggregation removed (``sum(sales.qty)`` → ``sales.qty``), so each
+  row shows the individual fact value, not a total. ``count(...)`` becomes the
+  literal ``1`` (one per row).
+- **Joins are resolved automatically.** Columns from related dimension tables pull
+  in the necessary ``LEFT JOIN`` chain, including multi-hop paths
+  (``Sales`` → ``Stores`` → ``Regions``).
+- **Filters apply.** The cell's row, column and slicer context becomes the ``WHERE``
+  clause, using the same row-level security and filtering as normal queries.
+- **CTEs and Jinja apply** exactly as for regular queries (measure-group Jinja, then
+  the cube CTE, then cube-level Jinja).
+
+If a measure group has no ``olap_drillthrough`` tag, drilling a cell of that group
+falls back to returning just the clicked measure as a single column.
+
+.. note::
+
+   Calculated fields cannot be drilled through — they are computed from measures
+   that may span several measure groups and have no single set of underlying rows.
+   Drilling a calculated field returns a clear message instead of data, matching
+   Analysis Services behavior.
+
+For the end-user experience in Excel, see :ref:`excel_drillthrough`.
+
 CTE
 ---
 
@@ -442,6 +506,8 @@ If multiple measure groups exist:
 Put simply, SQL generation follows a basic principle: the queries executed are exactly what is defined in the cube metadata.
 Enable logging in settings.json → WRITE_LOG to inspect generated SQL.
 
+.. _validation_debugging:
+
 Validation and debugging
 ------------------------
 
@@ -463,89 +529,16 @@ A practical workflow is: run each ``olap_source`` block on its own in a database
 client (every block is a runnable SELECT), then enable ``definition_check_on`` and
 ``WRITE_LOG`` to validate the full definition and review the final SQL.
 
-.. _jinja_scripts:
-
 Jinja scripts
 -------------
 
-When working with Big Data, performance and database load are critical. This means your SQL queries must be both accurate and efficient. Furthermore, users often require complex metrics that exceed the standard capabilities of OLAP cube measures. Jinja templates allow you to control SQL syntax without limitations, dynamically adapting the queries based on the user's selected fields and filters in Excel.
+Jinja templates let you modify the generated SQL dynamically — for performance
+optimization, conditional SQL logic and advanced metrics — using the ``--olap_jinja``
+tag inside the cube. Scripts receive the current SQL text and a rich ``context``
+describing the request.
 
-Jinja scripts allow modifying generated SQL dynamically.
-
-Use cases:
-
-- performance optimization
-- conditional SQL logic
-- advanced metrics
-
-Example of a Jinja script modifying SQL:
-
-.. code-block:: sql
-
-   --olap_jinja
-   {{ sql_text | replace("salesly.date_sale", "addYears(salesly.date_sale, 1)") }}
-
-The principle is simple: Jinja scripts are defined within the cube and applied to modify the generated SQL query. You can define scripts for specific measure groups, dimensions, or the entire cube. A script assigned to a measure group only affects its specific SQL segment, while a cube-level script applies to the overall query.
-
-Execution order:
-
-1. measure group Jinja
-2. cube-level Jinja
-
-Jinja scripts take the SQL query text and the context data as inputs. This context includes the cube definition, user-selected fields, active filters, and other metadata essential for modifying the query dynamically.
-See: :ref:`jinja_var`
-
-Below are some additional examples of using scripts.
-
-Example of a Jinja script with "if-else" statement:
-
-.. code-block:: sql
-
-   --olap_jinja
-   {% if "invoice_id" in sql_text %}
-       {{ sql_text | replace("FROM db.sale_by_days", "FROM db.sale_by_invoices") }}
-   {% else %}
-       {{ sql_text }}
-   {% endif %}
-
-Adding conditions "where" by default:
-
-.. code-block:: sql
-
-   --olap_jinja
-   {% set sql_where = "where sale.year=2025 " %}
-   {% if context["sale"]["sql_text_where"] %}
-      {% set sql_where = context["sale"]["sql_text_where"] ~ " and sale.year=2025 " %}
-   {% endif %}
-   {{ sql_text | replace("FROM db.sale sale", "FROM db.sale sale " ~ sql_where) }}
-
-Row-level security by user — restrict rows to the current user when they belong to the ``managers`` group
-(see :ref:`jinja_var` for the ``user`` key; always use ``user.name_sql`` to avoid SQL injection):
-
-.. code-block:: sql
-
-   --olap_jinja
-   {% if 'managers' in context.user.groups %}
-   {{ sql_text | replace("WHERE", "WHERE managers.login = " ~ context.user.name_sql ~ " AND ") }}
-   {% endif %}
-
-Relative date filtering — limit data to the current year using the ``now`` key:
-
-.. code-block:: sql
-
-   --olap_jinja
-   {{ sql_text | replace("WHERE", "WHERE times.year_str = '" ~ context.now.year ~ "' AND ") }}
-
-Conditional logic on the client request — add an extra column only when a specific
-calculated field was requested (see the ``request`` key):
-
-.. code-block:: sql
-
-   --olap_jinja
-   {% if 'Turnover' in context.request.calculated_fields %}
-   {{ sql_text | replace("FROM", ", some_extra_column FROM") }}
-   {% endif %}
-
+Jinja has its own chapter: see :doc:`jinja` for scripts, the ``context`` object
+reference and template debugging.
 
 Some examples
 -------------

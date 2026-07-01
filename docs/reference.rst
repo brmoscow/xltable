@@ -78,7 +78,13 @@ Tag reference
 
    * - olap_dimensions_visible
      - Marks the beginning of a block listing dimension attributes available to a specific user role.
-   
+
+   * - olap_drillthrough
+     - Marks a block, inside an ``olap_source`` measure-group block, listing the
+       detail columns returned when a user drills through a cell of that measure
+       group in Excel. The value is a comma-separated list of field aliases or
+       display names already defined in the cube. See :ref:`drillthrough`.
+
    * - olap_jinja
      - Marks the beginning of a block with Jinja template logic that modifies SQL scripts.
 
@@ -199,6 +205,8 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     LEFT JOIN db.Models models on sales.model = models.id
     LEFT JOIN calendar times on sales.date_sale = times.day_str
     LEFT JOIN db.Currencies curr on sales.currency = curr.id --relationship=`part-source`
+    --olap_drillthrough
+    stores_name, regions_name, models_name, times_day_str, sales_sum_qty, sales_sum_sum
 
     --olap_source Sales last year
     SELECT
@@ -269,194 +277,12 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
 
 ------------------------------------------------------------
 
-.. _jinja_var:
-
 Jinja context variables
 -----------------------
 
-XLTable uses Jinja templating to generate dynamic SQL based on the current Excel request.
-
-For each query, XLTable passes a dictionary called ``context`` into the Jinja template.
-This dictionary contains:
-
-- cube definition and metadata
-- generated SQL fragments (SELECT/WHERE/GROUP BY parts)
-- the current query context defined by the user in Excel (axes, selected levels, filters)
-- generated SQL fragments per OLAP source (measure group)
-
-Key reference
-^^^^^^^^^^^^^
-
-.. list-table::
-   :header-rows: 1
-   :widths: 30 70
-
-   * - Key
-     - Meaning
-
-   * - cube_definition
-     - Full cube definition object loaded by XLTable. Includes cube metadata, objects, sources, joins, levels, access filters, CTE and Jinja settings.
-
-   * - select_levels
-     - Dictionary of SQL fragments used to build dimension and measure expressions in the SELECT clause for the current Excel request.
-
-   * - where_levels
-     - Dictionary of SQL fragments representing filters selected by the user in Excel (WHERE conditions grouped by dimension/level).
-
-   * - group_levels
-     - Dictionary of SQL fragments representing grouping keys (GROUP BY expressions) derived from the current Excel axes.
-
-   * - dimension_axis0_levels
-     - List of dimension levels placed by the user on Excel Axis 0 (typically Rows).
-
-   * - dimension_axis1_levels
-     - List of dimension levels placed by the user on Excel Axis 1 (typically Columns).
-
-   * - user
-     - Information about the user executing the current request: ``name``, ``groups`` and a SQL-safe, quoted variant ``name_sql`` ready to be inserted directly into SQL.
-
-   * - now
-     - Server date/time of the current request, exposed as ready-to-use parts: ``date``, ``datetime``, ``year``, ``quarter``, ``month`` and ``day``.
-
-   * - request
-     - Convenience flat lists of what the client selected in Excel for the current request, split by type (``measures``, ``calculated_fields``, ``dimensions``, ``all_levels``, ``filters``) plus ``filter_values`` with the comma-separated values chosen for each filter. Avoids walking the nested ``cube_definition``.
-
-   * - <source_key>
-     - Dynamic key for each OLAP source (measure group). The key name equals the source table alias/name (for example ``sales``, ``stock``, ``stores``).
-       Each source entry contains source-specific SQL fragments such as ``sql_text_select``, ``sql_text_select_inside``, ``sql_text_where``, ``sql_text_group`` and ``sql_text``.
-  
-   * - any
-     - Copy any <source_key>. Used when the same table is used as a source of measures and dimensions.
-
-Dynamic source keys (<source_key>)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Source keys in ``context`` are derived from the table alias
-defined in the SQL query of the cube source.
-
-For example:
-
-.. code-block:: sql
-
-   --olap_source Sales
-   SELECT ...
-   FROM db.Sales sales
-
-In this case, the key ``sales`` will appear in ``context``:
-
-.. code-block:: python
-
-   context = {
-       ...
-       'sales': {
-           'sql_text_select': '...',
-           'sql_text_select_inside': '...',
-           'sql_text_where': '...',
-           'sql_text_group': '...',
-           'sql_text': '...'
-       }
-   }
-
-The key name always matches the alias used after the table name
-in the FROM clause.
-
-Each source key contains SQL fragments for that source:
-
-- ``sql_text_select``: SELECT clause fragment for the outer query
-- ``sql_text_select_inside``: SELECT clause fragment for the inner query (raw fields used for grouping/aggregation)
-- ``sql_text_where``: additional WHERE conditions applied to the source
-- ``sql_text_group``: GROUP BY fragment (often GROUPING SETS)
-- ``sql_text``: full generated SQL for the source
-
-User context (user)
-^^^^^^^^^^^^^^^^^^^
-
-The ``user`` key contains information about the user who executes the current request.
-It is useful for implementing row-level security or user-specific logic directly in Jinja.
-
-.. code-block:: python
-
-   context = {
-       ...
-       'user': {
-           'name': 'jdoe',                 # user login/name
-           'groups': ['managers', 'all'],  # list of security groups
-           'name_sql': "'jdoe'"            # SQL-safe, quoted user name
-       }
-   }
-
-- ``name``: raw user name (login).
-- ``groups``: list of security groups assigned to the user.
-- ``name_sql``: the user name already escaped and wrapped in single quotes,
-  ready to be inserted directly into SQL.
-
-.. warning::
-
-   When building SQL conditions from the user name, always use ``user.name_sql``.
-   The raw ``user.name`` is not escaped and inserting it directly into SQL may
-   lead to SQL injection.
-
-For usage examples see :ref:`jinja_scripts`.
-
-Current date/time (now)
-^^^^^^^^^^^^^^^^^^^^^^^
-
-The ``now`` key contains the server date and time captured at the moment the request
-is processed. It is useful for relative date filtering (current year, quarter, today, etc.).
-
-.. code-block:: python
-
-   context = {
-       ...
-       'now': {
-           'date': '2026-06-17',
-           'datetime': '2026-06-17 14:35:02',
-           'year': 2026,
-           'quarter': 2,
-           'month': 6,
-           'day': 17
-       }
-   }
-
-For usage examples see :ref:`jinja_scripts`.
-
-Client request (request)
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The ``request`` key provides ready-to-use flat lists of what the client selected
-in Excel for the current request. It is a convenience shortcut so templates do not
-have to walk the nested ``cube_definition`` to discover what was requested.
-
-Level names match the ``translation`` (localized display name) of each measure or
-dimension attribute.
-
-.. code-block:: python
-
-   context = {
-       ...
-       'request': {
-           'measures': ['Sales Quantity', 'Sales last year Amount'],
-           'calculated_fields': ['Turnover'],
-           'dimensions': ['Store', 'Model'],
-           'all_levels': ['Model', 'Store', 'Sales Quantity', 'Sales last year Amount'],
-           'filters': ['Year', 'Supervisor'],
-           'filter_values': {'Year': '2025 1, 2025 3, 2025 4, 2024', 'Supervisor': 'Ryan Howard, Michael Scott'}
-       }
-   }
-
-- ``measures``: selected measures.
-- ``calculated_fields``: selected calculated fields.
-- ``dimensions``: selected dimension levels (placed on rows or columns).
-- ``all_levels``: every level present in the SELECT clause (measures, calculated fields and dimensions), in selection order.
-- ``filters``: dimension levels the user filtered on in Excel (the WHERE conditions).
-- ``filter_values``: dictionary mapping each filtered level to a comma-separated string of the values selected by the user. For multi-level hierarchy members the parts of a member are joined with a space. When the user selected everything, the value is ``'[All]'``.
-
-.. warning::
-
-   ``filter_values`` contains raw, unescaped user input. Do not insert it directly
-   into SQL — use it for display/logic only, or escape it yourself.
-
-For usage examples see :ref:`jinja_scripts`.
+The Jinja ``context`` object handed to cube templates — its ``cube`` / ``request``
+/ ``sql`` namespaces plus ``user`` and ``now`` — is documented in the
+:doc:`Jinja chapter <jinja>`. See :ref:`jinja_var`.
 
 ------------------------------------------------------------
 

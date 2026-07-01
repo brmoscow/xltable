@@ -43,6 +43,7 @@ Start with these sections to deploy XLTable and connect Excel:
    quickstart
    install
    cubes
+   jinja
    excel
    reference
    clickhouse_sample

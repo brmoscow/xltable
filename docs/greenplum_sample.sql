@@ -209,6 +209,8 @@ FROM db.sales sales
 LEFT JOIN db.stores stores ON sales.store = stores.id
 LEFT JOIN db.models models ON sales.model = models.id
 LEFT JOIN calendar times ON sales.date_sale = times.day_str
+--olap_drillthrough
+stores_name, regions_name, models_name, times_day_str, sales_sum_qty, sales_sum_sum
 
 --olap_source Sales last year
 SELECT

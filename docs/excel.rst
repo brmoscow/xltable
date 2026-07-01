@@ -87,6 +87,27 @@ Query result caching reduces database load for repeated requests.
 
 ------------------------------------------------------------
 
+.. _excel_drillthrough:
+
+Drill through to detail rows
+----------------------------
+
+**Double-click any value cell** in a Pivot Table to drill through. Excel opens a
+new sheet listing the underlying detail rows behind that aggregated value — the
+individual records that were summed into the cell.
+
+The columns shown are configured per measure group in the cube definition with the
+``olap_drillthrough`` tag (see :ref:`drillthrough`). The cell's row, column and
+slicer context is applied automatically as a filter, so you only see the rows that
+make up that specific cell. The number of rows is capped by the drillthrough limit
+Excel sends with the request.
+
+Drill through is available on measures. Calculated fields cannot be drilled —
+double-clicking such a cell returns a message instead of data, because a calculated
+field has no single set of underlying rows.
+
+------------------------------------------------------------
+
 Troubleshooting connection issues
 -----------------------------------
 
