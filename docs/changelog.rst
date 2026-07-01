@@ -6,10 +6,12 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
-Version 2.0.14 — 2026-06-25
+Version 2.0.14 — 2026-07-01
 ----------------------------
 
 - **Drillthrough** — double-clicking a Pivot Table cell now returns the underlying detail rows. Detail columns are configured per measure group with the new ``olap_drillthrough`` tag in the cube definition.
+- **New Jinja context** — expanded the Jinja rendering context available in cube definitions with additional variables for building dynamic query logic.
+- **Debug console** — new debug console for inspecting rendered SQL, Jinja context and query execution, making cube development and troubleshooting easier.
 
 Version 2.0.13 — 2026-06-18
 ----------------------------

@@ -71,7 +71,7 @@ in 2026.
    * - 11
      - Drill-through
      - Ability to view the underlying detail rows behind an aggregated cell value in Excel.
-     -
+     - Done (2.0.14)
 
    * - 12
      - Sort by another field
