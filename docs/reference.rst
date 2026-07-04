@@ -315,8 +315,23 @@ Parameter reference
      - —
 
    * - WRITE_LOG
-     - Enables or disables logging of XLTable operations. Log files will be located in the folder  ``...\xltable\log``.
+     - Enables debug logging of XLTable operations (MDX, generated SQL, Jinja
+       diffs, result preview). Log files will be located in the folder
+       ``...\xltable\log``.
      - false
+
+   * - DUMP_XMLA
+     - Dumps every raw XMLA request and response to a separate file in the
+       ``log`` folder. Intended only for diagnosing Excel/XMLA protocol issues:
+       a single Excel action generates dozens of files. Independent of
+       ``WRITE_LOG``.
+     - false
+
+   * - LOG_RETENTION_DAYS
+     - Files in the ``log`` folder older than this number of days are deleted
+       automatically (checked at most once a day, on service start). Set to 0
+       to disable the cleanup.
+     - 14
 
    * - USERS
      - Defines the list of users for local authentication.

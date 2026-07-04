@@ -178,6 +178,8 @@ connection block:
            "verify": false
        },
        "WRITE_LOG": false,
+       "DUMP_XMLA": false,
+       "LOG_RETENTION_DAYS": 14,
        "MAX_CELLS": 1000000,
        "CONVERT_FIELDS_TO_STRING": true,
        "USERS": {"user1": "pass1", "user2": "pass2"},
