@@ -78,9 +78,9 @@ requests into optimized SQL. A read-only service account is all it needs.
    * - Greenplum
      - :doc:`greenplum_sample`
    * - StarRocks
-     - —
+     - :doc:`starrocks_sample`
    * - Databricks
-     - —
+     - :doc:`databricks_sample`
 
 Why XLTable?
 ------------
@@ -141,6 +141,8 @@ Getting help
    snowflake_sample
    trino_sample
    greenplum_sample
+   starrocks_sample
+   databricks_sample
 
 .. toctree::
    :maxdepth: 1

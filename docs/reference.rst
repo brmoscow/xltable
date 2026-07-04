@@ -352,6 +352,19 @@ Parameter reference
        accepted and used as ``MAX_CELLS``.
      - 1000000
 
+   * - OVERLOAD_GUARD
+     - Rejects data queries while the server host is out of resources, instead
+       of forwarding them to the database. When any threshold is exceeded —
+       ``MAX_MEMORY_PERCENT`` (RAM usage, %), ``MAX_CPU_PERCENT`` (CPU usage,
+       %), ``MIN_FREE_DISK_MB`` (free disk space, MB) — Excel shows
+       "Server is overloaded ... Please try again later" with the specific
+       reason on data refresh. Metadata (Discover) requests are never
+       rejected, so open cube connections keep working. Each threshold is
+       optional; omit the whole block to disable the guard. Note: inside a
+       container the measured resources are the host's, not the container
+       limits.
+     - disabled
+
    * - LDAP_CACHE_TIMEOUT
      - Defines the lifetime of cached LDAP authorization data in seconds. 
        After this period expires, XLTable refreshes user permissions from LDAP.

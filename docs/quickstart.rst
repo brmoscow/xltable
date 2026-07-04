@@ -89,6 +89,11 @@ Example for ClickHouse:
       "DUMP_XMLA": false,
       "LOG_RETENTION_DAYS": 14,
       "MAX_CELLS": 1000000,
+      "OVERLOAD_GUARD": {
+          "MAX_MEMORY_PERCENT": 90,
+          "MAX_CPU_PERCENT": 95,
+          "MIN_FREE_DISK_MB": 512
+      },
       "CONVERT_FIELDS_TO_STRING": true,
       "USERS": {"user1": "pass1", "user2": "pass2"},
       "USER_GROUPS": {"user1": ["olap_users", "olap_admins"], "user2": ["olap_users"]},
