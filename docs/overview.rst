@@ -65,6 +65,8 @@ This approach ensures that:
 
 ------------------------------------------------------------
 
+.. _ssas_comparison:
+
 Comparison with SSAS
 --------------------
 
@@ -161,7 +163,7 @@ and indicates which of them are available in XLTable.
      -
    * - Drillthrough (cell to detail rows)
      - ✓
-     -
+     - ✓
    * - **Administration**
      -
      -
@@ -213,6 +215,8 @@ Connect Excel Pivot Tables to XLTable using XMLA
 and start analyzing data immediately.
 
 ------------------------------------------------------------
+
+.. _system_requirements:
 
 System requirements
 -------------------

@@ -8,14 +8,12 @@ FAQ
 What are the minimum system requirements for installing XLTable?
 ----------------------------------------------------------------
 
-See the documentation page:
-https://xltable-olap.readthedocs.io/en/latest/overview.html#system-requirements
+See :ref:`system_requirements`.
 
 After installation, I see a message that no license is found or that xltable.lic is missing.
 -----------------------------------------------------------------------------------------------
 
-You need to upload a license file. Open the Admin Panel:
-https://xltable-olap.readthedocs.io/en/latest/install.html#admin-panel
+You need to upload a license file. Open the Admin Panel (see :ref:`admin_panel`).
 
 Send the server ID to the vendor or partner who provided your distribution package.
 Then upload the license file you receive through the Admin Panel.
@@ -25,22 +23,18 @@ I cannot connect to the XLTable server from Excel.
 
 I get errors such as "Connection failed, target computer actively refused it," timeout errors, or an error on the first step of the connection wizard.
 
-- Check the connection guide:
-  https://xltable-olap.readthedocs.io/en/latest/excel.html
-- Run diagnostics:
-  https://xltable-olap.readthedocs.io/en/latest/support.html#excel-connection-issues
+- Check the connection guide: :doc:`excel`
+- Run diagnostics: :doc:`support`
 - In the Excel server field, always use the full URL with protocol: ``http://...`` or ``https://....``.
 - Also verify access to XLTable over ports 80/443.
 
 Excel shows an XML parsing error, or curl returns HTTP 500 from the server.
 ----------------------------------------------------------------------------
 
-Validate ``settings.json`` against the documented schema:
-https://xltable-olap.readthedocs.io/en/latest/reference.html#settings-json-schema
+Validate ``settings.json`` against the documented schema: :ref:`settings_schema`.
 
 Required blocks (including ``WRITE_LOG`` and ``CREDENTIAL_DB``) must be present.
-After changes, restart the service and test the Excel connection again:
-https://xltable-olap.readthedocs.io/en/latest/excel.html
+After changes, restart the service and test the Excel connection again (see :doc:`excel`).
 
 Can I store cube metadata in one ClickHouse instance and actual data in another?
 ----------------------------------------------------------------------------------
@@ -49,14 +43,13 @@ Yes. Connections are defined in ``settings.json`` (``CREDENTIAL_DB`` block), whi
 
 More details:
 
-- https://xltable-olap.readthedocs.io/en/latest/install.html#database-connections
-- https://xltable-olap.readthedocs.io/en/latest/cubes.html#cube-definition-storage
+- :ref:`database_connections`
+- :ref:`cube_definition_storage`
 
 XLTable cannot connect to ClickHouse databases.
 -----------------------------------------------
 
-Check ``CREDENTIAL_DB`` parameters (``host``, ``port``, ``secure``) using this example:
-https://xltable-olap.readthedocs.io/en/latest/install.html#database-connections
+Check ``CREDENTIAL_DB`` parameters (``host``, ``port``, ``secure``) using the examples in :ref:`database_connections`.
 
 If ClickHouse accepts only TLS/HTTPS, install the correct certificate chain on the XLTable server and try again.
 
@@ -65,19 +58,18 @@ Where is the specific ClickHouse database configured?
 
 The target database and connection parameters are configured in ``settings.json``, in the ``CREDENTIAL_DB`` block:
 
-- https://xltable-olap.readthedocs.io/en/latest/install.html#database-connections
-- https://xltable-olap.readthedocs.io/en/latest/reference.html#settings-json-schema
+- :ref:`database_connections`
+- :ref:`settings_schema`
 
-If the ``olap_definition`` table does not exist, create it as shown here:
-https://xltable-olap.readthedocs.io/en/latest/cubes.html#cube-definition-storage
+If the ``olap_definition`` table does not exist, create it as shown in :ref:`cube_definition_storage`.
 
 How can I see SQL queries that XLTable sends to ClickHouse?
 ------------------------------------------------------------
 
 Set ``WRITE_LOG=true`` in ``settings.json``, restart the service, and check XLTable logs:
 
-- https://xltable-olap.readthedocs.io/en/latest/support.html#enable-logging
-- https://xltable-olap.readthedocs.io/en/latest/reference.html#settings-json-schema
+- :ref:`enable_logging`
+- :ref:`settings_schema`
 
 You can also inspect queries in ClickHouse via ``system.query_log`` using the ``log_comment`` marker.
 
@@ -124,8 +116,8 @@ Use two standard methods:
 
 Documentation:
 
-- https://xltable-olap.readthedocs.io/en/latest/excel.html#refreshing-data
-- https://xltable-olap.readthedocs.io/en/latest/install.html#admin-panel
+- :ref:`refreshing_data`
+- :ref:`admin_panel`
 
 Why are cube changes not visible to users after updating the cube?
 ------------------------------------------------------------------
@@ -146,11 +138,10 @@ Row counts may differ due to different result granularity.
 XLTable can include intermediate totals, not only leaf-level rows.
 Compare systems with identical dimensions, filters, and subtotal settings.
 
-SQL generation logic:
-https://xltable-olap.readthedocs.io/en/latest/cubes.html#sql-generation-logic
+See :ref:`sql_generation_logic`.
 
 How does XLTable generate SQL from a cube definition: are all CTEs executed or only the required ones?
------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------
 
 XLTable generates a query based on the current context of the fields selected in Excel. Only the required tables and fields are used, not the entire model.
 
@@ -158,14 +149,13 @@ For CTEs, only the parts actually used in the query participate in execution.
 
 Useful documentation sections:
 
-- https://xltable-olap.readthedocs.io/en/latest/cubes.html#cte
-- https://xltable-olap.readthedocs.io/en/latest/cubes.html#sql-generation-logic
+- :ref:`cte`
+- :ref:`sql_generation_logic`
 
 The XLTable service does not start automatically after server reboot.
 ----------------------------------------------------------------------
 
-Check service management instructions:
-https://xltable-olap.readthedocs.io/en/latest/install.html#service-management
+Check the service management instructions: :ref:`service_management`.
 
 On Linux, the default setup is often supervisor. Check:
 
@@ -185,8 +175,8 @@ Typical access includes:
 
 Step-by-step docs:
 
-- https://xltable-olap.readthedocs.io/en/latest/install.html
-- https://xltable-olap.readthedocs.io/en/latest/excel.html
+- :doc:`install`
+- :doc:`excel`
 
 The client is migrating from Microsoft SQL Server and SSAS. Can we avoid creating extra objects in ClickHouse?
 ---------------------------------------------------------------------------------------------------------------
@@ -195,16 +185,15 @@ Yes. You can reduce the number of intermediate ClickHouse objects by moving part
 
 References:
 
-- SSAS comparison: https://xltable-olap.readthedocs.io/en/latest/overview.html#comparison-with-ssas
-- Cube definition rules: https://xltable-olap.readthedocs.io/en/latest/cubes.html
+- SSAS comparison: :ref:`ssas_comparison`
+- Cube definition rules: :doc:`cubes`
 
 We need to combine two attributes from different tables into one dimension, but an error occurs.
 -------------------------------------------------------------------------------------------------
 
 For attributes from different tables, create separate dimensions and join sources using LEFT JOIN in the cube definition.
 
-Working example (Unified example):
-https://xltable-olap.readthedocs.io/en/latest/reference.html#unified-example
+Working example: :ref:`unified_example`.
 
 ClickHouse does not allow nesting window functions inside aggregates like MDX in Microsoft tools. How can we replicate multi-step measure logic?
 ---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -214,8 +203,8 @@ This allows you to inject filters and transform SQL before execution.
 
 Documentation:
 
-- https://xltable-olap.readthedocs.io/en/latest/cubes.html#jinja-scripts
-- https://xltable-olap.readthedocs.io/en/latest/reference.html#jinja-context-variables
+- :ref:`jinja_scripts`
+- :ref:`jinja_var`
 
 What is the license cost and trial period length?
 --------------------------------------------------
@@ -228,13 +217,12 @@ Is a trial installation on Microsoft Windows available? Why would a Windows serv
 
 Yes, a Windows Server distribution is available on request.
 
-Installation instructions:
-https://xltable-olap.readthedocs.io/en/latest/install.html#windows
+Installation instructions: :ref:`install_windows`.
 
 For pilots, Linux deployment is usually simpler. Windows is typically chosen when IT policy requires IIS and Microsoft domain integration.
 
 Can XLTable be connected from LibreOffice or OpenOffice?
--------------------------------------------------------
+----------------------------------------------------------
 
 Currently, the service works only with Excel. Support for other clients is planned for the future.
 
@@ -289,9 +277,9 @@ Check the Supervisor logs:
 The XLTable service does not start on Windows.
 ------------------------------------------------
 
-Check the Windows Event Log or run the service binary directly from a command prompt
-to see the error output:
+XLTable on Windows runs under IIS (FastCGI):
 
-.. code-block:: bash
-
-   C:\olap\xltable\main.exe
+- Check that the IIS application pool is started (IIS Manager → Application Pools).
+- Verify the FastCGI application is registered with the correct paths to
+  ``python.exe`` and ``wfastcgi.py`` (see :ref:`install_windows`).
+- Check the Windows Event Log and the XLTable ``log`` folder for error output.

@@ -1,0 +1,4 @@
+sphinx>=8,<10
+furo
+sphinx-design
+sphinx-copybutton

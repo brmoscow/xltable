@@ -11,6 +11,8 @@ If you have any questions or problems, please use these contacts:
 Troubleshooting
 ---------------
 
+.. _enable_logging:
+
 Enable logging
 ^^^^^^^^^^^^^^
 

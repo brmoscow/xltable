@@ -74,6 +74,8 @@ XLTable currently targets Excel as its client application.
 
 ------------------------------------------------------------
 
+.. _refreshing_data:
+
 Refreshing data
 ----------------
 

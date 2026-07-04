@@ -1,0 +1,26 @@
+/* The logo is dark blue on a transparent background — give it a light chip
+   in dark mode so it stays readable. */
+body[data-theme="dark"] .sidebar-logo-container {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 10px 14px;
+}
+@media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) .sidebar-logo-container {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 10px 14px;
+    }
+}
+
+/* Landing page cards: keep titles compact and add a subtle hover lift */
+.sd-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.sd-card:hover {
+    transform: translateY(-2px);
+}
+.sd-card .sd-card-title .octicon {
+    color: var(--color-brand-primary);
+    margin-right: 0.35em;
+}

@@ -52,6 +52,8 @@ this sequence:
 Blocks are separated by a blank line. Refer back to this map as you read the
 sections below.
 
+.. _cube_definition_storage:
+
 Cube definition storage
 -----------------------
 
@@ -432,6 +434,8 @@ falls back to returning just the clicked measure as a single column.
 
 For the end-user experience in Excel, see :ref:`excel_drillthrough`.
 
+.. _cte:
+
 CTE
 ---
 
@@ -483,6 +487,8 @@ Do not confuse the two visibility mechanisms: the ``--hide`` tag hides a field
 **globally**, for everyone (typically a helper measure used only inside calculated
 fields), whereas the ``..._visible`` tags control visibility **per role** — each role
 sees only the measures, dimensions and attributes listed for it.
+
+.. _sql_generation_logic:
 
 SQL generation logic
 --------------------

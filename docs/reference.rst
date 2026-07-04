@@ -286,6 +286,8 @@ The Jinja ``context`` object handed to cube templates — its ``cube`` / ``reque
 
 ------------------------------------------------------------
 
+.. _settings_schema:
+
 settings.json schema
 --------------------
 
