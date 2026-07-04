@@ -36,16 +36,18 @@ Create the working directory:
    sudo mkdir /usr/olap
    sudo chmod a+rwx /usr/olap
 
-Copy the distribution zip to the server:
+Copy the distribution zip and the installer to the server:
 
 .. code-block:: bash
 
-   scp xltable-*-ubuntu.zip user@your_server_ip:/usr/olap/
+   scp xltable-*-ubuntu.zip install_ubuntu.zip user@your_server_ip:/usr/olap/
 
-Run the install script:
+Unpack the installer scripts and run the install script:
 
 .. code-block:: bash
 
+   cd /usr/olap
+   unzip -o install_ubuntu.zip
    bash install_xltable.sh
 
 The script will:

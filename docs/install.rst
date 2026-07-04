@@ -37,16 +37,18 @@ Create working directory:
 Install XLTable
 ^^^^^^^^^^^^^^^
 
-Copy XLTable distribution zip to the server:
+Copy the XLTable distribution zip and the installer to the server:
 
 .. code-block:: bash
 
-   scp xltable-*-ubuntu.zip user@server:/usr/olap/
+   scp xltable-*-ubuntu.zip install_ubuntu.zip user@server:/usr/olap/
 
-Run the install script:
+Unpack the installer scripts and run the install script:
 
 .. code-block:: bash
 
+   cd /usr/olap
+   unzip -o install_ubuntu.zip
    bash install_xltable.sh
 
 The script will:
@@ -119,15 +121,22 @@ Run the update script:
 
 .. code-block:: bash
 
+   cd /usr/olap
    bash update_xltable.sh
 
 The script will:
 
 - Verify the zip integrity
-- Back up ``settings.json`` and ``.lic`` license files
-- Replace the xltable installation
+- Back up ``settings.json`` and the ``.lic`` license file to ``/usr/olap/backup_<timestamp>/``
+- Stop the service and replace the xltable installation
 - Restore the backed-up config and license files
-- Reload supervisor
+- Set file ownership to the service user from the supervisor config
+- Restart the service and show its status
+
+The backup folder is kept after the update — remove it once you have
+confirmed the new version works.
+
+.. _service_management:
 
 Service Management
 ^^^^^^^^^^^^^^^^^^
@@ -150,6 +159,8 @@ Service Management
      - ``sudo tail -f /var/log/supervisor/olap*.log``
 
 ------------------------------------------------------------
+
+.. _install_windows:
 
 Windows
 -------
@@ -188,7 +199,7 @@ Copy the distribution archive into ``C:\olap``, then extract it:
 .. code-block:: bash
 
    cd C:\olap
-   tar -xf xltable-2.0.11-windows_server.zip
+   tar -xf xltable-<version>-windows_server.zip
 
 The application folder will be at ``C:\olap\xltable\``.
 
@@ -222,7 +233,15 @@ Open **IIS Manager → server node → FastCGI Settings → Add Application**:
 - **Full Path:** ``C:\olap\xltable\.venv\Scripts\python.exe``
 - **Arguments:** ``C:\olap\xltable\.venv\Lib\site-packages\wfastcgi.py``
 
-**9. Verify**
+**9. Point the IIS site to the application**
+
+In **IIS Manager → Sites**, select **Default Web Site** (or create a dedicated site):
+
+- **Basic Settings → Physical Path:** ``C:\olap\xltable``
+- **Authentication:** disable **Anonymous Authentication**, enable **Windows Authentication** and **Basic Authentication** (matches the ``web.config`` from step 7)
+- Restart the site
+
+**10. Verify**
 
 Open the admin panel in a browser at ``http://localhost/admin``.
 
@@ -235,7 +254,13 @@ Update
 2. Back up ``settings.json`` and the license file ``.lic``
 3. Extract the new distribution archive into ``C:\olap\xltable\``, overwriting existing files
 4. Restore the backed-up ``settings.json`` and ``.lic``
-5. Start the application pool
+5. Update dependencies (skip if ``requirements.txt`` did not change):
+
+   .. code-block:: bash
+
+      C:\olap\xltable\.venv\Scripts\pip install -r C:\olap\xltable\requirements.txt
+
+6. Start the application pool
 
 ------------------------------------------------------------
 
@@ -301,6 +326,8 @@ Example structure:
 
 ------------------------------------------------------------
 
+.. _admin_panel:
+
 Admin panel
 -----------
 
@@ -339,6 +366,8 @@ The admin panel provides:
 - **Clear Cache** — removes all cached session data. Users will need to re-authenticate after the cache is cleared.
 
 ------------------------------------------------------------
+
+.. _database_connections:
 
 Database connections
 --------------------
@@ -439,7 +468,7 @@ Example structure for StarRocks connection:
     "SERVER_DB": "StarRocks",
     "CREDENTIAL_DB": {
         "host": "...",
-        "port": ...,
+        "port": 9030,
         "user": "...",
         "password": "...",
         "ssl_ca": "...",
