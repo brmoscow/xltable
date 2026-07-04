@@ -79,7 +79,7 @@ Example of a minimal settings.json:
         "query_timeout": 300
     },
     "WRITE_LOG": false,
-    "MAX_ROWS": 100000,
+    "MAX_CELLS": 1000000,
     "CONVERT_FIELDS_TO_STRING": true,
     "USERS": {"user1": "pass1", "user2": "pass2"},
     "USER_GROUPS": {"user1": ["olap_users", "olap_admins"], "user2": ["olap_users"]},

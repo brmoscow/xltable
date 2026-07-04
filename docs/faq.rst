@@ -266,11 +266,16 @@ Queries are slow.
 - Pre-aggregate data in the database where possible.
 - Reduce the number of dimensions selected in the Pivot Table.
 
-Too many rows are returned in the Pivot Table.
+The Pivot Table reports "too many data cells".
 -----------------------------------------------
 
-- The default row limit is 50,000. Adjust ``MAX_ROWS`` in ``settings.json`` if needed.
+- The result size limit is measured in cells of the pivoted table (rows ×
+  columns × measures), 1,000,000 by default. Adjust ``MAX_CELLS`` in
+  ``settings.json`` if needed (the legacy ``MAX_ROWS`` key is still accepted).
 - Add filters in the Pivot Table to reduce the result set.
+- A separate message appears when the columns area produces more than
+  16,384 columns (the Excel sheet limit) — move fields from columns to rows
+  or apply filters.
 
 The XLTable service does not start on Linux.
 ---------------------------------------------

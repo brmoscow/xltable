@@ -22,13 +22,13 @@
 
 -- ─── 1. Dimension tables ─────────────────────────────────────────────────────
 
--- Calendar: every day of 2023 and 2024 (365 + 366 = 731 rows)
+-- Calendar: every day of 2023, 2024 and 2025 (365 + 366 + 365 = 1096 rows)
 CREATE OR REPLACE TABLE `olap.Times` AS
 SELECT
     FORMAT_DATE('%Y-%m-%d', day) AS day_str,
     FORMAT_DATE('%Y-%m',    day) AS month_str,
     FORMAT_DATE('%Y',       day) AS year_str
-FROM UNNEST(GENERATE_DATE_ARRAY('2023-01-01', '2024-12-31')) AS day;
+FROM UNNEST(GENERATE_DATE_ARRAY('2023-01-01', '2025-12-31')) AS day;
 
 
 -- Sales regions (4 rows)
@@ -131,7 +131,7 @@ CREATE OR REPLACE TABLE `olap.olap_definition` AS
 SELECT 'myOLAPcube' AS id,
 """
 with calendar as (
-    SELECT * FROM olap.Times WHERE year_str IN ('2023', '2024')
+    SELECT * FROM olap.Times WHERE year_str IN ('2023', '2024', '2025')
 )
 
 --olap_cube

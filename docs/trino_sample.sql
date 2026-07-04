@@ -46,7 +46,7 @@ DROP TABLE IF EXISTS hive.db.Times;
 
 -- ─── 3. Dimension tables ─────────────────────────────────────────────────────
 
--- Calendar: every day of 2023 and 2024 (365 + 366 = 731 rows)
+-- Calendar: every day of 2023, 2024 and 2025 (365 + 366 + 365 = 1096 rows)
 CREATE TABLE hive.db.Times (
     day_str   VARCHAR,
     month_str VARCHAR,
@@ -58,7 +58,7 @@ SELECT
     date_format(date_add('day', n, date '2023-01-01'), '%Y-%m-%d') AS day_str,
     date_format(date_add('day', n, date '2023-01-01'), '%Y-%m')    AS month_str,
     date_format(date_add('day', n, date '2023-01-01'), '%Y')       AS year_str
-FROM UNNEST(SEQUENCE(0, 730)) AS t(n);
+FROM UNNEST(SEQUENCE(0, 1095)) AS t(n);
 
 
 -- Sales regions (4 rows)
@@ -189,7 +189,7 @@ INSERT INTO hive.db.olap_definition VALUES (
 'myOLAPcube',
 '
 with calendar as (
-    SELECT * FROM hive.db.Times WHERE year_str IN (''2023'', ''2024'')
+    SELECT * FROM hive.db.Times WHERE year_str IN (''2023'', ''2024'', ''2025'')
 )
 
 --olap_cube

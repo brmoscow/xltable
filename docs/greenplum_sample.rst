@@ -26,8 +26,8 @@ if your setup differs.
      - Rows
      - Description
    * - ``db.times``
-     - 731
-     - Calendar: every day from 2023-01-01 to 2024-12-31
+     - 1096
+     - Calendar: every day from 2023-01-01 to 2025-12-31
    * - ``db.regions``
      - 4
      - Sales regions: North, South, East, West
@@ -171,7 +171,7 @@ Expected output:
     sales           | 3000
     stock           |  500
     stores          |    8
-    times           |  731
+    times           | 1096
 
 ------------------------------------------------------------
 
@@ -195,7 +195,7 @@ connection block:
            "target_session_attrs": "read-write"
        },
        "WRITE_LOG": false,
-       "MAX_ROWS": 100000,
+       "MAX_CELLS": 1000000,
        "CONVERT_FIELDS_TO_STRING": true,
        "USERS": {"user1": "pass1", "user2": "pass2"},
        "USER_GROUPS": {"user1": ["olap_users", "olap_admins"], "user2": ["olap_users"]},
@@ -284,19 +284,19 @@ Customising the script
 
 **Change the date range**
 
-The calendar is generated for 2023–2024 using ``generate_series``.
-To extend it to 2025, change the end date and update the cube filter:
+The calendar is generated for 2023–2025 using ``generate_series``.
+To extend it to 2026, change the end date and update the cube filter:
 
 .. code-block:: sql
 
-   -- In db.times INSERT — extend generate_series to 2025-12-31
-   FROM generate_series('2023-01-01'::date, '2025-12-31'::date, '1 day'::interval) AS d;
+   -- In db.times INSERT — extend generate_series to 2026-12-31
+   FROM generate_series('2023-01-01'::date, '2026-12-31'::date, '1 day'::interval) AS d;
 
 Then update the cube definition inside ``db.olap_definition``:
 
 .. code-block:: sql
 
-   WHERE year_str IN ('2023', '2024', '2025')
+   WHERE year_str IN ('2023', '2024', '2025', '2026')
 
 **Add more stores or models**
 

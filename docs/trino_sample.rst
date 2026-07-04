@@ -26,8 +26,8 @@ before running if your setup differs.
      - Rows
      - Description
    * - ``hive.db.Times``
-     - 731
-     - Calendar: every day from 2023-01-01 to 2024-12-31
+     - 1096
+     - Calendar: every day from 2023-01-01 to 2025-12-31
    * - ``hive.db.Regions``
      - 4
      - Sales regions: North, South, East, West
@@ -153,7 +153,7 @@ Expected output:
    Sales            | 3000
    Stock            |  500
    Stores           |    8
-   Times            |  731
+   Times            | 1096
    olap_definition  |    1
 
 ------------------------------------------------------------
@@ -178,7 +178,7 @@ connection block:
            "verify": false
        },
        "WRITE_LOG": false,
-       "MAX_ROWS": 100000,
+       "MAX_CELLS": 1000000,
        "CONVERT_FIELDS_TO_STRING": true,
        "USERS": {"user1": "pass1", "user2": "pass2"},
        "USER_GROUPS": {"user1": ["olap_users", "olap_admins"], "user2": ["olap_users"]},
@@ -273,19 +273,19 @@ Also update ``catalog`` in ``settings.json`` accordingly.
 
 **Change the date range**
 
-The calendar is generated for 2023–2024.
-To extend it to 2025, adjust the ``SEQUENCE`` upper bound:
+The calendar is generated for 2023–2025.
+To extend it to 2026, adjust the ``SEQUENCE`` upper bound:
 
 .. code-block:: sql
 
-   -- In hive.db.Times INSERT — add 365 days for 2025 (730 + 365 = 1095)
-   FROM UNNEST(SEQUENCE(0, 1095)) AS t(n);
+   -- In hive.db.Times INSERT — add 365 days for 2026 (1095 + 365 = 1460)
+   FROM UNNEST(SEQUENCE(0, 1460)) AS t(n);
 
 Then update the cube definition inside ``hive.db.olap_definition``:
 
 .. code-block:: sql
 
-   WHERE year_str IN ('2023', '2024', '2025')
+   WHERE year_str IN ('2023', '2024', '2025', '2026')
 
 **Add more stores or models**
 

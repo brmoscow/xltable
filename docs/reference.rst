@@ -186,7 +186,7 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     SELECT 'myOLAPcube' AS id,
     '	
     with calendar as (
-        SELECT * FROM db.Times where year_str in ('2023', '2024')
+        SELECT * FROM db.Times where year_str in (''2023'', ''2024'', ''2025'')
     )
 
     --olap_cube
@@ -326,9 +326,14 @@ Parameter reference
      - Defines user groups used for role-based access control.
      - —
 
-   * - MAX_ROWS
-     - Limits the maximum number of rows returned by a query.
-     - 50000
+   * - MAX_CELLS
+     - Limits the size of the pivoted result returned to Excel, measured in
+       cells: unique row combinations × column combinations × measures.
+       Queries exceeding the limit are rejected with a message suggesting
+       filters, the same way SSAS cancels oversized results
+       (``RowsetSerializationLimit``). The legacy ``MAX_ROWS`` key is still
+       accepted and used as ``MAX_CELLS``.
+     - 1000000
 
    * - LDAP_CACHE_TIMEOUT
      - Defines the lifetime of cached LDAP authorization data in seconds. 

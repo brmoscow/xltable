@@ -28,10 +28,10 @@ USE SCHEMA public;
 
 -- ─── 2. Dimension tables ─────────────────────────────────────────────────────
 
--- Calendar: every day of 2023 and 2024 (365 + 366 = 731 rows)
+-- Calendar: every day of 2023, 2024 and 2025 (365 + 366 + 365 = 1096 rows)
 CREATE OR REPLACE TABLE olap.public.Times AS
 WITH seq AS (
-    SELECT SEQ4() AS n FROM TABLE(GENERATOR(ROWCOUNT => 731))
+    SELECT SEQ4() AS n FROM TABLE(GENERATOR(ROWCOUNT => 1096))
 )
 SELECT
     TO_VARCHAR(DATEADD(DAY, n, '2023-01-01'), 'YYYY-MM-DD') AS day_str,
@@ -140,7 +140,7 @@ CREATE OR REPLACE TABLE olap.public.olap_definition AS
 SELECT 'myOLAPcube' AS id,
 $$
 with calendar as (
-    SELECT * FROM olap.public.Times WHERE year_str IN ('2023', '2024')
+    SELECT * FROM olap.public.Times WHERE year_str IN ('2023', '2024', '2025')
 )
 
 --olap_cube

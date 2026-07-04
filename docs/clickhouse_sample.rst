@@ -22,8 +22,8 @@ What the script creates
      - Rows
      - Description
    * - ``db.Times``
-     - 731
-     - Calendar: every day from 2023-01-01 to 2024-12-31
+     - 1096
+     - Calendar: every day from 2023-01-01 to 2025-12-31
    * - ``db.Regions``
      - 4
      - Sales regions: North, South, East, West
@@ -156,7 +156,7 @@ Expected output:
    │ Sales                │  3000 │
    │ Stock                │   500 │
    │ Stores               │     8 │
-   │ Times                │   731 │
+   │ Times                │  1096 │
    │ olap_definition      │     1 │
    └──────────────────────┴───────┘
 
@@ -182,7 +182,7 @@ connection block:
            "query_timeout": 300
        },
        "WRITE_LOG": false,
-       "MAX_ROWS": 100000,
+       "MAX_CELLS": 1000000,
        "CONVERT_FIELDS_TO_STRING": true,
        "USERS": {"user1": "pass1", "user2": "pass2"},
        "USER_GROUPS": {"user1": ["olap_users", "olap_admins"], "user2": ["olap_users"]},
@@ -271,19 +271,19 @@ Customising the script
 
 **Change the date range**
 
-The calendar is generated for 2023–2024.
-To extend it to 2025, adjust the ``numbers()`` call and the CTE filter:
+The calendar is generated for 2023–2025.
+To extend it to 2026, adjust the ``numbers()`` call and the CTE filter:
 
 .. code-block:: sql
 
-   -- In db.Times INSERT — add 365 days for 2025 (731 + 365 = 1096)
-   FROM numbers(1096);
+   -- In db.Times INSERT — add 365 days for 2026 (1096 + 365 = 1461)
+   FROM numbers(1461);
 
 Then update the cube definition inside ``db.olap_definition``:
 
 .. code-block:: sql
 
-   WHERE year_str IN ('2023', '2024', '2025')
+   WHERE year_str IN ('2023', '2024', '2025', '2026')
 
 **Add more stores or models**
 

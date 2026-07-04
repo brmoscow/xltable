@@ -49,7 +49,7 @@ DROP TABLE IF EXISTS db.times;
 
 -- ─── 3. Dimension tables ─────────────────────────────────────────────────────
 
--- Calendar: every day of 2023 and 2024 (365 + 366 = 731 rows)
+-- Calendar: every day of 2023, 2024 and 2025 (365 + 366 + 365 = 1096 rows)
 CREATE TABLE db.times (
     day_str   TEXT,
     month_str TEXT,
@@ -61,7 +61,7 @@ SELECT
     to_char(d, 'YYYY-MM-DD') AS day_str,
     to_char(d, 'YYYY-MM')    AS month_str,
     to_char(d, 'YYYY')       AS year_str
-FROM generate_series('2023-01-01'::date, '2024-12-31'::date, '1 day'::interval) AS d;
+FROM generate_series('2023-01-01'::date, '2025-12-31'::date, '1 day'::interval) AS d;
 
 
 -- Sales regions (4 rows)
@@ -191,7 +191,7 @@ INSERT INTO db.olap_definition VALUES (
 'myOLAPcube',
 '
 with calendar as (
-    SELECT * FROM db.times WHERE year_str IN (''2023'', ''2024'')
+    SELECT * FROM db.times WHERE year_str IN (''2023'', ''2024'', ''2025'')
 )
 
 --olap_cube

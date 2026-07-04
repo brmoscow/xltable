@@ -41,7 +41,7 @@ DROP TABLE IF EXISTS db.Times;
 
 -- ─── 3. Dimension tables ─────────────────────────────────────────────────────
 
--- Calendar: every day of 2023 and 2024 (365 + 366 = 731 rows)
+-- Calendar: every day of 2023, 2024 and 2025 (365 + 366 + 365 = 1096 rows)
 CREATE TABLE db.Times
 (
     day_str   String,   -- 'YYYY-MM-DD'
@@ -54,7 +54,7 @@ SELECT
     formatDateTime(toDate('2023-01-01') + toUInt32(number), '%Y-%m-%d') AS day_str,
     formatDateTime(toDate('2023-01-01') + toUInt32(number), '%Y-%m')    AS month_str,
     formatDateTime(toDate('2023-01-01') + toUInt32(number), '%Y')       AS year_str
-FROM numbers(731);
+FROM numbers(1096);
 
 
 -- Sales regions (4 rows)
@@ -178,7 +178,7 @@ ENGINE = MergeTree() ORDER BY id AS
 SELECT 'myOLAPcube' AS id,
 '
 with calendar as (
-    SELECT * FROM db.Times WHERE year_str IN (''2023'', ''2024'')
+    SELECT * FROM db.Times WHERE year_str IN (''2023'', ''2024'', ''2025'')
 )
 
 --olap_cube
