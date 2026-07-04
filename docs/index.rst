@@ -112,6 +112,9 @@ Getting help
 
       help@xltable.com — support and licensing.
 
+Working with ChatGPT, Claude or another AI assistant? Give it the whole
+documentation as a single file — see :doc:`ai`.
+
 .. toctree::
    :maxdepth: 1
    :caption: Getting started
@@ -151,5 +154,6 @@ Getting help
 
    faq
    support
+   ai
    changelog
    backlog

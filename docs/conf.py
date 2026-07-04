@@ -3,6 +3,8 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import os
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
@@ -17,6 +19,7 @@ release = '2.0.15'
 extensions = [
     'sphinx_design',
     'sphinx_copybutton',
+    'sphinx_llms_txt',
 ]
 
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
@@ -56,3 +59,23 @@ html_theme_options = {
 # sphinx-copybutton: strip shell/REPL prompts when copying code
 copybutton_prompt_text = r'\$ |>>> |\.\.\. '
 copybutton_prompt_is_regexp = True
+
+# -- sphinx-llms-txt: llms.txt / llms-full.txt for AI assistants -------------
+# https://sphinx-llms-txt.readthedocs.io — see docs/ai.rst for the user-facing page
+
+# Read the Docs sets READTHEDOCS_CANONICAL_URL per version; fall back to
+# stable for local builds so generated links are always absolute.
+html_baseurl = os.environ.get(
+    'READTHEDOCS_CANONICAL_URL',
+    'https://xltable-olap.readthedocs.io/en/stable/',
+)
+
+llms_txt_title = 'XLTable'
+llms_txt_summary = (
+    'XLTable is an OLAP server that connects native Excel Pivot Tables '
+    'directly to modern analytical databases (ClickHouse, BigQuery, '
+    'Snowflake, Trino, Greenplum, StarRocks, Databricks) over XMLA. '
+    'It provides a semantic and security layer: cubes with measures, '
+    'dimensions, hierarchies and roles are defined in plain SQL with '
+    'optional Jinja templating.'
+)

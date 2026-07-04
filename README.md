@@ -6,6 +6,10 @@ connects Excel Pivot Tables directly to modern analytical databases
 
 Published at: https://xltable-olap.readthedocs.io
 
+For AI assistants the whole documentation is available as a single file
+([llms.txt convention](https://llmstxt.org)):
+https://xltable-olap.readthedocs.io/en/stable/llms-full.txt
+
 ## Building locally
 
 Requires Python 3.12+.

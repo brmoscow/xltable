@@ -6,6 +6,9 @@ If you have any questions or problems, please use these contacts:
 - Telegram: https://t.me/XLTable
 - Email: help@xltable.com
 
+Prefer asking an AI assistant? Feed it the whole documentation as a single
+file — see :doc:`ai`.
+
 ------------------------------------------------------------
 
 Troubleshooting
