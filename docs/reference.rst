@@ -365,10 +365,27 @@ Parameter reference
        limits.
      - disabled
 
+   * - AUTH_CACHE_TIMEOUT
+     - Defines the lifetime of a cached authorization in seconds, for both
+       local (``USERS``) and Active Directory users. After this period
+       expires, XLTable re-checks the user against the current configuration
+       or LDAP on the next request. When not set, the value of
+       ``LDAP_CACHE_TIMEOUT`` is used.
+     - 3600
+
    * - LDAP_CACHE_TIMEOUT
-     - Defines the lifetime of cached LDAP authorization data in seconds. 
-       After this period expires, XLTable refreshes user permissions from LDAP.
+     - Legacy name of ``AUTH_CACHE_TIMEOUT``; kept for backward
+       compatibility and used when ``AUTH_CACHE_TIMEOUT`` is not set.
      - 300
+
+   * - METADATA_CACHE_TTL
+     - Defines the lifetime of cached cube metadata and query results in
+       seconds: cube definitions, database/table/field lists and MDX query
+       results. After this period expires, XLTable re-reads the data from the
+       database, so an edited cube definition is picked up automatically
+       within this window — no manual cache clearing is required. Set to 0 to
+       disable expiry (cache entries then live until the cache is cleared).
+     - 600
 
    * - CONVERT_FIELDS_TO_STRING
      - Forces conversion of certain fields to string type before returning results.
@@ -382,13 +399,28 @@ Parameter reference
      - Defines connection parameters for Active Directory authentication.
      - —
 
-Service restart required
-^^^^^^^^^^^^^^^^^^^^^^^^
+Applying configuration changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-After any changes to the ``settings.json`` file, the XLTable service
-must be restarted for the new configuration to take effect.
+Changes to ``settings.json`` are picked up automatically — no service
+restart is required. XLTable watches the file and re-reads it within a few
+seconds of saving (in multi-process deployments such as IIS, every worker
+process picks the change up on its next request).
 
-Restart the service according to your deployment environment
-(Linux Supervisor or Windows Service).
+- If the saved file contains a JSON syntax error, the service keeps running
+  with the previous configuration and writes the parse error to the log; the
+  file is re-read once it is fixed.
+- When the configuration content changes, the cache is cleared automatically,
+  so nothing cached under the previous (for example, incorrect) configuration
+  — authorized sessions, cube metadata — stays in effect. Users re-authorize
+  transparently on their next request.
+- The same comparison runs on service start, so a restart with a changed
+  ``settings.json`` also begins with a clean cache.
+
+The admin panel (see :ref:`admin_panel`) shows which settings file is in use
+and when it was last loaded.
+
+Deployment-level parameters that live outside ``settings.json`` (service
+user, port, IIS application pool settings) still require a service restart.
 
   

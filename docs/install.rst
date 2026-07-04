@@ -106,11 +106,9 @@ Example of a minimal settings.json:
 
 .. note::
 
-   After each change to the ``settings.json`` file, restart the service:
-
-   .. code-block:: bash
-
-      sudo supervisorctl restart olap
+   Changes to ``settings.json`` are picked up automatically within a few
+   seconds of saving — no service restart is required (see
+   :ref:`settings_schema`).
 
 
 Upgrading version
@@ -366,9 +364,19 @@ Features
 
 The admin panel provides:
 
-- **Service status** — confirms the server is running and shows the active database backend.
+- **Service status** — confirms the server is running, shows the active
+  database backend and the settings file in use with the time it was last
+  loaded (``settings.json`` is re-read automatically when it changes, see
+  :ref:`settings_schema`).
 - **Documentation** — direct link to the XLTable documentation.
-- **Clear Cache** — removes all cached session data. Users will need to re-authenticate after the cache is cleared.
+- **Cache overview** — a per-user table showing active sessions, the number of
+  cached entries and the time of the last activity, with a **Sign out** button
+  that drops the sessions of a single user without affecting the others.
+- **Clear Metadata Cache** — removes cached cube definitions, schema lists and
+  query results while keeping users signed in. Use it after editing a cube so
+  the new definition is picked up immediately (it is also picked up
+  automatically within ``METADATA_CACHE_TTL``, see :ref:`settings_schema`).
+- **Clear All Cache** — removes all cached session data. Users will need to re-authenticate after the cache is cleared.
 
 ------------------------------------------------------------
 

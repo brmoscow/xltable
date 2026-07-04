@@ -26,7 +26,8 @@ To diagnose issues, enable logging in ``settings.json``:
    "WRITE_LOG": true
 
 Log files are written to the ``xltable/log`` folder.
-After enabling, restart the service and reproduce the issue, then inspect the log files.
+The setting is picked up automatically within a few seconds — reproduce the
+issue, then inspect the log files.
 
 For Excel connectivity issues, support may additionally ask you to set
 ``"DUMP_XMLA": true`` — this dumps every raw XMLA request/response to the

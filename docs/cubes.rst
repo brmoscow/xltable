@@ -529,7 +529,8 @@ is refused and an error is returned, so a broken definition never reaches users.
 XLTable then writes every generated SQL query to the log folder
 (``...\xltable\log``), letting you see the exact statements produced for the user's
 field selection. This is the fastest way to debug unexpected results or performance
-issues. Remember to restart the service after changing ``settings.json``.
+issues. Changes to ``settings.json`` are picked up automatically within a few
+seconds — no restart is needed.
 
 A practical workflow is: run each ``olap_source`` block on its own in a database
 client (every block is a runnable SELECT), then enable ``definition_check_on`` and

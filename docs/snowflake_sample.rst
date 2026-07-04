@@ -195,12 +195,15 @@ table, so no additional cube configuration is needed.
 
 ------------------------------------------------------------
 
-Step 3: Restart XLTable
-------------------------
+Step 3: Apply the settings
+--------------------------
+
+XLTable re-reads ``settings.json`` automatically within a few seconds of
+saving — no restart is needed. If the service is not running yet, start it:
 
 .. code-block:: bash
 
-   sudo supervisorctl restart olap
+   sudo supervisorctl start olap
 
 ------------------------------------------------------------
 

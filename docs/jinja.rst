@@ -344,7 +344,8 @@ script.
 Enabling debug output
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Set ``WRITE_LOG`` to ``true`` in ``settings.json`` and restart the service. This
+Set ``WRITE_LOG`` to ``true`` in ``settings.json`` — the change is picked up
+automatically within a few seconds, no restart is needed. This
 raises the log level to ``DEBUG``, so XLTable logs the full detail of every request
 — the incoming MDX, the context, each Jinja script's effect, the generated SQL and
 a sample of the result.

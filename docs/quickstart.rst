@@ -111,11 +111,8 @@ Example for ClickHouse:
 
 .. note::
 
-   After each change to the ``settings.json`` file, restart the service:
-
-   .. code-block:: bash
-
-      sudo supervisorctl restart olap
+   Changes to ``settings.json`` are picked up automatically within a few
+   seconds of saving — no service restart is required.
 
 For other database types, see :doc:`install`.
 

@@ -34,7 +34,9 @@ Excel shows an XML parsing error, or curl returns HTTP 500 from the server.
 Validate ``settings.json`` against the documented schema: :ref:`settings_schema`.
 
 Required blocks (including ``WRITE_LOG`` and ``CREDENTIAL_DB``) must be present.
-After changes, restart the service and test the Excel connection again (see :doc:`excel`).
+Changes are picked up automatically within a few seconds of saving (a file with
+a JSON syntax error is ignored and logged, the previous configuration keeps
+working) — test the Excel connection again after saving (see :doc:`excel`).
 
 Can I store cube metadata in one ClickHouse instance and actual data in another?
 ----------------------------------------------------------------------------------
@@ -66,7 +68,8 @@ If the ``olap_definition`` table does not exist, create it as shown in :ref:`cub
 How can I see SQL queries that XLTable sends to ClickHouse?
 ------------------------------------------------------------
 
-Set ``WRITE_LOG=true`` in ``settings.json``, restart the service, and check XLTable logs:
+Set ``WRITE_LOG=true`` in ``settings.json`` (picked up automatically, no
+restart needed) and check XLTable logs:
 
 - :ref:`enable_logging`
 - :ref:`settings_schema`
@@ -109,10 +112,14 @@ Use the following SQL query:
 Data in storage updates frequently; we need to refresh cache. Is configurable cache TTL planned?
 --------------------------------------------------------------------------------------------------
 
-Use two standard methods:
+The cache TTL is configurable: the ``METADATA_CACHE_TTL`` setting (600 seconds
+by default) limits how long cube metadata and query results are served from
+the cache before being re-read from the database. See :ref:`settings_schema`.
+
+To refresh immediately, use two standard methods:
 
 - Refresh in Excel (Refresh / Refresh All)
-- Clear cache in the Admin Panel (Clear Cache)
+- Clear Metadata Cache in the Admin Panel
 
 Documentation:
 
@@ -122,7 +129,10 @@ Documentation:
 Why are cube changes not visible to users after updating the cube?
 ------------------------------------------------------------------
 
-The cache must be cleared. You can do this in the Admin Panel (``http://<server>/admin``) for all users, or by clicking Refresh in Excel for an individual user.
+An edited cube definition is picked up automatically within
+``METADATA_CACHE_TTL`` (600 seconds by default). To apply it immediately, use
+**Clear Metadata Cache** in the Admin Panel (``http://<server>/admin``) —
+users stay signed in — or click Refresh in Excel for an individual user.
 
 Excel queries run too long or timeout; a ClickHouse view is slow while a physical table is faster.
 ----------------------------------------------------------------------------------------------------
@@ -238,7 +248,7 @@ I get an authentication error in Excel.
 
 - Verify the username and password in ``settings.json`` under the ``USERS`` key.
 - If using Active Directory, verify the ``CREDENTIAL_ACTIVE_DIRECTORY`` settings.
-- After any changes to ``settings.json``, restart the service.
+- Changes to ``settings.json`` are picked up automatically within a few seconds of saving.
 
 The Pivot Table shows no data.
 --------------------------------
