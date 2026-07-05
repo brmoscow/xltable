@@ -9,6 +9,7 @@ Stay up to date with the latest releases by following us on
 Version 2.0.15 — 2026-07-04
 ----------------------------
 
+- **Keep Only / Hide Selected Items** — the Pivot Table context-menu commands **Filter → Keep Only Selected Items** and **Hide Selected Items** are now supported, including items of multi-level hierarchies. Excel's service query for the hierarchy position of the selected items (``__XlItemPath`` / ``__XlSiblingCount`` / ``__XlChildCount``) is answered the same way as by SSAS.
 - **Result limit in cells (MAX_CELLS)** — the result size limit is now measured in cells of the pivoted table (row combinations × column combinations × measures) instead of rows, with a default of 1,000,000 — the same way SSAS limits oversized results. The legacy ``MAX_ROWS`` setting is still accepted. A separate, clear message is returned when the columns area exceeds the Excel sheet limit of 16,384 columns.
 - **XMLA diagnostics (DUMP_XMLA)** — new setting that dumps every raw XMLA request and response to the ``log`` folder, for diagnosing Excel/XMLA protocol issues.
 - **Automatic log cleanup (LOG_RETENTION_DAYS)** — log files older than the configured number of days (14 by default) are now removed automatically.

@@ -110,6 +110,19 @@ field has no single set of underlying rows.
 
 ------------------------------------------------------------
 
+Filtering by selected items
+---------------------------
+
+Besides the field filter dropdown, Pivot Table items can be filtered directly
+from the selection: select one or more items in the Pivot Table, right-click and
+choose **Filter** → **Keep Only Selected Items** or **Hide Selected Items**.
+
+Both commands work the same way as with SSAS, including items of multi-level
+hierarchies. Excel first asks the server for the hierarchy position of each
+selected item and then applies the resulting filter to the field.
+
+------------------------------------------------------------
+
 Troubleshooting connection issues
 -----------------------------------
 
