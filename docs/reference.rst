@@ -352,6 +352,15 @@ Parameter reference
        accepted and used as ``MAX_CELLS``.
      - 1000000
 
+   * - MAX_FILTER_MEMBERS
+     - Caps the member list the server enumerates when Excel applies
+       **Keep Only / Hide Selected Items** on a field. If the dimension level
+       has more members than the cap, the resulting filter keeps only the
+       first ``MAX_FILTER_MEMBERS`` of them and a warning is written to the
+       log. The 10,000-item limit of the filter dropdown list is separate and
+       not affected by this setting.
+     - 100000
+
    * - OVERLOAD_GUARD
      - Rejects data queries while the server host is out of resources, instead
        of forwarding them to the database. When any threshold is exceeded —
