@@ -123,6 +123,24 @@ selected item and then applies the resulting filter to the field.
 
 ------------------------------------------------------------
 
+Expanding and collapsing fields
+-------------------------------
+
+Nested Pivot Table fields can be expanded and collapsed the same way as with
+SSAS — per item with the **+** / **−** buttons, or for the whole field at once:
+right-click an item and choose **Expand/Collapse** → **Collapse Entire Field**
+or **Expand Entire Field**.
+
+All combinations are supported, both for separate nested fields and for levels
+of a multi-level hierarchy: collapsing an entire field, expanding an entire
+field or hierarchy level (all items at once), expanding a single item of a
+collapsed field back (only that item shows the nested field), and collapsing
+single items of an expanded field. A collapsed field costs nothing on the
+database side — its table is not scanned or joined at all until the field is
+expanded again.
+
+------------------------------------------------------------
+
 Troubleshooting connection issues
 -----------------------------------
 

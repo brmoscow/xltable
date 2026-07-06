@@ -63,6 +63,8 @@ Tag reference
        
    * - olap_access_filters
      - Marks the beginning of a block defining security filters for a specific user role.
+       The filters are enforced on every SQL query the server builds; an explicit
+       filter on the same field in a query is intersected with the allowed values.
 
    * - olap_calculated_fields
      - Marks the beginning of a block containing the list of calculated fields. After the tag, you must specify the name of the folder calculated fields.

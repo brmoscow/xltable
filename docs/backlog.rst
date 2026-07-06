@@ -51,21 +51,21 @@ in 2026.
      - Done (2.0.14)
 
    * - 8
+     - Collapse all
+     - Ability to collapse all expanded hierarchy levels in an Excel Pivot Table with a single action.
+     - Done (2.0.15)
+
+   * - 9
      - AI assistant for cube design
      - An AI-powered assistant that helps developers design cube structure,
        suggest measure and dimension definitions, and detect common mistakes.
      - Done (Beta)
 
-   * - 9
+   * - 10
      - Semantic layer for AI agents
      - Expose the XLTable semantic layer (measures, dimensions, hierarchies, access rules)
        as a structured interface consumable by AI agents and LLM-based tools.
      - Done (Beta)
-
-   * - 10
-     - Collapse all
-     - Ability to collapse all expanded hierarchy levels in an Excel Pivot Table with a single action.
-     -
 
    * - 11
      - Native data types in dimension attributes

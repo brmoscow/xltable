@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/Scripts/python -c \"import sphinx; print\\(sphinx.__version__\\)\")",
+      "Bash(where python *)",
+      "Bash(py -0)",
+      "Bash(C:/Users/bogda/AppData/Local/Programs/Python/Python314/python.exe -m sphinx --version)",
+      "Bash(C:/Users/bogda/AppData/Local/Programs/Python/Python314/python.exe -c ' *)",
+      "Bash(git rm *)",
+      "Bash(git ls-remote *)",
+      "Bash(git commit -m '2.0.15: furo theme, redesigned landing page and navigation *)",
+      "Bash(git push *)",
+      "Bash(git commit -m 'docs: StarRocks and Databricks deployment samples, OVERLOAD_GUARD setting *)",
+      "WebSearch",
+      "WebFetch(domain:sphinx-llms-txt.readthedocs.io)",
+      "Bash(python -c \"import sphinx; print\\(sphinx.__version__\\)\")",
+      "Bash(pip show *)",
+      "Bash(py -0p)",
+      "Bash(where.exe python *)",
+      "Bash(c:/msa/bq/xltable/.venv/Scripts/python.exe -m pip install -q sphinx-llms-txt)",
+      "Bash(c:/msa/bq/xltable/.venv/Scripts/python.exe -m pip show sphinx-llms-txt)",
+      "Bash(C:/Users/bogda/AppData/Local/Programs/Python/Python314/python.exe -m venv /c/Users/bogda/AppData/Local/Temp/claude/c--msa-bq-xltable/bd484863-afc2-47d1-96ff-3751cb14d8d8/scratchpad/venv)",
+      "Bash(/c/Users/bogda/AppData/Local/Temp/claude/c--msa-bq-xltable/bd484863-afc2-47d1-96ff-3751cb14d8d8/scratchpad/venv/Scripts/python.exe -m pip install -q -r c:/msa/bq/xltable/docs/requirements.txt)",
+      "Bash(/c/Users/bogda/AppData/Local/Temp/claude/c--msa-bq-xltable/bd484863-afc2-47d1-96ff-3751cb14d8d8/scratchpad/venv/Scripts/python.exe -m sphinx -b html c:/msa/bq/xltable/docs /c/Users/bogda/AppData/Local/Temp/claude/c--msa-bq-xltable/bd484863-afc2-47d1-96ff-3751cb14d8d8/scratchpad/html)",
+      "Bash(git commit -m 'docs: AI assistants page and llms.txt/llms-full.txt generation *)"
+    ]
+  }
+}

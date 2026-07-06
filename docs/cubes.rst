@@ -483,6 +483,14 @@ Under ``olap_user_groups``, list the user groups that belong to this role.
 Under the ``..._visible`` tags, list the measure groups, dimensions, individual measures, or dimension attributes visible to this role.
 Under ``olap_access_filters``, define the row-level filters applied to this role.
 
+Access filters are a security boundary: the server adds them to the ``WHERE``
+clause of every SQL query it builds for the cube — regular pivot queries,
+filter member lists, Keep Only / Hide probes and drillthrough. When a query
+also filters the same field explicitly, the two conditions are intersected,
+so no MDX query (including a hand-crafted one) can return rows outside the
+role's allowed set. If a user belongs to several roles, their filters are
+combined (the union of the allowed values).
+
 Do not confuse the two visibility mechanisms: the ``--hide`` tag hides a field
 **globally**, for everyone (typically a helper measure used only inside calculated
 fields), whereas the ``..._visible`` tags control visibility **per role** — each role
