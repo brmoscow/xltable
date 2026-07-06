@@ -22,7 +22,15 @@
       "Bash(C:/Users/bogda/AppData/Local/Programs/Python/Python314/python.exe -m venv /c/Users/bogda/AppData/Local/Temp/claude/c--msa-bq-xltable/bd484863-afc2-47d1-96ff-3751cb14d8d8/scratchpad/venv)",
       "Bash(/c/Users/bogda/AppData/Local/Temp/claude/c--msa-bq-xltable/bd484863-afc2-47d1-96ff-3751cb14d8d8/scratchpad/venv/Scripts/python.exe -m pip install -q -r c:/msa/bq/xltable/docs/requirements.txt)",
       "Bash(/c/Users/bogda/AppData/Local/Temp/claude/c--msa-bq-xltable/bd484863-afc2-47d1-96ff-3751cb14d8d8/scratchpad/venv/Scripts/python.exe -m sphinx -b html c:/msa/bq/xltable/docs /c/Users/bogda/AppData/Local/Temp/claude/c--msa-bq-xltable/bd484863-afc2-47d1-96ff-3751cb14d8d8/scratchpad/html)",
-      "Bash(git commit -m 'docs: AI assistants page and llms.txt/llms-full.txt generation *)"
+      "Bash(git commit -m 'docs: AI assistants page and llms.txt/llms-full.txt generation *)",
+      "PowerShell(git ls-remote --tags origin)",
+      "PowerShell($html = \\(Invoke-WebRequest -Uri \"https://xltable.com\" -UseBasicParsing\\).Content; $i = $html.IndexOf\\('logo-xltable.svg'\\); $html.Substring\\([Math]::Max\\(0,$i-600\\), 1200\\))",
+      "PowerShell($venv = \"C:\\\\Users\\\\bogda\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--msa-bq-xltable\\\\bd484863-afc2-47d1-96ff-3751cb14d8d8\\\\scratchpad\\\\venv\\\\Scripts\\\\python.exe\"; if \\(Test-Path $venv\\) { & $venv -c \"import PIL; print\\('venv PIL', PIL.__version__\\)\" } else { \"no venv\" }; python -c \"import PIL; print\\('system PIL', PIL.__version__\\)\" 2>$null)",
+      "PowerShell(python -c \"import PIL; print\\('system PIL', PIL.__version__\\)\")",
+      "PowerShell($py = \"C:\\\\Users\\\\bogda\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python314\\\\python.exe\"; & $py --version; $venv = \"C:\\\\Users\\\\bogda\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--msa-bq-xltable\\\\bd484863-afc2-47d1-96ff-3751cb14d8d8\\\\scratchpad\\\\venv\\\\Scripts\\\\python.exe\"; & $venv -m pip install -q Pillow && & $venv -c \"import PIL; print\\('PIL', PIL.__version__\\)\")",
+      "PowerShell(& \"C:\\\\Users\\\\bogda\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--msa-bq-xltable\\\\bd484863-afc2-47d1-96ff-3751cb14d8d8\\\\scratchpad\\\\venv\\\\Scripts\\\\python.exe\" \"C:\\\\Users\\\\bogda\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--msa-bq-xltable\\\\51931952-2adb-4d51-b5ed-5c9388871342\\\\scratchpad\\\\recolor_logo.py\")",
+      "PowerShell(& \"C:\\\\Users\\\\bogda\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--msa-bq-xltable\\\\bd484863-afc2-47d1-96ff-3751cb14d8d8\\\\scratchpad\\\\venv\\\\Scripts\\\\python.exe\" -m sphinx -q -b html c:\\\\msa\\\\bq\\\\xltable\\\\docs \"C:\\\\Users\\\\bogda\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--msa-bq-xltable\\\\51931952-2adb-4d51-b5ed-5c9388871342\\\\scratchpad\\\\html\" 2>&1 | Select-Object -Last 10; Select-String -Path \"C:\\\\Users\\\\bogda\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--msa-bq-xltable\\\\51931952-2adb-4d51-b5ed-5c9388871342\\\\scratchpad\\\\html\\\\index.html\" -Pattern 'xllogo_\\(light|white|blue\\)' -AllMatches | ForEach-Object { $_.Matches.Value } | Sort-Object -Unique)",
+      "PowerShell(Start-Process \"C:\\\\Users\\\\bogda\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--msa-bq-xltable\\\\51931952-2adb-4d51-b5ed-5c9388871342\\\\scratchpad\\\\html\\\\index.html\")"
     ]
   }
 }

@@ -43,8 +43,8 @@ html_js_files = [
 
 # Brand color #0060b7 sampled from the XLTable logo
 html_theme_options = {
-    'light_logo': 'xllogo_blue.png',
-    'dark_logo': 'xllogo_blue.png',
+    'light_logo': 'xllogo_light.png',
+    'dark_logo': 'xllogo_white.png',
     'sidebar_hide_name': True,
     'light_css_variables': {
         'color-brand-primary': '#0060b7',
