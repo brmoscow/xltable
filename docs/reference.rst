@@ -337,6 +337,23 @@ Parameter reference
        to disable the cleanup.
      - 14
 
+   * - SERVER_PORT
+     - TCP port the server listens on. Applies to the standalone deployment
+       (Ubuntu / ``python main.py``); under IIS the port is managed by IIS.
+       The ``OLAP_PORT`` environment variable overrides this setting — the
+       Ubuntu installer uses it to run several worker processes on
+       consecutive ports (5000, 5001, ...). Requires a service restart.
+     - 5000
+
+   * - SERVER_THREADS
+     - Number of worker threads of one server process (standalone deployment
+       only). Threads waiting on the database do not block each other, so
+       this is how many queries one process keeps in flight towards the
+       warehouse; CPU-intensive result building still runs one report at a
+       time per process — for parallel heavy reports run several worker
+       processes (see :ref:`install_ubuntu`). Requires a service restart.
+     - 16
+
    * - USERS
      - Defines the list of users for local authentication.
      - —
@@ -397,6 +414,14 @@ Parameter reference
        within this window — no manual cache clearing is required. Set to 0 to
        disable expiry (cache entries then live until the cache is cleared).
      - 600
+
+   * - RESULT_CACHE_MAX_MB
+     - Query results larger than this size (MB) are not stored in the shared
+       result cache and are rebuilt on every refresh instead. Storing very
+       large results makes all worker processes queue on the cache write, so
+       oversized responses are cheaper to recompute. Set to 0 to disable
+       result caching entirely (metadata is still cached).
+     - 16
 
    * - CONVERT_FIELDS_TO_STRING
      - Forces conversion of certain fields to string type before returning results.

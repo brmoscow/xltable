@@ -10,6 +10,8 @@ and supports integration with Active Directory and multiple databases.
 
 ------------------------------------------------------------
 
+.. _install_ubuntu:
+
 Linux
 -----
 
@@ -56,8 +58,23 @@ The script will:
 - Install ``supervisor``, ``nginx``, ``unzip``
 - Extract xltable to ``/usr/olap/xltable/``
 - Create ``/usr/olap/xltable/setting/settings.json`` from the example (if missing)
-- Configure supervisor to autostart the service
-- Configure nginx as a reverse proxy on port 80
+- Configure supervisor to autostart several xltable worker processes
+  (one per CPU core, up to 4 by default)
+- Configure nginx on port 80 as a load balancer across the worker
+  processes (ports 5000, 5001, ...)
+
+.. note::
+
+   Several worker processes are what lets heavy reports from many concurrent
+   users be built in parallel: Python limits one process to one CPU core for
+   result building, so the instance count is effectively the number of large
+   reports the server can render at the same time. All instances share the
+   same cache and ``settings.json``. To change the count, re-run the installer
+   with the desired number — the existing configuration and settings are kept:
+
+   .. code-block:: bash
+
+      XLTABLE_INSTANCES=6 bash install_xltable.sh
 
 Set up connections with database (configuration examples in the folder ``/usr/olap/xltable/setting``):
 
@@ -151,15 +168,18 @@ Service Management
    * - Action
      - Command
    * - Start
-     - ``sudo supervisorctl start olap``
+     - ``sudo supervisorctl start 'olap:*'``
    * - Stop
-     - ``sudo supervisorctl stop olap``
+     - ``sudo supervisorctl stop 'olap:*'``
    * - Restart
-     - ``sudo supervisorctl restart olap``
+     - ``sudo supervisorctl restart 'olap:*'``
    * - Status
-     - ``sudo supervisorctl status olap``
+     - ``sudo supervisorctl status 'olap:*'``
    * - Logs
      - ``sudo tail -f /var/log/supervisor/olap*.log``
+
+``olap:*`` addresses every worker process of the service; it also works on
+installations that still run the old single-process configuration.
 
 ------------------------------------------------------------
 
