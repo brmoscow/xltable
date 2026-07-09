@@ -382,7 +382,9 @@ records that were summed into that cell.
 
 You declare which columns those detail rows contain **per measure group**, with the
 ``olap_drillthrough`` tag placed inside an ``olap_source`` block, after its
-``LEFT JOIN`` clauses:
+``LEFT JOIN`` clauses and **before** ``--olap_jinja`` if the source has one
+(everything after ``--olap_jinja`` belongs to the Jinja template — a drillthrough
+tag placed there would be rendered into the SQL of every query and break it):
 
 .. code-block:: sql
 
@@ -413,10 +415,20 @@ How it works:
 - **Measures are returned raw.** A measure listed here is emitted as its underlying
   column with the aggregation removed (``sum(sales.qty)`` → ``sales.qty``), so each
   row shows the individual fact value, not a total. ``count(...)`` becomes the
-  literal ``1`` (one per row).
+  literal ``1`` (one per row). This works only for measures that are a **single
+  aggregate over a plain expression**: a compound expression combining several
+  aggregates (``sum(sales.sum) / sum(sales.qty)``) or a conditional/uniq aggregate
+  (``sumIf``, ``uniqExact``, ...) has no meaningful per-row value, so its column
+  is skipped in the detail table (the syntax checker warns about such fields in
+  the ``olap_drillthrough`` list).
 - **Joins are resolved automatically.** Columns from related dimension tables pull
   in the necessary ``LEFT JOIN`` chain, including multi-hop paths
-  (``Sales`` → ``Stores`` → ``Regions``).
+  (``Sales`` → ``Stores`` → ``Regions``). Relationships tagged
+  ``relationship=`one-table``` produce no join, as in regular queries — the
+  dimension columns are read directly from the fact table. The measure group's
+  ``relationship=`part-source``` helper joins are always included, so measures
+  computed through a lookup table (for example a currency conversion) drill
+  through correctly.
 - **Filters apply.** The cell's row, column and slicer context becomes the ``WHERE``
   clause, using the same row-level security and filtering as normal queries.
 - **CTEs and Jinja apply** exactly as for regular queries (measure-group Jinja, then
@@ -430,7 +442,8 @@ falls back to returning just the clicked measure as a single column.
    Calculated fields cannot be drilled through — they are computed from measures
    that may span several measure groups and have no single set of underlying rows.
    Drilling a calculated field returns a clear message instead of data, matching
-   Analysis Services behavior.
+   Analysis Services behavior. A calculated field listed inside
+   ``olap_drillthrough`` is skipped the same way as a compound measure.
 
 For the end-user experience in Excel, see :ref:`excel_drillthrough`.
 

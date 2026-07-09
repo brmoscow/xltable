@@ -36,6 +36,16 @@ a script to a specific measure group or to the whole cube. A script assigned to 
 measure group only affects its own SQL segment; a cube-level script applies to the
 overall query.
 
+.. important::
+
+   The template body is **everything after the** ``--olap_jinja`` **tag up to the
+   end of its block**, so ``--olap_jinja`` must be the last tag of the section it
+   belongs to. In particular, put ``--olap_drillthrough`` (and, in the
+   ``--olap_cube`` block, ``--olap_calculated_fields``) *above* ``--olap_jinja``:
+   a tag placed below it becomes part of the template and is rendered into the
+   SQL of every query, breaking it. The cube syntax checker reports this as an
+   error.
+
 Example of a Jinja script modifying SQL:
 
 .. code-block:: jinja
