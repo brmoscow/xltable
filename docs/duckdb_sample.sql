@@ -1,7 +1,7 @@
 -- =============================================================================
--- XLTable OLAP – Greenplum sample data script
+-- XLTable OLAP – DuckDB sample data script
 -- =============================================================================
--- Creates the `db` schema inside your Greenplum database, all required
+-- Creates the `db` schema inside your DuckDB database file, all required
 -- dimension and fact tables, fills them with ~3 500 rows of deterministic
 -- test data, and registers the `myOLAPcube` OLAP cube definition
 -- (see reference.html#unified-example).
@@ -10,23 +10,14 @@
 --            if needed.  Quick search-and-replace:  db.  →  <your_schema>.
 --
 -- Prerequisites:
---   - Greenplum instance reachable from your workstation
---   - psql CLI installed (bundled with Greenplum / PostgreSQL client tools)
---   - A Greenplum user with CREATE SCHEMA, CREATE TABLE, INSERT privileges
+--   - DuckDB CLI installed (https://duckdb.org/docs/installation)
+--     or the Python package: pip install duckdb
 --
--- Usage (psql with TLS):
---   psql "host=<host> port=5432 dbname=<database> \
---         user=<user> password=<password> sslmode=require" \
---     -f greenplum_sample.sql
+-- Usage (DuckDB CLI — creates/opens the database file):
+--   duckdb /usr/olap/xltable/data/sample.duckdb -f duckdb_sample.sql
 --
--- Usage (psql without TLS):
---   psql "host=<host> port=5432 dbname=<database> \
---         user=<user> password=<password>" \
---     -f greenplum_sample.sql
---
--- Usage (connection URL):
---   psql postgresql://<user>:<password>@<host>:5432/<database>?sslmode=require \
---     -f greenplum_sample.sql
+-- Usage (Python):
+--   python -c "import duckdb; duckdb.connect('sample.duckdb').execute(open('duckdb_sample.sql').read())"
 -- =============================================================================
 
 
@@ -58,10 +49,10 @@ CREATE TABLE db.times (
 
 INSERT INTO db.times
 SELECT
-    to_char(d, 'YYYY-MM-DD') AS day_str,
-    to_char(d, 'YYYY-MM')    AS month_str,
-    to_char(d, 'YYYY')       AS year_str
-FROM generate_series('2023-01-01'::date, '2025-12-31'::date, '1 day'::interval) AS d;
+    strftime(d, '%Y-%m-%d') AS day_str,
+    strftime(d, '%Y-%m')    AS month_str,
+    strftime(d, '%Y')       AS year_str
+FROM generate_series(DATE '2023-01-01', DATE '2025-12-31', INTERVAL 1 DAY) AS t(d);
 
 
 -- Sales regions (4 rows)
@@ -129,7 +120,7 @@ INSERT INTO db.models VALUES
 -- ─── 4. Fact tables ──────────────────────────────────────────────────────────
 
 -- Sales transactions: 3 000 rows spread across 2023–2024
--- hashtext() provides deterministic pseudo-random distribution.
+-- hash() provides deterministic pseudo-random distribution.
 CREATE TABLE db.sales (
     store     TEXT,
     model     TEXT,
@@ -144,17 +135,16 @@ SELECT
         WHEN 0 THEN 'S01' WHEN 1 THEN 'S02' WHEN 2 THEN 'S03' WHEN 3 THEN 'S04'
         WHEN 4 THEN 'S05' WHEN 5 THEN 'S06' WHEN 6 THEN 'S07' ELSE      'S08'
     END AS store,
-    CASE MOD(ABS(hashtext(CAST(n * 7  AS TEXT))), 8)
+    CASE MOD(hash(CAST(n * 7  AS TEXT)), 8)
         WHEN 0 THEN 'M01' WHEN 1 THEN 'M02' WHEN 2 THEN 'M03' WHEN 3 THEN 'M04'
         WHEN 4 THEN 'M05' WHEN 5 THEN 'M06' WHEN 6 THEN 'M07' ELSE      'M08'
     END AS model,
-    to_char(
-        '2023-01-01'::date
-            + (MOD(ABS(hashtext(CAST(n * 3  AS TEXT))), 731) || ' days')::interval,
-        'YYYY-MM-DD')                                                       AS date_sale,
-    1  + MOD(ABS(hashtext(CAST(n * 11 AS TEXT))), 100)                      AS qty,
-    ROUND(CAST(50 + MOD(ABS(hashtext(CAST(n * 13 AS TEXT))), 950) AS NUMERIC) * 1.5, 2) AS amount
-FROM generate_series(0, 2999) AS n;
+    strftime(
+        DATE '2023-01-01' + CAST(MOD(hash(CAST(n * 3 AS TEXT)), 731) AS INTEGER),
+        '%Y-%m-%d')                                                      AS date_sale,
+    1  + MOD(hash(CAST(n * 11 AS TEXT)), 100)                            AS qty,
+    ROUND((50 + MOD(hash(CAST(n * 13 AS TEXT)), 950)) * 1.5, 2)          AS amount
+FROM generate_series(0, 2999) AS t(n);
 
 
 -- Stock inventory snapshots: 500 rows
@@ -170,12 +160,12 @@ SELECT
         WHEN 0 THEN 'S01' WHEN 1 THEN 'S02' WHEN 2 THEN 'S03' WHEN 3 THEN 'S04'
         WHEN 4 THEN 'S05' WHEN 5 THEN 'S06' WHEN 6 THEN 'S07' ELSE      'S08'
     END AS store,
-    CASE MOD(ABS(hashtext(CAST(n * 5  AS TEXT))), 8)
+    CASE MOD(hash(CAST(n * 5  AS TEXT)), 8)
         WHEN 0 THEN 'M01' WHEN 1 THEN 'M02' WHEN 2 THEN 'M03' WHEN 3 THEN 'M04'
         WHEN 4 THEN 'M05' WHEN 5 THEN 'M06' WHEN 6 THEN 'M07' ELSE      'M08'
     END AS model,
-    10 + MOD(ABS(hashtext(CAST(n * 17 AS TEXT))), 500)                      AS qty
-FROM generate_series(0, 499) AS n;
+    10 + MOD(hash(CAST(n * 17 AS TEXT)), 500)                            AS qty
+FROM generate_series(0, 499) AS t(n);
 
 
 -- ─── 5. OLAP cube definition ─────────────────────────────────────────────────
@@ -261,7 +251,7 @@ FROM db.models models
 SELECT
 --olap_dimensions
  times.year_str  as times_year_str  --hierarchy=`Dates` --translation=`Year`
-,to_char(date_trunc(''quarter'', times.day_str::date), ''YYYY-MM'') as times_quarter_str --hierarchy=`Dates` --translation=`Quarter`
+,strftime(date_trunc(''quarter'', times.day_str::date), ''%Y-%m'') as times_quarter_str --hierarchy=`Dates` --translation=`Quarter`
 ,times.month_str as times_month_str --hierarchy=`Dates` --translation=`Month`
 ,times.day_str   as times_day_str   --hierarchy=`Dates` --translation=`Day`
 FROM calendar times

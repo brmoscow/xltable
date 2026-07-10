@@ -418,6 +418,7 @@ Currently supported connection types:
 - StarRocks
 - Databricks
 - Greenplum
+- DuckDB
 
 For each database type, the corresponding configuration section must be
 defined in ``settings.json``.
@@ -545,3 +546,22 @@ Example structure for Greenplum connection:
         "password": "...",
         "target_session_attrs": "read-write"
     },
+
+DuckDB
+^^^^^^^^^^
+
+DuckDB is an embedded database: no server is needed, the whole database is a
+single file readable by the XLTable service account.
+
+.. code-block:: json
+
+    "SERVER_DB": "DuckDB",
+    "CREDENTIAL_DB": {
+        "database": "/usr/olap/xltable/data/analytics.duckdb",
+        "read_only": true
+    },
+
+``database`` is the path to the ``.duckdb`` file (use an absolute path).
+``read_only`` is optional and defaults to ``true``; keep it enabled so that
+several XLTable worker processes can open the same file simultaneously.
+A ready-to-run sample database script is described in :doc:`duckdb_sample`.

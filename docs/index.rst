@@ -81,6 +81,8 @@ requests into optimized SQL. A read-only service account is all it needs.
      - :doc:`starrocks_sample`
    * - Databricks
      - :doc:`databricks_sample`
+   * - DuckDB
+     - :doc:`duckdb_sample`
 
 Why XLTable?
 ------------
@@ -146,6 +148,7 @@ documentation as a single file — see :doc:`ai`.
    greenplum_sample
    starrocks_sample
    databricks_sample
+   duckdb_sample
 
 .. toctree::
    :maxdepth: 1

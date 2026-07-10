@@ -386,8 +386,9 @@ Parameter reference
        ``MAX_MEMORY_PERCENT`` (RAM usage, %), ``MAX_CPU_PERCENT`` (CPU usage,
        %), ``MIN_FREE_DISK_MB`` (free disk space, MB) — Excel shows
        "Server is overloaded ... Please try again later" with the specific
-       reason on data refresh. Metadata (Discover) requests are never
-       rejected, so open cube connections keep working. Each threshold is
+       reason on data refresh. Metadata (Discover) requests and session
+       open/close requests are never rejected, so connecting to a cube and
+       already open connections keep working. Each threshold is
        optional; omit the whole block to disable the guard. Note: inside a
        container the measured resources are the host's, not the container
        limits.

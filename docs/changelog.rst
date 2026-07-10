@@ -6,6 +6,12 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
+Version 2.0.16 — 2026-07-10
+----------------------------
+
+- **DuckDB Connector** — added support for DuckDB as a data source. DuckDB is embedded: the whole database is a single file next to XLTable — no database server to install, which makes it the fastest way to try XLTable or to serve small and medium datasets. Cubes can also be built directly on top of Parquet/CSV files via ``read_parquet()`` / ``read_csv()`` in the cube definition. See :doc:`duckdb_sample`.
+
+
 Version 2.0.15 — 2026-07-04
 ----------------------------
 
