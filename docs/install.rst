@@ -565,6 +565,7 @@ single file readable by the XLTable service account.
 ``read_only`` is optional and defaults to ``true``; keep it enabled so that
 several XLTable worker processes can open the same file simultaneously.
 A ready-to-run sample database script is described in :doc:`duckdb_sample`.
+
 ------------------------------------------------------------
 
 .. _install_multi_server:
