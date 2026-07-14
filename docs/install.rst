@@ -183,76 +183,6 @@ installations that still run the old single-process configuration.
 
 ------------------------------------------------------------
 
-.. _install_multi_server:
-
-Scaling to multiple servers (Redis cache)
------------------------------------------
-
-A single XLTable machine already runs several worker processes behind nginx
-(see :ref:`install_ubuntu`). When one machine is not enough, run XLTable on
-several servers and let them share one cache through Redis: set
-``CACHE_BACKEND`` to ``redis`` in ``settings.json`` on every server.
-
-.. code-block:: json
-
-  {
-    "CACHE_BACKEND": "redis",
-    "REDIS_URL": "redis://:yourpassword@redis-host:6379/0"
-  }
-
-With a shared cache every server can handle every request, so a load
-balancer in front of the servers needs no sticky sessions — plain
-round-robin works:
-
-.. code-block:: nginx
-
-   upstream xltable {
-       least_conn;
-       server 10.0.0.11:80;
-       server 10.0.0.12:80;
-   }
-
-   server {
-       listen 80;
-       client_max_body_size 16m;
-       location / {
-           proxy_pass http://xltable;
-           proxy_read_timeout 600s;   # heavy reports may run for minutes
-           proxy_set_header Authorization $http_authorization;
-       }
-   }
-
-What the shared cache gives you:
-
-- a session opened through one server is valid on all of them — Excel
-  refreshes keep working no matter where the balancer sends them;
-- **Cancel** works across servers: a query started on one server can be
-  cancelled by a request that lands on another;
-- the licensed user limit is counted across all servers, not per server;
-- **Clear All Cache** / **Clear Metadata Cache** in the admin panel of any
-  server take effect for the whole cluster.
-
-.. warning::
-
-   - ``settings.json`` must be **identical on all servers**. Every server
-     checks a fingerprint of its configuration against the shared cache and
-     clears the cache on mismatch — servers with different configurations
-     would keep wiping the cache for each other. Deploy configuration
-     changes to all servers together.
-   - The Redis instance must **not be reachable by anyone but the XLTable
-     servers**: protect it with a password (``requirepass`` /  ACL), keep it
-     on a private network. Cached entries carry session authorization state,
-     and anyone able to write to this Redis can effectively execute code on
-     the XLTable servers.
-
-When ``CACHE_BACKEND`` is not set (or set to ``sqlite``), XLTable keeps the
-default single-machine cache shared by the worker processes of that machine.
-If the ``redis`` backend is misconfigured (missing ``REDIS_URL``), the
-server logs an error and falls back to the SQLite cache instead of failing
-to start.
-
-------------------------------------------------------------
-
 .. _install_windows:
 
 Windows
@@ -635,3 +565,71 @@ single file readable by the XLTable service account.
 ``read_only`` is optional and defaults to ``true``; keep it enabled so that
 several XLTable worker processes can open the same file simultaneously.
 A ready-to-run sample database script is described in :doc:`duckdb_sample`.
+------------------------------------------------------------
+
+.. _install_multi_server:
+
+Scaling to multiple servers (Redis cache)
+-----------------------------------------
+
+A single XLTable machine already runs several worker processes behind nginx
+(see :ref:`install_ubuntu`). When one machine is not enough, run XLTable on
+several servers and let them share one cache through Redis: set
+``CACHE_BACKEND`` to ``redis`` in ``settings.json`` on every server.
+
+.. code-block:: json
+
+    "CACHE_BACKEND": "redis",
+    "REDIS_URL": "redis://:yourpassword@redis-host:6379/0"  
+
+With a shared cache every server can handle every request, so a load
+balancer in front of the servers needs no sticky sessions — plain
+round-robin works:
+
+.. code-block:: nginx
+
+   upstream xltable {
+       least_conn;
+       server 10.0.0.11:80;
+       server 10.0.0.12:80;
+   }
+
+   server {
+       listen 80;
+       client_max_body_size 16m;
+       location / {
+           proxy_pass http://xltable;
+           proxy_read_timeout 600s;   # heavy reports may run for minutes
+           proxy_set_header Authorization $http_authorization;
+       }
+   }
+
+What the shared cache gives you:
+
+- a session opened through one server is valid on all of them — Excel
+  refreshes keep working no matter where the balancer sends them;
+- **Cancel** works across servers: a query started on one server can be
+  cancelled by a request that lands on another;
+- the licensed user limit is counted across all servers, not per server;
+- **Clear All Cache** / **Clear Metadata Cache** in the admin panel of any
+  server take effect for the whole cluster.
+
+.. warning::
+
+   - ``settings.json`` must be **identical on all servers**. Every server
+     checks a fingerprint of its configuration against the shared cache and
+     clears the cache on mismatch — servers with different configurations
+     would keep wiping the cache for each other. Deploy configuration
+     changes to all servers together.
+   - The Redis instance must **not be reachable by anyone but the XLTable
+     servers**: protect it with a password (``requirepass`` /  ACL), keep it
+     on a private network. Cached entries carry session authorization state,
+     and anyone able to write to this Redis can effectively execute code on
+     the XLTable servers.
+
+When ``CACHE_BACKEND`` is not set (or set to ``sqlite``), XLTable keeps the
+default single-machine cache shared by the worker processes of that machine.
+If the ``redis`` backend is misconfigured (missing ``REDIS_URL``), the
+server logs an error and falls back to the SQLite cache instead of failing
+to start.
+
