@@ -10,7 +10,7 @@ Version 2.0.16 — 2026-07-10
 ----------------------------
 
 - **DuckDB Connector** — added support for DuckDB as a data source. DuckDB is embedded: the whole database is a single file next to XLTable — no database server to install, which makes it the fastest way to try XLTable or to serve small and medium datasets. Cubes can also be built directly on top of Parquet/CSV files via ``read_parquet()`` / ``read_csv()`` in the cube definition. See :doc:`duckdb_sample`.
-
+- **Multi-server deployments (CACHE_BACKEND: redis)** — several XLTable servers can now share one cache through Redis and work behind a load balancer (e.g. nginx) with no sticky sessions: a session opened through one server is valid on all of them, a running query can be cancelled through any server, the licensed user limit is counted across the whole cluster, and cache management in the admin panel of any server applies to all. The default single-machine cache is unchanged. See :ref:`install_multi_server`.
 
 Version 2.0.15 — 2026-07-04
 ----------------------------

@@ -490,11 +490,28 @@ Example:
    region, store
    --olap_access_filters
    region in (`EU`, `NA`)
+   store in (`Downtown North`, `Downtown South`)
 
 The ``olap_user_role`` tag marks the beginning of a role definition; multiple roles can be defined.
 Under ``olap_user_groups``, list the user groups that belong to this role.
 Under the ``..._visible`` tags, list the measure groups, dimensions, individual measures, or dimension attributes visible to this role.
 Under ``olap_access_filters``, define the row-level filters applied to this role.
+
+Each filter occupies its own line and has the form ``<alias> in ('value1', 'value2')``.
+The name to the left of ``in`` is the field's **alias** from the cube's SELECT section —
+the name after ``AS`` (or, when the field has no ``AS``, the expression itself with dots
+replaced by underscores: ``t.store_name`` becomes ``t_store_name``). The match is
+case-insensitive. Display names assigned with ``--translation`` cannot be used here.
+
+To filter by several fields in one role, put each filter on its own line. Unlike the
+``..._visible`` tags, the lines are **not** separated by commas — inside this block commas
+only separate the values of one ``in (...)`` list, and a stray comma at the start or end
+of a line makes the filter invalid. Filters on different fields are combined with AND
+(a row must satisfy all of them), while the values inside one ``in (...)`` list are
+alternatives (OR). Listing the same field again — on another line, or in another role the
+user belongs to — adds its values to the allowed set. A field referenced in an access
+filter is always included in the cube for that role, even if it is not listed under
+``--olap_dimensions_visible``.
 
 Access filters are a security boundary: the server adds them to the ``WHERE``
 clause of every SQL query it builds for the cube — regular pivot queries,

@@ -63,6 +63,10 @@ Tag reference
        
    * - olap_access_filters
      - Marks the beginning of a block defining security filters for a specific user role.
+       Each filter is written on its own line (no commas between lines) as
+       ``<alias> in ('v1', 'v2')``, where ``<alias>`` is the field's alias from the cube's
+       SELECT section (display names from ``--translation`` cannot be used). Filters on
+       different fields are combined with AND; the values of one list are alternatives (OR).
        The filters are enforced on every SQL query the server builds; an explicit
        filter on the same field in a query is intersected with the allowed values.
 
@@ -423,6 +427,22 @@ Parameter reference
        oversized responses are cheaper to recompute. Set to 0 to disable
        result caching entirely (metadata is still cached).
      - 16
+
+   * - CACHE_BACKEND
+     - Storage of the shared session/metadata cache. ``sqlite`` — a local
+       database file shared by the worker processes of one machine.
+       ``redis`` — an external Redis server shared by **several XLTable
+       servers** behind a load balancer (requires ``REDIS_URL``); see
+       :ref:`install_multi_server`. If the ``redis`` backend is
+       misconfigured, the server logs an error and falls back to ``sqlite``.
+     - sqlite
+
+   * - REDIS_URL
+     - Redis connection string for ``CACHE_BACKEND: redis``, in the form
+       ``redis://[:password@]host:port/db`` (``rediss://`` for TLS). All
+       servers sharing the cache must use the same Redis database and have
+       identical ``settings.json`` files.
+     - —
 
    * - CONVERT_FIELDS_TO_STRING
      - Forces conversion of certain fields to string type before returning results.
