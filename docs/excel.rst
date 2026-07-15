@@ -139,6 +139,10 @@ single items of an expanded field. A collapsed field costs nothing on the
 database side — its table is not scanned or joined at all until the field is
 expanded again.
 
+The **Expand/Collapse** → **Expand To "<level name>"** command is supported as
+well: a single item of a multi-level hierarchy can be expanded several levels
+deep in one click — for example, a year straight down to days.
+
 ------------------------------------------------------------
 
 Troubleshooting connection issues
