@@ -1,10 +1,6 @@
 FAQ
 ====================================
 
-.. contents:: Quick navigation
-   :local:
-   :depth: 1
-
 What are the minimum system requirements for installing XLTable?
 ----------------------------------------------------------------
 
@@ -25,7 +21,7 @@ I get errors such as "Connection failed, target computer actively refused it," t
 
 - Check the connection guide: :doc:`excel`
 - Run diagnostics: :doc:`support`
-- In the Excel server field, always use the full URL with protocol: ``http://...`` or ``https://....``.
+- In the Excel server field, always use the full URL with protocol: ``http://...`` or ``https://...``.
 - Also verify access to XLTable over ports 80/443.
 
 Excel shows an XML parsing error, or curl returns HTTP 500 from the server.

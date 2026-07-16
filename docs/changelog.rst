@@ -6,12 +6,6 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
-Version 2.0.17 — 2026-07-15
-----------------------------
-
-- **Fixed a false "too many columns" error** — a Pivot Table with fields only in the Rows area and a measure in Values could be rejected with *"The table cannot be built, there are too many columns…"* even though such a report has a single value column. For this layout Excel sends the row fields on the only MDX axis (formally COLUMNS), and the column-limit guard mistook them for pivot columns. The guard now follows the actual orientation of the built table: the 16,384-column Excel limit is checked only when fields are really placed in the Columns area.
-- **Expand To "<level name>"** — the Pivot Table context-menu command **Expand/Collapse → Expand To "<level>"** now expands an item of a multi-level hierarchy several levels deep in one click (for example, a year straight down to days). Previously only the first nested level was expanded and the resulting table did not match the requested layout.
-
 Version 2.0.16 — 2026-07-10
 ----------------------------
 
