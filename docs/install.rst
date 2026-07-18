@@ -647,7 +647,9 @@ What the shared cache gives you:
 - a session opened through one server is valid on all of them — Excel
   refreshes keep working no matter where the balancer sends them;
 - **Cancel** works across servers: a query started on one server can be
-  cancelled by a request that lands on another;
+  cancelled by a request that lands on another (except Databricks and
+  embedded DuckDB, where the query is interrupted in-process and the Cancel
+  request must reach the server process running the query);
 - the licensed user limit is counted across all servers, not per server;
 - **Clear All Cache** / **Clear Metadata Cache** in the admin panel of any
   server take effect for the whole cluster.
