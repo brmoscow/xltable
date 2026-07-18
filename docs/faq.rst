@@ -209,7 +209,7 @@ The cache TTL is configurable: the ``METADATA_CACHE_TTL`` setting (600 seconds
 by default) limits how long cube metadata and query results are served from
 the cache before being re-read from the database, and ``SQL_CACHE_TTL``
 (default: the ``METADATA_CACHE_TTL`` value) limits how long SQL query results
-are shared between users. See :ref:`settings_schema`.
+are shared between users. See :doc:`cache` and :ref:`settings_schema`.
 
 To refresh immediately, use the standard methods:
 
@@ -221,6 +221,7 @@ To refresh immediately, use the standard methods:
 
 Documentation:
 
+- :doc:`cache`
 - :ref:`refreshing_data`
 - :ref:`admin_panel`
 - :ref:`cache_api`

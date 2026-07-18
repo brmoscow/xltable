@@ -398,7 +398,8 @@ The admin panel is organized into tabs:
   inactivity defined by the license (30 days by default) or manually with the
   **Release** button (which also signs that user out). When all seats are
   taken, a new user gets a clear "Named user limit reached" message in Excel.
-- **Cache** — cache overview and management:
+- **Cache** — cache overview and management (how the cache is organized is
+  described in :doc:`cache`):
 
   - a per-user table showing active sessions, the number of cached entries
     and the time of the last activity, with a **Sign out** button that drops

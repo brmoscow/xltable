@@ -126,6 +126,7 @@ documentation as a single file — see :doc:`ai`.
    quickstart
    install
    excel
+   cache
 
 .. toctree::
    :maxdepth: 1

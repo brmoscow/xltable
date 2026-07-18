@@ -6,7 +6,7 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
-Version 2.0.17 — upcoming
+Version 2.0.17 — 2026-07-18
 ----------------------------
 
 - **Named user licensing enforced with a seat registry** — the licensed user limit now counts *named* users instead of concurrent sessions. A licensed seat is assigned to a user on their first request and survives sign-outs, cache clears and server restarts; it is freed automatically after a period of inactivity defined by the license (30 days by default) or manually by an administrator. The **License** tab of the admin panel shows who occupies the seats, when each user was first and last seen, and provides a per-seat **Release** button. When all seats are taken, a new user gets a clear "Named user limit reached" message in Excel; existing users are unaffected. In multi-server deployments (``CACHE_BACKEND: redis``) the seat registry is shared by the whole cluster. See :ref:`admin_panel`.
