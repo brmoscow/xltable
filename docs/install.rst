@@ -382,21 +382,27 @@ For local users, the group is assigned via ``USER_GROUPS``; for AD users — via
 Features
 ^^^^^^^^
 
-The admin panel provides:
+The admin panel is organized into tabs:
 
-- **Service status** — confirms the server is running, shows the active
+- **Status** — confirms the server is running, shows the active
   database backend and the settings file in use with the time it was last
   loaded (``settings.json`` is re-read automatically when it changes, see
   :ref:`settings_schema`).
-- **Documentation** — direct link to the XLTable documentation.
-- **Cache overview** — a per-user table showing active sessions, the number of
-  cached entries and the time of the last activity, with a **Sign out** button
-  that drops the sessions of a single user without affecting the others.
-- **Clear Metadata Cache** — removes cached cube definitions, schema lists and
-  query results while keeping users signed in. Use it after editing a cube so
-  the new definition is picked up immediately (it is also picked up
-  automatically within ``METADATA_CACHE_TTL``, see :ref:`settings_schema`).
-- **Clear All Cache** — removes all cached session data. Users will need to re-authenticate after the cache is cleared.
+- **License** — current license details, the server ID to send to the vendor
+  when requesting a license, and the license file upload form.
+- **Cache** — cache overview and management:
+
+  - a per-user table showing active sessions, the number of cached entries
+    and the time of the last activity, with a **Sign out** button that drops
+    the sessions of a single user without affecting the others;
+  - statistics of the shared SQL result cache (entries, size, hit rate);
+  - **Clear Metadata Cache** — removes cached cube definitions, schema lists
+    and query results while keeping users signed in. Use it after editing a
+    cube so the new definition is picked up immediately (it is also picked up
+    automatically within ``METADATA_CACHE_TTL``, see :ref:`settings_schema`);
+  - **Clear All Cache** — removes all cached session data. Users will need to
+    re-authenticate after the cache is cleared.
+- **Resources** — direct links to the XLTable documentation and support.
 
 ------------------------------------------------------------
 
