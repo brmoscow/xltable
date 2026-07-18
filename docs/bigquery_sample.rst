@@ -164,7 +164,8 @@ connection block:
    {
        "SERVER_DB": "BigQuery",
        "CREDENTIAL_DB": {
-           "key_path": "/path/to/service-account-key.json"
+           "key_path": "/path/to/service-account-key.json",
+           "query_timeout": 300
        },
        "WRITE_LOG": false,
        "DUMP_XMLA": false,
@@ -326,6 +327,26 @@ Troubleshooting
     The service account JSON file must be accessible to the XLTable process.
     Use an absolute path and ensure file permissions allow the server user
     to read it.
+
+------------------------------------------------------------
+
+Viewing XLTable query history
+-----------------------------
+
+Every SQL query sent by XLTable starts with a marker comment
+``/* user:<name>, app:xltable */`` identifying the application and the
+XLTable user. The history is available via ``INFORMATION_SCHEMA.JOBS`` of
+the region your datasets live in (replace ``region-eu`` with your region):
+
+.. code-block:: sql
+
+   SELECT creation_time, user_email, total_bytes_processed, query
+   FROM `region-eu`.INFORMATION_SCHEMA.JOBS
+   WHERE query LIKE '%app:xltable%'
+   ORDER BY creation_time DESC
+   LIMIT 10;
+
+See also :ref:`query_history_marker`.
 
 ------------------------------------------------------------
 

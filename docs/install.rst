@@ -428,6 +428,11 @@ defined in ``settings.json``.
    To connect to the database, a single service account with **read-only** access is sufficient.
    XLTable uses this account for all queries; no write permissions are required.
 
+All connection types accept an optional ``query_timeout`` parameter in
+``CREDENTIAL_DB`` — the maximum execution time of a single database query in
+seconds (default: 300). A query running longer than this is cancelled and an
+error is returned to Excel instead of holding the connection indefinitely.
+
 ClickHouse
 ^^^^^^^^^^
 
@@ -455,13 +460,39 @@ Example structure for BigQuery connection with path to service account key file:
 
     "SERVER_DB": "BigQuery",
     "CREDENTIAL_DB": {
-        "key_path": "..."
+        "key_path": "...",
+        "query_timeout": 300
     },
 
 Snowflake
 ^^^^^^^^^^
 
-Example structure for Snowflake connection:
+The recommended way to connect is **key-pair authentication**: Snowflake has
+deprecated single-factor password sign-ins, so a service user should
+authenticate with an RSA key pair. Generate a key pair and assign the public
+key to the service user as described in the
+`Snowflake key-pair authentication guide <https://docs.snowflake.com/en/user-guide/key-pair-auth>`_,
+then reference the private key file in ``settings.json``:
+
+.. code-block:: json
+
+    "SERVER_DB": "Snowflake",
+    "CREDENTIAL_DB": {
+         "user": "...",
+         "account": "...",
+         "private_key_path": "/path/to/rsa_key.p8",
+         "private_key_passphrase": "...",
+         "warehouse": "...",
+         "schema": "...",
+         "query_timeout": 300
+    },
+
+``private_key_passphrase`` is only required if the private key file is
+encrypted; omit it for an unencrypted key.
+
+Alternatively, a `programmatic access token (PAT) <https://docs.snowflake.com/en/user-guide/programmatic-access-tokens>`_
+or a legacy password can be passed in the ``password`` field (used only when
+``private_key_path`` is not set):
 
 .. code-block:: json
 
@@ -470,8 +501,9 @@ Example structure for Snowflake connection:
          "user": "...",
          "password": "...",
          "account": "...",
-         "warehouse": "...",    
-         "schema": "..."
+         "warehouse": "...",
+         "schema": "...",
+         "query_timeout": 300
     },
 
 Trino
@@ -489,8 +521,9 @@ Example structure for Trino connection:
         "password": "...",
         "catalog": "...",
         "http_scheme": "https",
-        "verify": false
-    },  
+        "verify": false,
+        "query_timeout": 300
+    },
 
 StarRocks
 ^^^^^^^^^^
@@ -506,7 +539,8 @@ Example structure for StarRocks connection:
         "user": "...",
         "password": "...",
         "ssl_ca": "...",
-        "ssl_disabled": false
+        "ssl_disabled": false,
+        "query_timeout": 300
     },
 
 Databricks
@@ -521,7 +555,8 @@ Example structure for Databricks connection:
         "server_hostname": "adb-xxxxxxxxxxxx.azuredatabricks.net",
         "http_path": "/sql/1.0/warehouses/xxxxxxxxxxxx",
         "access_token": "dapi...",
-        "catalog": "..."
+        "catalog": "...",
+        "query_timeout": 300
     },
 
 ``server_hostname`` and ``http_path`` can be found in the Databricks workspace
@@ -544,7 +579,8 @@ Example structure for Greenplum connection:
         "dbname": "...",
         "user": "...",
         "password": "...",
-        "target_session_attrs": "read-write"
+        "target_session_attrs": "read-write",
+        "query_timeout": 300
     },
 
 DuckDB
@@ -558,7 +594,8 @@ single file readable by the XLTable service account.
     "SERVER_DB": "DuckDB",
     "CREDENTIAL_DB": {
         "database": "/usr/olap/xltable/data/analytics.duckdb",
-        "read_only": true
+        "read_only": true,
+        "query_timeout": 300
     },
 
 ``database`` is the path to the ``.duckdb`` file (use an absolute path).

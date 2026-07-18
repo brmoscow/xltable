@@ -175,7 +175,8 @@ connection block:
            "password": "<password>",
            "catalog": "hive",
            "http_scheme": "https",
-           "verify": false
+           "verify": false,
+           "query_timeout": 300
        },
        "WRITE_LOG": false,
        "DUMP_XMLA": false,
@@ -343,6 +344,26 @@ Troubleshooting
     The Trino user needs at minimum:
     ``CREATE SCHEMA``, ``CREATE TABLE``, ``INSERT``, ``DROP TABLE``
     on the target catalog and schema.
+
+------------------------------------------------------------
+
+Viewing XLTable query history
+-----------------------------
+
+Every SQL query sent by XLTable starts with a marker comment
+``/* user:<name>, app:xltable */`` identifying the application and the
+XLTable user. Recent queries are kept in coordinator memory and shown in
+the Trino Web UI; with SQL:
+
+.. code-block:: sql
+
+   SELECT created, user, state, query
+   FROM system.runtime.queries
+   WHERE query LIKE '%app:xltable%'
+   ORDER BY created DESC
+   LIMIT 10;
+
+See also :ref:`query_history_marker`.
 
 ------------------------------------------------------------
 

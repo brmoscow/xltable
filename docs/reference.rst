@@ -322,6 +322,12 @@ Parameter reference
      - Defines credentials used for accessing the server database.
      - —
 
+   * - CREDENTIAL_DB.query_timeout
+     - Maximum execution time of a single database query, in seconds. A query
+       running longer is cancelled and an error is returned to Excel.
+       Supported by all connection types.
+     - 300
+
    * - WRITE_LOG
      - Enables debug logging of XLTable operations (MDX, generated SQL, Jinja
        diffs, result preview). Log files will be located in the folder

@@ -161,7 +161,8 @@ connection block:
        "SERVER_DB": "DuckDB",
        "CREDENTIAL_DB": {
            "database": "/usr/olap/xltable/data/sample.duckdb",
-           "read_only": true
+           "read_only": true,
+           "query_timeout": 300
        },
        "WRITE_LOG": false,
        "DUMP_XMLA": false,
@@ -334,6 +335,16 @@ Troubleshooting
 ``Catalog Error: Table with name ... does not exist``
     The script did not run against the same file XLTable opens — compare the
     path used in Step 1 with ``database`` in ``settings.json``.
+
+------------------------------------------------------------
+
+Viewing XLTable query history
+-----------------------------
+
+DuckDB is embedded and has no server-side query history. To see the SQL
+queries XLTable executes, set ``WRITE_LOG=true`` in ``settings.json``
+(picked up automatically, no restart needed) and check the XLTable logs —
+see :ref:`enable_logging`.
 
 ------------------------------------------------------------
 

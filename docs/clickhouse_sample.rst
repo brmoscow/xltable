@@ -338,6 +338,31 @@ Troubleshooting
 
 ------------------------------------------------------------
 
+Viewing XLTable query history
+-----------------------------
+
+Every SQL query sent by XLTable starts with a marker comment
+``/* user:<name>, app:xltable */`` identifying the application and the
+XLTable user. In ClickHouse the same marker is additionally set in the
+``log_comment`` setting — a separate column of ``system.query_log`` that
+allows exact filtering:
+
+.. code-block:: sql
+
+   SELECT
+       event_time,
+       query,
+       user,
+       query_duration_ms
+   FROM system.query_log
+   WHERE log_comment LIKE 'user:%, app:xltable'
+   ORDER BY event_time DESC
+   LIMIT 10;
+
+See also :ref:`query_history_marker`.
+
+------------------------------------------------------------
+
 Full script
 -----------
 

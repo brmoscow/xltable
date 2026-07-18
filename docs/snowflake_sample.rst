@@ -164,7 +164,8 @@ connection block:
            "password":  "<password>",
            "account":   "<your_account>",
            "warehouse": "COMPUTE_WH",
-           "schema":    "olap.public"
+           "schema":    "olap.public",
+           "query_timeout": 300
        },
        "WRITE_LOG": false,
        "DUMP_XMLA": false,
@@ -332,6 +333,32 @@ Troubleshooting
     The ``account`` field in ``settings.json`` must use the Snowflake account
     locator format, e.g. ``xy12345.eu-west-1``.
     Find it in **Snowflake UI → Admin → Accounts**.
+
+------------------------------------------------------------
+
+Viewing XLTable query history
+-----------------------------
+
+Every SQL query sent by XLTable ends with a marker comment
+``/* user:<name>, app:xltable */`` identifying the application and the
+XLTable user (at the end, not the beginning: Snowflake strips comments
+preceding the statement from its query history). Up to 365 days of
+history are available via ``ACCOUNT_USAGE`` (shows queries of all users;
+requires access to the ``SNOWFLAKE`` database, e.g. the ``ACCOUNTADMIN``
+role; new queries appear with up to ~45 minutes of latency):
+
+.. code-block:: sql
+
+   SELECT start_time, user_name, total_elapsed_time, query_text
+   FROM snowflake.account_usage.query_history
+   WHERE query_text LIKE '%app:xltable%'
+   ORDER BY start_time DESC
+   LIMIT 10;
+
+The history is also available in the UI under
+**Monitoring → Query History**.
+
+See also :ref:`query_history_marker`.
 
 ------------------------------------------------------------
 

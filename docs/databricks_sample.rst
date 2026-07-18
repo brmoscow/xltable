@@ -168,7 +168,8 @@ connection block:
        "CREDENTIAL_DB": {
            "server_hostname": "adb-xxxxxxxxxxxx.azuredatabricks.net",
            "http_path": "/sql/1.0/warehouses/xxxxxxxxxxxx",
-           "access_token": "dapi..."
+           "access_token": "dapi...",
+           "query_timeout": 300
        },
        "WRITE_LOG": false,
        "DUMP_XMLA": false,
@@ -327,6 +328,28 @@ Troubleshooting
     Personal access tokens expire. Generate a new one in
     **User Settings → Developer → Access tokens** and update
     ``access_token`` in ``settings.json``.
+
+------------------------------------------------------------
+
+Viewing XLTable query history
+-----------------------------
+
+Every SQL query sent by XLTable starts with a marker comment
+``/* user:<name>, app:xltable */`` identifying the application and the
+XLTable user. The history is available on the **Query History** page of
+the workspace UI, or with SQL if
+`system tables <https://docs.databricks.com/en/admin/system-tables/index.html>`_
+are enabled:
+
+.. code-block:: sql
+
+   SELECT start_time, executed_by, total_duration_ms, statement_text
+   FROM system.query.history
+   WHERE statement_text LIKE '%app:xltable%'
+   ORDER BY start_time DESC
+   LIMIT 10;
+
+See also :ref:`query_history_marker`.
 
 ------------------------------------------------------------
 

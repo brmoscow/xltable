@@ -159,7 +159,8 @@ connection block:
            "port": 9030,
            "user": "<user>",
            "password": "<password>",
-           "ssl_disabled": true
+           "ssl_disabled": true,
+           "query_timeout": 300
        },
        "WRITE_LOG": false,
        "DUMP_XMLA": false,
@@ -313,6 +314,28 @@ Troubleshooting
 ``Access denied`` when running the script
     The StarRocks user needs at minimum:
     ``CREATE DATABASE``, ``CREATE TABLE``, ``INSERT``, ``DROP TABLE`` on ``db.*``.
+
+------------------------------------------------------------
+
+Viewing XLTable query history
+-----------------------------
+
+Every SQL query sent by XLTable starts with a marker comment
+``/* user:<name>, app:xltable */`` identifying the application and the
+XLTable user. Queries are recorded in the FE audit log
+(``fe/log/fe.audit.log``) — search it for ``app:xltable``. If the
+`AuditLoader plugin <https://docs.starrocks.io/docs/administration/management/audit_management/>`_
+is installed, the history is queryable with SQL:
+
+.. code-block:: sql
+
+   SELECT `timestamp`, `user`, queryTime, stmt
+   FROM starrocks_audit_db__.starrocks_audit_tbl__
+   WHERE stmt LIKE '%app:xltable%'
+   ORDER BY `timestamp` DESC
+   LIMIT 10;
+
+See also :ref:`query_history_marker`.
 
 ------------------------------------------------------------
 

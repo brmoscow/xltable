@@ -192,7 +192,8 @@ connection block:
            "dbname": "<database>",
            "user": "<user>",
            "password": "<password>",
-           "target_session_attrs": "read-write"
+           "target_session_attrs": "read-write",
+           "query_timeout": 300
        },
        "WRITE_LOG": false,
        "DUMP_XMLA": false,
@@ -357,6 +358,28 @@ Troubleshooting
     The Greenplum user needs at minimum:
     ``CREATE SCHEMA``, ``CREATE TABLE``, ``INSERT``, ``DROP TABLE`` on the
     target database and schema.
+
+------------------------------------------------------------
+
+Viewing XLTable query history
+-----------------------------
+
+Every SQL query sent by XLTable starts with a marker comment
+``/* user:<name>, app:xltable */`` identifying the application and the
+XLTable user. Currently running queries are visible in
+``pg_stat_activity``:
+
+.. code-block:: sql
+
+   SELECT pid, usename, query_start, state, query
+   FROM pg_stat_activity
+   WHERE query LIKE '/* user:%, app:xltable */%';
+
+For a persistent history, enable statement logging on the server
+(``log_statement = 'all'`` or ``log_min_duration_statement``) and search
+the server log for ``app:xltable``.
+
+See also :ref:`query_history_marker`.
 
 ------------------------------------------------------------
 
