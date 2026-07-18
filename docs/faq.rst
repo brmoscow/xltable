@@ -207,7 +207,9 @@ Data in storage updates frequently; we need to refresh cache. Is configurable ca
 
 The cache TTL is configurable: the ``METADATA_CACHE_TTL`` setting (600 seconds
 by default) limits how long cube metadata and query results are served from
-the cache before being re-read from the database. See :ref:`settings_schema`.
+the cache before being re-read from the database, and ``SQL_CACHE_TTL``
+(default: the ``METADATA_CACHE_TTL`` value) limits how long SQL query results
+are shared between users. See :ref:`settings_schema`.
 
 To refresh immediately, use two standard methods:
 

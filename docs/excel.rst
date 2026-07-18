@@ -84,8 +84,25 @@ Pivot Table data is refreshed on demand:
 - Right-click the Pivot Table → **Refresh**
 - Or use **Data** → **Refresh All**
 
-XLTable will execute SQL queries against the database for each refresh.
-Query result caching reduces database load for repeated requests.
+XLTable executes SQL queries against the database on refresh, with two
+levels of caching that reduce database load:
+
+- each session keeps its already-built responses, so repeating the same
+  report view does not re-run the query;
+- SQL query results are **shared between users**: when several users look at
+  the same report, the query runs in the database once per ``SQL_CACHE_TTL``
+  (600 seconds by default) and the others are served from the cache within
+  milliseconds.
+
+Pressing **Refresh** always gives the pressing user fresh data: cached
+results obtained before the refresh are bypassed for that user and, once
+re-read from the database, updated for everyone else as well. Users who do
+not press Refresh keep being served from the cache until its TTL expires.
+
+Row-level security is unaffected by the shared cache: per-user access
+filters are part of the generated SQL text, so users with different
+permissions never share query results. See :ref:`settings_schema` for the
+``SQL_CACHE_*`` settings.
 
 ------------------------------------------------------------
 

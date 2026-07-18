@@ -434,8 +434,40 @@ Parameter reference
        result caching entirely (metadata is still cached).
      - 16
 
+   * - SQL_CACHE_ENABLED
+     - Shared SQL result cache: when several users (or several sessions of
+       one user) produce an identical SQL query, it is executed in the
+       database once and the result is shared between them. Safe with
+       row-level security: per-user access filters are rendered into the SQL
+       text itself, so users with different permissions generate different
+       SQL and never share results. Excel **Refresh** gives the pressing
+       user fresh data and updates the shared entries for everyone (see
+       :ref:`refreshing_data`). Set to ``false`` to execute every query
+       individually.
+     - true
+
+   * - SQL_CACHE_TTL
+     - Lifetime (seconds) of entries in the shared SQL result cache: within
+       this window an identical query is served from the cache instead of
+       the database. Set to 0 to disable expiry. When not set, the value of
+       ``METADATA_CACHE_TTL`` is used.
+     - 600
+
+   * - SQL_CACHE_MAX_MB
+     - Total size cap (MB) of the shared SQL result cache. When the cap is
+       exceeded, the least recently used results are evicted.
+     - 256
+
+   * - SQL_CACHE_MAX_RESULT_MB
+     - A single query result larger than this size (MB) is not stored in the
+       shared SQL result cache and is re-read from the database instead.
+       (Not to be confused with ``RESULT_CACHE_MAX_MB``, which caps the
+       cached XMLA response of one session.)
+     - 32
+
    * - CACHE_BACKEND
-     - Storage of the shared session/metadata cache. ``sqlite`` — a local
+     - Storage of the shared session/metadata cache and the shared SQL
+       result cache. ``sqlite`` — a local
        database file shared by the worker processes of one machine.
        ``redis`` — an external Redis server shared by **several XLTable
        servers** behind a load balancer (requires ``REDIS_URL``); see
