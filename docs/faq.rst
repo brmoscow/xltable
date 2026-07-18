@@ -211,15 +211,19 @@ the cache before being re-read from the database, and ``SQL_CACHE_TTL``
 (default: the ``METADATA_CACHE_TTL`` value) limits how long SQL query results
 are shared between users. See :ref:`settings_schema`.
 
-To refresh immediately, use two standard methods:
+To refresh immediately, use the standard methods:
 
 - Refresh in Excel (Refresh / Refresh All)
 - Clear Metadata Cache in the Admin Panel
+- ``POST /api/cache/clear`` from your ETL pipeline — clear the cache
+  automatically right after the warehouse data is updated, so users get
+  fresh data without waiting out the TTL (see :ref:`cache_api`)
 
 Documentation:
 
 - :ref:`refreshing_data`
 - :ref:`admin_panel`
+- :ref:`cache_api`
 
 Why are cube changes not visible to users after updating the cube?
 ------------------------------------------------------------------
@@ -316,6 +320,25 @@ What is the license cost and trial period length?
 
 Pricing information is available at:
 https://xltable.com/#pricing
+
+How are licensed users counted?
+--------------------------------
+
+XLTable licenses are per **named user**, not per concurrent connection.
+A licensed seat is assigned to a user on their first request and stays
+assigned to that user — signing out, closing Excel or clearing the server
+cache does not free the seat. A seat is released:
+
+- automatically, after a period of user inactivity defined by the license
+  (30 days by default) — so seats of employees who left are recycled without
+  administrator involvement;
+- manually, by an administrator on the **License** tab of the admin panel
+  (the **Release** button, which also signs that user out).
+
+When all seats are taken, a new user receives a clear "Named user limit
+reached" message in Excel; existing users are unaffected. The admin panel
+shows who occupies the seats and when each user was last active. To add
+seats, contact the vendor for an updated license file.
 
 Is a trial installation on Microsoft Windows available? Why would a Windows server be needed?
 -----------------------------------------------------------------------------------------------

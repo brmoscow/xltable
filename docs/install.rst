@@ -389,7 +389,15 @@ The admin panel is organized into tabs:
   loaded (``settings.json`` is re-read automatically when it changes, see
   :ref:`settings_schema`).
 - **License** — current license details, the server ID to send to the vendor
-  when requesting a license, and the license file upload form.
+  when requesting a license, and the license file upload form. If the license
+  limits the number of named users, this tab also shows the **named user
+  seats**: which users occupy the licensed seats, when each was first and last
+  seen, and a **Release** button per seat. Licensing is per *named* user — a
+  seat is taken on the first request of a user and is not freed by signing out
+  or clearing the cache; it is released automatically after a period of
+  inactivity defined by the license (30 days by default) or manually with the
+  **Release** button (which also signs that user out). When all seats are
+  taken, a new user gets a clear "Named user limit reached" message in Excel.
 - **Cache** — cache overview and management:
 
   - a per-user table showing active sessions, the number of cached entries
@@ -656,7 +664,8 @@ What the shared cache gives you:
   cancelled by a request that lands on another (except Databricks and
   embedded DuckDB, where the query is interrupted in-process and the Cancel
   request must reach the server process running the query);
-- the licensed user limit is counted across all servers, not per server;
+- the licensed named-user seats are counted across all servers, not per
+  server — the seat registry is shared by the whole cluster;
 - **Clear All Cache** / **Clear Metadata Cache** in the admin panel of any
   server take effect for the whole cluster.
 
