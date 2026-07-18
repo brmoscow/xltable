@@ -490,6 +490,13 @@ Parameter reference
      - Defines user groups for accessing the admin panel (``/admin``).
      - —
 
+   * - API_TOKENS
+     - Bearer tokens (a string or a list of strings) accepted by the cache
+       management API (see :ref:`cache_api`) — intended for external systems
+       such as ETL pipelines, so they do not need an admin password. When not
+       set, the API accepts only admin credentials.
+     - —
+
    * - CREDENTIAL_ACTIVE_DIRECTORY
      - Defines connection parameters for Active Directory authentication.
      - —
@@ -517,5 +524,64 @@ and when it was last loaded.
 
 Deployment-level parameters that live outside ``settings.json`` (service
 user, port, IIS application pool settings) still require a service restart.
+
+------------------------------------------------------------
+
+.. _cache_api:
+
+Cache management API
+--------------------
+
+``POST /api/cache/clear`` clears the cache on request of an external system.
+The typical use is a final step of an ETL pipeline: right after the data in
+the warehouse is updated, the pipeline clears the XLTable cache so users get
+fresh data immediately instead of waiting out the cache TTL.
+
+Authorization — either of:
+
+- ``Authorization: Bearer <token>`` with a token listed in ``API_TOKENS``
+  (recommended for pipelines — no admin password in scripts);
+- admin credentials via HTTP Basic auth (an ``OWNERS`` account or a user
+  from an admin group).
+
+The ``scope`` parameter (query string, form field or JSON body) selects what
+is cleared:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 14 66
+
+   * - scope
+     - Effect
+   * - ``sql`` (default)
+     - Only the shared SQL result cache — the right choice after a data
+       update: cube definitions and user sessions stay untouched.
+   * - ``metadata``
+     - Also cached cube definitions and schema lists; users stay signed in.
+       Equivalent to **Clear Metadata Cache** in the admin panel — use after
+       editing a cube.
+   * - ``all``
+     - Everything, including authorized sessions; users re-authorize on
+       their next request.
+
+Examples:
+
+.. code-block:: bash
+
+   # after an ETL run: refresh data for all users
+   curl -X POST -H "Authorization: Bearer <token>" \
+        http://xltable-server/api/cache/clear
+
+   # after editing a cube definition
+   curl -X POST -H "Authorization: Bearer <token>" \
+        "http://xltable-server/api/cache/clear?scope=metadata"
+
+The response is JSON: ``{"cleared": "sql"}`` on success, ``401`` for missing
+or invalid credentials, ``400`` for an unknown scope.
+
+With ``CACHE_BACKEND: redis`` one call clears the shared cache of the whole
+cluster — any server behind the load balancer can be called. With the default
+``sqlite`` backend the call clears the cache of the machine that served it,
+so in a multi-machine setup without Redis call each server directly.
 
   
