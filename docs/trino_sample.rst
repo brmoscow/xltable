@@ -176,12 +176,10 @@ connection block:
            "catalog": "hive",
            "http_scheme": "https",
            "verify": false,
-           "query_timeout": 300
+           "query_timeout": 60
        },
        "WRITE_LOG": false,
-       "DUMP_XMLA": false,
-       "LOG_RETENTION_DAYS": 14,
-       "MAX_CELLS": 1000000,
+       "MAX_CELLS": 100000,
        "OVERLOAD_GUARD": {
            "MAX_MEMORY_PERCENT": 90,
            "MAX_CPU_PERCENT": 95,
@@ -190,16 +188,7 @@ connection block:
        "CONVERT_FIELDS_TO_STRING": true,
        "USERS": {"user1": "pass1", "user2": "pass2"},
        "USER_GROUPS": {"user1": ["olap_users", "olap_admins"], "user2": ["olap_users"]},
-       "ADMIN_GROUPS": ["olap_admins"],
-       "CREDENTIAL_ACTIVE_DIRECTORY": {
-          "server_address": "..",
-          "domain": "..",
-          "domain_full": "..",
-          "username": "..",
-          "password": "..",
-          "access_groups": ["..", ".."]
-        },
-       "LDAP_CACHE_TIMEOUT": 300
+       "ADMIN_GROUPS": ["olap_admins"]
    }
 
 XLTable automatically discovers all cubes stored in the ``olap_definition``

@@ -326,7 +326,7 @@ Parameter reference
      - Maximum execution time of a single database query, in seconds. A query
        running longer is cancelled and an error is returned to Excel.
        Supported by all connection types.
-     - 300
+     - 60
 
    * - WRITE_LOG
      - Enables debug logging of XLTable operations (MDX, generated SQL, Jinja
@@ -379,7 +379,7 @@ Parameter reference
        filters, the same way SSAS cancels oversized results
        (``RowsetSerializationLimit``). The legacy ``MAX_ROWS`` key is still
        accepted and used as ``MAX_CELLS``.
-     - 1000000
+     - 100000
 
    * - MAX_FILTER_MEMBERS
      - Caps the member list the server enumerates when Excel applies

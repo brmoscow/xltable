@@ -1,22 +1,28 @@
 About XLTable
 =============
 
-**Excel meets Big Data.**
+**Semantic Layer for Big Data.**
 
-XLTable is an OLAP server that allows you to connect **Excel Pivot Tables**
-directly to modern analytical databases without exporting data to files
-or using traditional BI tools.
+Self-service analytics on big data — governed by IT, loved by users.
+
+XLTable is an XMLA-compatible OLAP semantic layer that connects **Excel Pivot
+Tables** and AI assistants directly to modern analytical databases — without
+exporting data to files or using traditional BI tools. No SQL for end users,
+no data copies: queries are pushed down to your warehouse, and XLTable
+deploys inside your perimeter.
 
 XLTable acts as a **semantic and security layer** between Excel and databases,
 providing centralized control over data models, access rights and performance.
 
 It is designed for organizations that want to keep Excel as the main
-analytics tool while working with large datasets stored in modern data platforms.
+analytics tool while working with large datasets stored in modern data
+platforms: Excel becomes the front end, your warehouse stays the single
+source of truth.
 
-.. image:: _static/xltable_idea.png
-   :alt: XLTable Idea
+.. image:: _static/xltable_dataflow.png
+   :alt: Data flow — Excel talks to XLTable over XMLA, XLTable translates MDX into SQL for your database
    :align: center
-   :width: 400px
+   :width: 560px
 
 ------------------------------------------------------------
 
@@ -24,16 +30,23 @@ What is XLTable
 ---------------
 
 XLTable enables business users to analyze large datasets using familiar
-Excel Pivot Tables, while IT teams define and manage analytical models centrally.
+Excel Pivot Tables — or by asking questions in plain language through AI
+assistants — while IT teams define and manage analytical models centrally.
+One model, two ways to explore: Excel and AI answer from the same cube,
+with the same numbers.
 
 Unlike classic BI tools, XLTable does not replace Excel.
 Instead, it extends Excel with enterprise-grade OLAP capabilities:
 
 - Dimensions, measures and hierarchies
 - Calculated fields and reusable metrics
-- Fine-grained access control
+- Fine-grained access control down to rows and members
 - Query result caching
-- Integration with Active Directory
+- Integration with Active Directory / LDAP
+- MCP connector for Claude and other AI assistants
+
+Cube definitions are plain SQL files: keep them in Git, review changes in
+pull requests, deploy through the CI/CD flow your team already uses.
 
 XLTable is typically used by finance teams, analysts, controllers and managers
 who require both flexibility and governance.
@@ -127,10 +140,10 @@ and indicates which of them are available in XLTable.
      -
    * - Pre-computed aggregations
      - ✓
-     -
+     - ✓
    * - Proactive caching
      - ✓
-     -
+     - ✓
    * - DirectQuery (pass-through to source database)
      - ✓
      - ✓
@@ -163,6 +176,9 @@ and indicates which of them are available in XLTable.
      -
    * - Drillthrough (cell to detail rows)
      - ✓
+     - ✓
+   * - AI assistants connectivity (MCP)
+     -
      - ✓
    * - **Administration**
      -
@@ -228,6 +244,7 @@ Operating systems
 ^^^^^^^^^^^^^^^^^
 
 - Linux (Ubuntu 22.04+ recommended)
+- Windows 10 / 11
 - Windows Server 2019+
 
 Hardware requirements

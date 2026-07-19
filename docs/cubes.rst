@@ -647,20 +647,35 @@ fact table just to populate a filter dropdown.
 
 ------------------------------------------------------------
 
-Best practices for cube design
-------------------------------
+Cube design rules and recommendations
+-------------------------------------
+
+The first part of this section lists **required rules** — they are part of
+the cube definition syntax, and a cube that violates them will not work
+correctly. The second part contains **recommendations** that keep cubes
+fast and maintainable.
+
+Required rules
+^^^^^^^^^^^^^^
 
 Naming conventions:
 
-- measures → <table_alias>_<aggregation>_<column>
-- dimensions → <table_alias>_<column>
-
-Aliases must be unique.
+- measures → ``<table_alias>_<aggregation>_<column>``
+- dimensions → ``<table_alias>_<column>``
+- aliases must be unique
 
 Table alias rules:
 
 - every source must have a unique alias
 - aliases must remain stable
+
+Join rules:
+
+- always use LEFT JOIN
+- define joins explicitly
+
+Recommendations
+^^^^^^^^^^^^^^^
 
 Dimension strategy:
 
@@ -671,11 +686,6 @@ Hierarchy design:
 
 - build logical parent-child structures
 - maintain natural ordering
-
-Join strategy:
-
-- always use LEFT JOIN
-- define joins explicitly
 
 Measure design:
 

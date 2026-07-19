@@ -2,10 +2,10 @@
 Installation
 ============
 
-This section describes how to install XLTable, configure system access
-and connect analytical databases.
+This section describes how to install XLTable, obtain a license,
+configure system access and connect analytical databases.
 
-XLTable can be deployed on Linux or Windows servers
+XLTable can be deployed on Linux, Windows 10 / 11 or Windows Server
 and supports integration with Active Directory and multiple databases.
 
 ------------------------------------------------------------
@@ -95,12 +95,10 @@ Example of a minimal settings.json:
         "port": "8443",
         "secure": true,
         "verify": true,
-        "query_timeout": 300
+        "query_timeout": 60
     },
     "WRITE_LOG": false,
-    "DUMP_XMLA": false,
-    "LOG_RETENTION_DAYS": 14,
-    "MAX_CELLS": 1000000,
+    "MAX_CELLS": 100000,
     "OVERLOAD_GUARD": {
         "MAX_MEMORY_PERCENT": 90,
         "MAX_CPU_PERCENT": 95,
@@ -109,16 +107,7 @@ Example of a minimal settings.json:
     "CONVERT_FIELDS_TO_STRING": true,
     "USERS": {"user1": "pass1", "user2": "pass2"},
     "USER_GROUPS": {"user1": ["olap_users", "olap_admins"], "user2": ["olap_users"]},
-    "ADMIN_GROUPS": ["olap_admins"],
-    "CREDENTIAL_ACTIVE_DIRECTORY": {
-        "server_address": "..",
-        "domain": "..",
-        "domain_full": "..",
-        "username": "..",
-        "password": "..",
-        "access_groups": ["..", ".."]
-    },
-    "LDAP_CACHE_TIMEOUT": 300
+    "ADMIN_GROUPS": ["olap_admins"]
   }
 
 .. note::
@@ -183,12 +172,76 @@ installations that still run the old single-process configuration.
 
 ------------------------------------------------------------
 
+.. _install_windows_desktop:
+
+Windows 10 / 11
+---------------
+
+On Windows 10 / 11 XLTable runs as a standalone executable — no additional
+components are required. This is the fastest way to get started
+(see also :doc:`quickstart`); for production deployments on Windows Server
+with IIS, see :ref:`install_windows`.
+
+Installation
+^^^^^^^^^^^^
+
+1. Download the distribution archive and extract it to a folder of your
+   choice, e.g. ``C:\xltable\``
+
+2. Edit the configuration file ``C:\xltable\setting\settings.json``
+   (database connection, users — see :ref:`database_connections`
+   and :ref:`settings_schema`)
+
+3. Start the server by double-clicking ``main.exe`` (or from the command line):
+
+   .. code-block:: text
+
+      C:\xltable\main.exe
+
+4. Open the admin panel in your browser at ``http://localhost:5000/admin``
+   and activate the license (see :ref:`obtaining_license`)
+
+5. In Excel, connect to the server at ``http://localhost:5000``
+
+Connecting from other computers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To let Excel users on other machines connect, allow inbound TCP port 5000
+in Windows Firewall (run as administrator):
+
+.. code-block:: text
+
+   netsh advfirewall firewall add rule name="xltable" dir=in action=allow protocol=TCP localport=5000
+
+They can then connect to ``http://<server-name-or-ip>:5000``.
+
+Autostart
+^^^^^^^^^
+
+To start the server automatically at logon, put a shortcut to ``main.exe``
+into the Startup folder: press :kbd:`Win+R`, type ``shell:startup``, and copy
+the shortcut there. For unattended servers, use Task Scheduler
+(trigger **At startup**, action — run ``C:\xltable\main.exe``).
+
+Update
+^^^^^^
+
+1. Stop ``main.exe`` (close the window or end the process in Task Manager)
+2. Back up ``settings.json`` and the license file ``.lic``
+3. Extract the new distribution archive into ``C:\xltable\``, overwriting existing files
+4. Restore the backed-up ``settings.json`` and ``.lic``
+5. Start ``main.exe``
+
+------------------------------------------------------------
+
 .. _install_windows:
 
-Windows
--------
+Windows Server (IIS)
+--------------------
 
-XLTable can be installed on Windows Server 2019+.
+XLTable can be installed on Windows Server 2019+ behind IIS.
+For a quick setup without IIS, the standalone installation described in
+:ref:`install_windows_desktop` also works on Windows Server.
 
 Prerequisites
 ^^^^^^^^^^^^^
@@ -284,6 +337,31 @@ Update
       C:\olap\xltable\.venv\Scripts\pip install -r C:\olap\xltable\requirements.txt
 
 6. Start the application pool
+
+------------------------------------------------------------
+
+.. _obtaining_license:
+
+Obtaining a license
+-------------------
+
+XLTable requires a license file (``.lic``) to serve requests. A trial
+license is issued free of charge:
+
+1. Install and start XLTable, then open the admin panel at
+   ``http://<server>/admin`` (see :ref:`admin_panel`) and go to the
+   **License** tab.
+2. Copy the **server id** shown there.
+3. Send it to help@xltable.com or Telegram https://t.me/XLTable — we will
+   issue you a trial license.
+4. Upload the received ``.lic`` file using the form on the **License** tab.
+
+The **License** tab also shows the current license details and, for licenses
+limited by named users, the occupied seats. Licensing is per **named user** —
+see :doc:`faq` for how seats are counted and released.
+
+When upgrading XLTable, keep the ``.lic`` file together with
+``settings.json`` — both are backed up and restored by the update procedure.
 
 ------------------------------------------------------------
 
@@ -463,7 +541,7 @@ Example structure for ClickHouse connection:
         "port": "8443",
         "secure": true,
         "verify": true,
-        "query_timeout": 300
+        "query_timeout": 60
     },
 
 BigQuery
@@ -476,7 +554,7 @@ Example structure for BigQuery connection with path to service account key file:
     "SERVER_DB": "BigQuery",
     "CREDENTIAL_DB": {
         "key_path": "...",
-        "query_timeout": 300
+        "query_timeout": 60
     },
 
 Snowflake
@@ -499,7 +577,7 @@ then reference the private key file in ``settings.json``:
          "private_key_passphrase": "...",
          "warehouse": "...",
          "schema": "...",
-         "query_timeout": 300
+         "query_timeout": 60
     },
 
 ``private_key_passphrase`` is only required if the private key file is
@@ -518,7 +596,7 @@ or a legacy password can be passed in the ``password`` field (used only when
          "account": "...",
          "warehouse": "...",
          "schema": "...",
-         "query_timeout": 300
+         "query_timeout": 60
     },
 
 Trino
@@ -537,7 +615,7 @@ Example structure for Trino connection:
         "catalog": "...",
         "http_scheme": "https",
         "verify": false,
-        "query_timeout": 300
+        "query_timeout": 60
     },
 
 StarRocks
@@ -555,7 +633,7 @@ Example structure for StarRocks connection:
         "password": "...",
         "ssl_ca": "...",
         "ssl_disabled": false,
-        "query_timeout": 300
+        "query_timeout": 60
     },
 
 Databricks
@@ -571,7 +649,7 @@ Example structure for Databricks connection:
         "http_path": "/sql/1.0/warehouses/xxxxxxxxxxxx",
         "access_token": "dapi...",
         "catalog": "...",
-        "query_timeout": 300
+        "query_timeout": 60
     },
 
 ``server_hostname`` and ``http_path`` can be found in the Databricks workspace
@@ -595,7 +673,7 @@ Example structure for Greenplum connection:
         "user": "...",
         "password": "...",
         "target_session_attrs": "read-write",
-        "query_timeout": 300
+        "query_timeout": 60
     },
 
 DuckDB
@@ -610,7 +688,7 @@ single file readable by the XLTable service account.
     "CREDENTIAL_DB": {
         "database": "/usr/olap/xltable/data/analytics.duckdb",
         "read_only": true,
-        "query_timeout": 300
+        "query_timeout": 60
     },
 
 ``database`` is the path to the ``.duckdb`` file (use an absolute path).

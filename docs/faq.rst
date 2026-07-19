@@ -387,7 +387,7 @@ The Pivot Table reports "too many data cells".
 -----------------------------------------------
 
 - The result size limit is measured in cells of the pivoted table (rows ×
-  columns × measures), 1,000,000 by default. Adjust ``MAX_CELLS`` in
+  columns × measures), 100,000 by default. Adjust ``MAX_CELLS`` in
   ``settings.json`` if needed (the legacy ``MAX_ROWS`` key is still accepted).
 - Add filters in the Pivot Table to reduce the result set.
 - A separate message appears when the columns area produces more than

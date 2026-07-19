@@ -2,12 +2,16 @@
 XLTable Documentation
 =====================
 
-**Excel meets Big Data.**
+**Semantic Layer for Big Data.**
 
-XLTable is an OLAP server that connects native **Excel Pivot Tables** directly
-to modern analytical databases — no CSV exports, no add-ins, no BI tools in
-between. It acts as a **semantic and security layer** between Excel and your
-data platform: IT defines models, access rights and performance centrally,
+Self-service analytics on big data — governed by IT, loved by users.
+
+XLTable is an XMLA-compatible OLAP semantic layer for modern analytical
+databases. Business users explore data in native **Excel Pivot Tables** or ask
+questions in plain language through AI assistants — no SQL for end users, no
+data copies, no add-ins, no BI tools in between. Excel becomes the front end,
+your warehouse stays the single source of truth, and XLTable deploys inside
+your perimeter: IT defines models, access rights and performance centrally,
 while business users keep working in the tool they know best.
 
 .. grid:: 1 2 2 3
@@ -58,8 +62,9 @@ while business users keep working in the tool they know best.
 Supported data sources
 ----------------------
 
-All heavy computation runs inside your database — XLTable translates Excel
-requests into optimized SQL. A read-only service account is all it needs.
+All heavy computation runs inside your database — XLTable pushes queries down
+to your warehouse, with no extracts and no in-memory copies. A read-only
+service account is all it needs.
 
 .. list-table::
    :header-rows: 1
@@ -87,9 +92,16 @@ requests into optimized SQL. A read-only service account is all it needs.
 Why XLTable?
 ------------
 
-- Native Excel Pivot Tables on big data — the standard SSAS/XMLA workflow
+- Native Excel Pivot Tables on big data — drag-and-drop over the standard
+  SSAS/XMLA workflow, no SQL, no retraining
 - Centralized semantic layer: dimensions, measures, hierarchies, calculated fields
-- Fine-grained access control, row-level security and Active Directory integration
+- One model, two ways to explore: the same cube answers Excel Pivot Tables
+  and AI assistants (MCP connector)
+- Code-first: cube definitions are plain SQL files — keep them in Git, review
+  changes in pull requests, deploy through your CI/CD flow
+- Fine-grained access control down to rows and members, Active Directory / LDAP integration
+- Your data never leaves: queries run inside your warehouse, XLTable deploys
+  inside your perimeter
 - Query result caching for a fast Excel experience
 - Self-hosted on Linux or Windows, on-premise or in the cloud
 

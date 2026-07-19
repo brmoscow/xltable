@@ -162,12 +162,10 @@ connection block:
        "CREDENTIAL_DB": {
            "database": "/usr/olap/xltable/data/sample.duckdb",
            "read_only": true,
-           "query_timeout": 300
+           "query_timeout": 60
        },
        "WRITE_LOG": false,
-       "DUMP_XMLA": false,
-       "LOG_RETENTION_DAYS": 14,
-       "MAX_CELLS": 1000000,
+       "MAX_CELLS": 100000,
        "OVERLOAD_GUARD": {
            "MAX_MEMORY_PERCENT": 90,
            "MAX_CPU_PERCENT": 95,

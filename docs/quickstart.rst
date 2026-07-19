@@ -1,16 +1,18 @@
 Quickstart
 ==========
 
-This guide helps you deploy XLTable and connect Excel to your analytical database
-as quickly as possible.
+This guide helps you deploy XLTable on **Windows 10 / 11** and connect Excel
+to your analytical database as quickly as possible — no additional components
+are required.
 
 By the end of this guide you will have:
 
-- XLTable server running on Linux
+- XLTable server running on Windows 10 or 11
+- A trial license activated
 - A working database connection
 - A simple OLAP cube accessible from Excel Pivot Tables
 
-For complete details on each step, see the full documentation sections.
+For a production installation on Linux or Windows Server, see :doc:`install`.
 
 ------------------------------------------------------------
 
@@ -19,55 +21,31 @@ Prerequisites
 
 Before starting, make sure you have:
 
-- A Linux server (Ubuntu 22.04+ recommended) with sudo access
+- A computer running Windows 10 or 11 (Windows Server also works — see :doc:`install`)
 - An analytical database (ClickHouse, BigQuery, Snowflake, Trino, StarRocks, Databricks, Greenplum or DuckDB)
 - Microsoft Excel (Microsoft 365 or Excel 2016+)
-- XLTable distribution file (contact help@xltable.com to obtain it)
+- XLTable distribution archive (contact help@xltable.com to obtain it)
 
 ------------------------------------------------------------
 
 Step 1: Install XLTable
 -----------------------
 
-Create the working directory:
+Download the distribution archive and extract it to a folder of your choice,
+e.g. ``C:\xltable\``.
 
-.. code-block:: bash
-
-   sudo mkdir /usr/olap
-   sudo chmod a+rwx /usr/olap
-
-Copy the distribution zip and the installer to the server:
-
-.. code-block:: bash
-
-   scp xltable-*-ubuntu.zip install_ubuntu.zip user@your_server_ip:/usr/olap/
-
-Unpack the installer scripts and run the install script:
-
-.. code-block:: bash
-
-   cd /usr/olap
-   unzip -o install_ubuntu.zip
-   bash install_xltable.sh
-
-The script will:
-
-- Install ``supervisor``, ``nginx``, ``unzip``
-- Extract xltable to ``/usr/olap/xltable/``
-- Create ``/usr/olap/xltable/setting/settings.json`` from the example (if missing)
-- Configure supervisor to autostart the service
-- Configure nginx as a reverse proxy on port 80
+That is the whole installation — XLTable ships as a standalone executable.
 
 ------------------------------------------------------------
 
 Step 2: Configure database connection
 --------------------------------------
 
-Open the settings file:
+Edit the configuration file:
 
-.. code-block:: bash
+.. code-block:: text
 
-   nano /usr/olap/xltable/setting/settings.json
+   C:\xltable\setting\settings.json
 
 Add your database connection and basic user credentials.
 Example for ClickHouse:
@@ -83,12 +61,10 @@ Example for ClickHouse:
          "port": "8443",
          "secure": true,
          "verify": true,
-         "query_timeout": 300
+         "query_timeout": 60
       },
       "WRITE_LOG": false,
-      "DUMP_XMLA": false,
-      "LOG_RETENTION_DAYS": 14,
-      "MAX_CELLS": 1000000,
+      "MAX_CELLS": 100000,
       "OVERLOAD_GUARD": {
           "MAX_MEMORY_PERCENT": 90,
           "MAX_CPU_PERCENT": 95,
@@ -97,16 +73,7 @@ Example for ClickHouse:
       "CONVERT_FIELDS_TO_STRING": true,
       "USERS": {"user1": "pass1", "user2": "pass2"},
       "USER_GROUPS": {"user1": ["olap_users", "olap_admins"], "user2": ["olap_users"]},
-      "ADMIN_GROUPS": ["olap_admins"],
-      "CREDENTIAL_ACTIVE_DIRECTORY": {
-         "server_address": "..",
-         "domain": "..",
-         "domain_full": "..",
-         "username": "..",
-         "password": "..",
-         "access_groups": ["..", ".."]
-      },
-      "LDAP_CACHE_TIMEOUT": 300
+      "ADMIN_GROUPS": ["olap_admins"]
    }
 
 .. note::
@@ -114,11 +81,45 @@ Example for ClickHouse:
    Changes to ``settings.json`` are picked up automatically within a few
    seconds of saving — no service restart is required.
 
-For other database types, see :doc:`install`.
+For other database types, see :ref:`database_connections`.
 
 ------------------------------------------------------------
 
-Step 3: Create a minimal OLAP cube
+Step 3: Start the server
+------------------------
+
+Start the server by double-clicking ``main.exe`` (or from the command line):
+
+.. code-block:: text
+
+   C:\xltable\main.exe
+
+The server listens on port 5000.
+
+------------------------------------------------------------
+
+Step 4: Get a trial license
+---------------------------
+
+Open the admin panel in your browser:
+
+.. code-block:: text
+
+   http://localhost:5000/admin
+
+Log in as a user whose group is listed in ``ADMIN_GROUPS``
+(``user1`` in the example above).
+
+On the **License** tab, copy the **server id** and send it to
+help@xltable.com (or Telegram https://t.me/XLTable) — we will issue you a
+trial license. Upload the received ``.lic`` file using the form on the same
+**License** tab.
+
+For details, see :ref:`obtaining_license` and :ref:`admin_panel`.
+
+------------------------------------------------------------
+
+Step 5: Create a minimal OLAP cube
 ------------------------------------
 
 XLTable reads cube definitions from a table named ``olap_definition`` in your database.
@@ -127,35 +128,11 @@ For a ready-to-run example with sample tables, test data, and a complete cube de
 
 ------------------------------------------------------------
 
-Step 4: Start the service
---------------------------
-
-The install script starts the service automatically. To manage it manually:
-
-.. list-table::
-   :header-rows: 1
-   :widths: 20 50
-
-   * - Action
-     - Command
-   * - Start
-     - ``sudo supervisorctl start olap``
-   * - Stop
-     - ``sudo supervisorctl stop olap``
-   * - Restart
-     - ``sudo supervisorctl restart olap``
-   * - Status
-     - ``sudo supervisorctl status olap``
-   * - Logs
-     - ``sudo tail -f /var/log/supervisor/olap*.log``
-
-------------------------------------------------------------
-
-Step 5: Connect Excel
+Step 6: Connect Excel
 ----------------------
 
 1. Open Excel and go to **Data → Get Data → From Database → From Analysis Services**.
-2. Enter the server URL: ``http://your_server_ip``
+2. Enter the server URL: ``http://localhost:5000``
 3. Enter the username and password configured in ``settings.json``.
 4. Select the ``myOLAPcube`` cube.
 5. Click **Finish** — your Pivot Table is ready.
@@ -163,12 +140,24 @@ Step 5: Connect Excel
 Connection to XLTable is identical to connecting to Microsoft SQL Server Analysis Services (SSAS).
 For details on authentication modes and advanced connection options, see :doc:`excel`.
 
+Connecting from other computers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To let Excel users on other machines connect, allow inbound TCP port 5000
+in Windows Firewall (run as administrator):
+
+.. code-block:: text
+
+   netsh advfirewall firewall add rule name="xltable" dir=in action=allow protocol=TCP localport=5000
+
+They can then connect to ``http://<server-name-or-ip>:5000``.
+
 ------------------------------------------------------------
 
 Next steps
 ----------
 
-- :doc:`install` — complete installation guide for Linux and Windows
+- :doc:`install` — complete installation guide for Linux, Windows 10 / 11 and Windows Server, including autostart and updates
 - :doc:`cubes` — full OLAP cube definition reference
 - :doc:`reference` — settings.json parameters and SQL tag reference
 - :doc:`clickhouse_sample` — ready-to-run ClickHouse script with sample tables, test data, and the ``myOLAPcube`` cube
