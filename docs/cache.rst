@@ -14,9 +14,10 @@ Cache layers
 ------------
 
 - **Session response cache** — each session keeps its already-built XMLA
-  responses, so repeating the same report view does not re-run the query.
-  Responses larger than ``RESULT_CACHE_MAX_MB`` are not stored and are
-  rebuilt on every refresh.
+  responses, keyed by the query text, so repeating the same report view does
+  not re-run the query. Entries live for ``METADATA_CACHE_TTL`` (600 seconds
+  by default); responses larger than ``RESULT_CACHE_MAX_MB`` are not stored
+  and are rebuilt on every refresh.
 
 - **Shared SQL result cache** — SQL query results are **shared between
   users**: when several users (or several sessions of one user) produce an
@@ -26,10 +27,10 @@ Cache layers
   part of the generated SQL text, so users with different permissions
   generate different SQL and never share results.
 
-- **Metadata cache** — cube definitions, database/table/field lists and MDX
-  query results are kept for ``METADATA_CACHE_TTL`` (600 seconds by
-  default), so an edited cube definition is picked up automatically within
-  this window, without any manual cache clearing.
+- **Metadata cache** — cube definitions and database/table/field lists are
+  kept for ``METADATA_CACHE_TTL`` (600 seconds by default), so an edited
+  cube definition is picked up automatically within this window, without
+  any manual cache clearing.
 
 - **Authorization cache** — a successful authorization (local users and
   Active Directory) is kept for ``AUTH_CACHE_TIMEOUT`` seconds before the
@@ -69,7 +70,7 @@ setting to what it controls; full descriptions are in
      - A single SQL result larger than this is not cached.
      - 32
    * - ``METADATA_CACHE_TTL``
-     - Lifetime (seconds) of cube metadata and MDX query results.
+     - Lifetime (seconds) of cube metadata and cached session responses.
      - 600
    * - ``RESULT_CACHE_MAX_MB``
      - A single session response larger than this is not cached.

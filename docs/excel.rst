@@ -19,6 +19,11 @@ Adding an Analysis Services data source
 
 3. In the **Server name** field, enter the XLTable server address: ``http://your_server_ip``
 
+   The server listens on port 5000 by default, so unless it is behind a proxy
+   include the port in the address — for example ``http://localhost:5000`` when
+   Excel runs on the same machine as the server, or ``http://your_server_ip:5000``
+   over the network.
+
 4. In the **Log on credentials** section, select **Use the following User Name and Password**
    and enter the credentials configured in ``settings.json``.
 

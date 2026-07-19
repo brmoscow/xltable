@@ -418,10 +418,10 @@ Parameter reference
      - 300
 
    * - METADATA_CACHE_TTL
-     - Defines the lifetime of cached cube metadata and query results in
-       seconds: cube definitions, database/table/field lists and MDX query
-       results. After this period expires, XLTable re-reads the data from the
-       database, so an edited cube definition is picked up automatically
+     - Defines the lifetime in seconds of cached cube metadata (cube
+       definitions, database/table/field lists) and of already-built session
+       responses. After this period expires, XLTable re-reads the data from
+       the database, so an edited cube definition is picked up automatically
        within this window — no manual cache clearing is required. Set to 0 to
        disable expiry (cache entries then live until the cache is cleared).
      - 600
