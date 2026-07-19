@@ -463,7 +463,10 @@ Features
 The admin panel is organized into tabs:
 
 - **Status** — confirms the server is running, shows the active
-  database backend and the settings file in use with the time it was last
+  database backend, the active cache backend (``sqlite`` — cache local to
+  this machine, or ``redis`` with the server address — cache shared by the
+  whole cluster; the actual mode after a possible fallback, see
+  :doc:`cache`) and the settings file in use with the time it was last
   loaded (``settings.json`` is re-read automatically when it changes, see
   :ref:`settings_schema`).
 - **License** — current license details, the server ID to send to the vendor
@@ -482,7 +485,10 @@ The admin panel is organized into tabs:
   - a per-user table showing active sessions, the number of cached entries
     and the time of the last activity, with a **Sign out** button that drops
     the sessions of a single user without affecting the others;
-  - statistics of the shared SQL result cache (entries, size, hit rate);
+  - statistics of the shared SQL result cache (entries, size, hit rate).
+    Hit/miss counters accumulate since the last reset — they survive restarts
+    and cache clearing; the **Reset stats** button starts counting from zero,
+    without touching the cached entries;
   - **Clear Metadata Cache** — removes cached cube definitions, schema lists
     and query results while keeping users signed in. Use it after editing a
     cube so the new definition is picked up immediately (it is also picked up

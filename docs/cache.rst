@@ -115,7 +115,9 @@ effect (see :ref:`applying_config`). When fresh data is needed immediately:
   (cube definitions, schema lists and query results; users stay signed in —
   use after editing a cube) and **Clear All Cache** (everything; users
   re-authenticate on their next request). A **Sign out** button drops the
-  sessions of a single user.
+  sessions of a single user. Hit/miss statistics of the shared SQL cache are
+  never affected by cache clearing — they accumulate until the **Reset
+  stats** button starts them from zero.
 - **Cache management API** — for external systems such as ETL pipelines;
   see below.
 
