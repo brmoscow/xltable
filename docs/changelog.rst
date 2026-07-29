@@ -46,9 +46,6 @@ Version 2.0.18 — 2026-07-29
   jobs, files and their total size, with a **Clear Export Jobs and Files**
   button that also removes orphaned files and compacts the job registry. See
   :ref:`admin_panel`.
-- **nginx timeout helper (Ubuntu)** — ``set_nginx_timeouts.sh`` adjusts the
-  proxy timeouts of an already-installed server (for heavy reports hitting
-  ``504 Gateway Time-out``) without reinstalling. See :ref:`install_ubuntu`.
 
 Version 2.0.17 — 2026-07-18
 ----------------------------

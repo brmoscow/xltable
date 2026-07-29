@@ -530,7 +530,7 @@ it). Minimal configuration — an empty object is enough:
 
    {
        "EXPORT": {},
-       "PUBLIC_URL": "http://bi.company.local:5000"
+       "PUBLIC_URL": "http://bi.company.local"
    }
 
 All keys of the section are optional:
