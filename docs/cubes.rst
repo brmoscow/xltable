@@ -87,6 +87,54 @@ Unified example
 
 Follow this link for an example of creating an OLAP cube for a ClickHouse database: :ref:`unified_example` .
 
+.. _cube_autogen:
+
+Generating a cube automatically (autogen)
+-----------------------------------------
+
+A first-draft cube definition can be generated from a single table or view —
+a working starting point that you refine by hand instead of writing the
+definition from scratch:
+
+.. code-block:: text
+
+   main.exe autogen                     # interactive wizard
+   main.exe autogen shop.sales          # direct: generate for a table
+   main.exe autogen shop.sales --full   # exact distinct counts (slower)
+
+(on Linux: ``python main.py autogen ...``; the database connection is taken
+from ``settings.json``, same as for the server.)
+
+The wizard lists the tables of the configured database, lets you narrow the
+list by a substring and pick a table by number, then shows how each column
+was classified — and why — before asking for confirmation.
+
+Autogen makes one light profiling pass over the table (row count, distinct
+counts, min/max) and assigns a role to every column by rules:
+
+- **date / datetime** columns become a ready **Year → Quarter → Month → Day**
+  hierarchy;
+- columns whose names signal a key or code (``id``, ``*_id``, ``code``,
+  ``year`` …) become dimensions, even when numeric;
+- numeric columns named like prices or rates (``price``, ``rate``,
+  ``percent`` …) become **AVG** measures — summing them would be meaningless;
+- other numeric columns become **SUM** measures with number formats;
+- booleans and small low-cardinality integers become category dimensions;
+- text columns become dimensions; near-unique text on large tables
+  (comments, URLs) is excluded from the cube;
+- a ``count(*)`` measure is always added.
+
+The result is a complete, commented cube definition in a ``.sql`` file
+(``cubes/<table>.sql`` by default; an existing file is never silently
+overwritten). Paste its contents into the ``olap_definition`` table (see
+:ref:`cube_definition_storage`) — the cube is ready to open in Excel, and
+the file is the natural place to keep refining it: rename translations,
+arrange folders, add relationships and access rules.
+
+``--full`` uses exact ``count(distinct)`` instead of the approximate
+aggregate during profiling — more precise classification on the boundary
+cases, at the cost of a slower scan of large tables.
+
 Cube definition rules
 ---------------------
 

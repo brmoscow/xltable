@@ -2,9 +2,53 @@ Version History
 ===============
 
 Stay up to date with the latest releases by following us on
-`Telegram <https://t.me/XLTable>`_ or `X <https://x.com/XLTable>`_.
+`Telegram <https://t.me/xltable_news>`_ or `X <https://x.com/XLTable>`_.
 
 ------------------------------------------------------------
+
+Version 2.0.18 — 2026-07-29
+----------------------------
+
+- **Export of large results to a CSV file** — when a Pivot Table layout is too
+  detailed for the pivot size cap (``MAX_CELLS``), the full result can now be
+  exported to a file instead: right-click → **Additional Actions** → **Export
+  full table to CSV**. The browser opens a status page and the download starts
+  automatically when the file is ready; the export is built in the background
+  by streaming the query result straight to disk, so even multi-gigabyte
+  results do not load the server memory. The file contains exactly what the
+  pivot is configured to show — same fields, filters and expansions, with cube
+  captions as column headers — but complete and without subtotal rows, so it
+  can be safely aggregated further. Results larger than an Excel sheet
+  (1,048,576 rows) are delivered as a ZIP archive. Repeated exports of an
+  unchanged layout reuse the already-built file (kept 24 hours by default);
+  pressing **Refresh** and exporting again rebuilds it with fresh data.
+  Row-level security applies to the file the same way as to the pivot.
+  Currently supported for ClickHouse. Enabled by the new ``EXPORT`` section in
+  ``settings.json`` — without it, server behavior is exactly as before. See
+  :ref:`excel_export` and :ref:`export_settings`.
+- **Preview mode for heavy layouts (Data Output field)** — every cube of an
+  export-enabled server gets a service **Data Output** field: putting it into
+  the **Filters** area and selecting ``Preview: first 1000 rows`` shows the
+  first rows of the detailed result while keeping the pivot fully editable —
+  a way to shape a heavy layout on real data before exporting it. The preview
+  returns plain data rows without totals — a faithful sample of the future
+  file. See :ref:`excel_export`.
+- **Cube autogeneration (autogen)** — a first-draft cube definition can be
+  generated from a single table: ``main.exe autogen`` starts a console wizard
+  (pick a database table, review how every column was classified and why),
+  ``main.exe autogen <schema.table>`` generates without questions. Date
+  columns become a ready Year→Quarter→Month→Day hierarchy, key-like and text
+  columns become dimensions, numeric columns become SUM measures (price/rate
+  columns — AVG), near-unique text is excluded, ``count(*)`` is always added.
+  The result is a complete commented ``.sql`` definition file to paste into
+  ``olap_definition`` and refine by hand. See :ref:`cube_autogen`.
+- **Admin panel: export management** — the **Cache** tab shows current export
+  jobs, files and their total size, with a **Clear Export Jobs and Files**
+  button that also removes orphaned files and compacts the job registry. See
+  :ref:`admin_panel`.
+- **nginx timeout helper (Ubuntu)** — ``set_nginx_timeouts.sh`` adjusts the
+  proxy timeouts of an already-installed server (for heavy reports hitting
+  ``504 Gateway Time-out``) without reinstalling. See :ref:`install_ubuntu`.
 
 Version 2.0.17 — 2026-07-18
 ----------------------------

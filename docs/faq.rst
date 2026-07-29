@@ -61,6 +61,20 @@ The target database and connection parameters are configured in ``settings.json`
 
 If the ``olap_definition`` table does not exist, create it as shown in :ref:`cube_definition_storage`.
 
+Can we add extra columns with technical information to the olap_definition table?
+----------------------------------------------------------------------------------
+
+Yes, this is safe and does not affect cube operation. XLTable never selects
+the whole table: it only reads the ``id`` column (to list the cubes) and the
+``definition`` column (to load a cube definition), always referencing these
+columns by name. Any additional columns — owner, change date, comments,
+versioning info and so on — are simply ignored by the server.
+
+The only requirements:
+
+- keep the existing ``id`` and ``definition`` columns unchanged (names and types);
+- make sure the database user XLTable connects with keeps read access to the table.
+
 How can I see SQL queries that XLTable sends to the database?
 --------------------------------------------------------------
 

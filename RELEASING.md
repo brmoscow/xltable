@@ -78,8 +78,8 @@ git push origin 2.0.15
 # 1. обновить release в docs/conf.py
 # 2. затем:
 git add -A
-git commit -m "2.0.15"
-git tag 2.0.15
+git commit -m "2.0.18"
+git tag 2.0.18
 git push origin main --tags
 # 3. проверить сборку на readthedocs.org
 ```

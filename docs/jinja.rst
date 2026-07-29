@@ -118,6 +118,110 @@ so match on the level name (not the localized display name):
    {{ sql_text | replace("FROM", ", some_extra_column FROM") }}
    {% endif %}
 
+.. _jinja_array_dimension:
+
+Worked example: dimension from an array column (ClickHouse)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Suppose the fact table ``db.Sales`` has an array column ``promo_tags``
+(``Array(String)``): one sale can carry several promo tags at once, and the cube
+must expose the tags as a regular dimension. The dimension members come from a
+small CTE, the measure group reads the fact table as usual:
+
+.. code-block:: sql
+
+   with promo as (
+   SELECT distinct promo_tag FROM db.Sales
+   ARRAY JOIN promo_tags as promo_tag)
+
+   --olap_cube
+   --olap_jinja
+   ...the script below...
+
+   --olap_source Sales
+   SELECT
+   --olap_measures
+      sum(sales.amount) as sales_sum_amount --translation=`Sales Amount`
+   FROM db.Sales sales
+   LEFT JOIN promo as promo --relationship=`one-table`
+
+   --olap_source Promo
+   SELECT
+   --olap_dimensions
+     promo_tag as promo_tag --translation=`Promo Tag`
+   FROM promo as promo
+
+Two things have to be handled in Jinja:
+
+1. When the user puts **Promo Tag on rows**, the fact rows must be expanded with
+   ``ARRAY JOIN`` so that each sale contributes to every tag it carries. But the
+   expansion multiplies rows: a sale with two tags would then be counted twice in
+   the grand total ``[All]`` and in the subtotals of every *other* dimension.
+2. When the user only **filters** by Promo Tag, no expansion is needed — the
+   generated equality filter just has to be rewritten into an array lookup
+   (``has`` / ``hasAny``).
+
+The cube-level script below handles both. For correct totals it relies on two
+ClickHouse features: ``arrayEnumerate``, which numbers the copies of each fact row
+produced by ``ARRAY JOIN`` (``promo_row_num = 1`` marks the original row), and
+``grouping()``, which tells — inside ``GROUPING SETS`` — whether the current
+total includes the Promo Tag key:
+
+.. code-block:: jinja
+
+   --olap_jinja
+   {# request = what the user selected (level_name values); in drillthrough the
+      context is empty and req = None - only branch 2 applies there #}
+   {% set req = context.get("request") %}
+   {% if req and "PROMO_TAG" in req.dimensions %}
+       {# branch 1: expand the fact rows, numbering the copies of each row #}
+       {% set sql_text = sql_text
+           | replace("db.Sales sales", "db.Sales sales ARRAY JOIN promo_tags as promo_tag, arrayEnumerate(promo_tags) as promo_row_num") %}
+       {# totals without the multiplication, step 1: next to the measure column add
+          a _ded twin - the value on the first copy of the row, 0 on duplicates #}
+       {% set sql_text = sql_text
+           | replace("sales.amount as sales_amount", "sales.amount as sales_amount, if(promo_row_num = 1, sales.amount, 0) as sales_amount_ded") %}
+       {# step 2: wrap the outer sum in if(grouping(...)) - grouping sets that
+          contain Promo Tag sum the full value, sets without it (the grand total
+          and subtotals of other dimensions) sum the _ded column instead #}
+       {% set sql_text = sql_text
+           | replace("sum(sales_amount) as ", "if(grouping(PROMO_TAG_GR)=1, sum(sales_amount_ded), sum(sales_amount)) as ") %}
+   {% else %}
+       {# branch 2: rewrite the generated equality filter into an array lookup;
+          also applies in drillthrough #}
+       {% set sql_text = sql_text
+           | replace("(ifNull(toString(promo_tag),``)  = ", "has(promo_tags, ")
+           | replace("(ifNull(toString(promo_tag),``) IN (", "hasAny(promo_tags, array(") %}
+   {% endif %}
+   {{ sql_text }}
+
+How the ``replace`` targets map to the generated SQL:
+
+- ``db.Sales sales`` — the fact table with its alias in the source ``FROM``
+  clause. The CTE is not touched: there the table appears without this alias.
+- ``sales.amount as sales_amount`` — the measure column in the inner row-level
+  ``SELECT``; the alias is the column reference with ``.`` replaced by ``_``.
+- ``sum(sales_amount) as`` — the outer aggregation of that column over
+  ``GROUPING SETS``.
+- ``PROMO_TAG_GR`` — the grouping key of the dimension: its ``level_name``
+  (the upper-cased alias) plus the ``_GR`` suffix.
+- the last two targets are the equality predicates the engine generates for a
+  dimension filter, e.g. ``(ifNull(toString(promo_tag),'') = 'TAG1')``. In the
+  script above the two single quotes are written as two backticks: backticks in
+  a cube definition are converted to single quotes when the cube is loaded.
+
+The easiest way to see these exact strings for your own cube is to enable
+``WRITE_LOG`` and read the ``===== JINJA =====`` / ``===== SQL =====`` sections of
+the log (see below).
+
+.. note::
+
+   Limitations of the pattern: it fixes ``sum(...)`` measures (a plain
+   ``count(...)`` still counts the multiplied rows; ``count(distinct ...)`` is
+   unaffected); select at most one array dimension per query (two would produce
+   two ``ARRAY JOIN`` clauses); and rows with an **empty** array are dropped by
+   ``ARRAY JOIN`` — use ``LEFT ARRAY JOIN`` when they must stay in the totals.
+
 .. _jinja_var:
 
 The context object

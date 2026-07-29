@@ -501,6 +501,91 @@ Parameter reference
      - Defines connection parameters for Active Directory authentication.
      - —
 
+   * - EXPORT
+     - Enables exporting large pivot results to CSV files and the preview
+       mode (the service **Data Output** field). A block of sub-keys — see
+       :ref:`export_settings`. When the section is absent, the feature is
+       fully off and leaves no trace: cube metadata, menus and server
+       behavior are exactly as before.
+     - disabled
+
+   * - PUBLIC_URL
+     - The server address as Excel users' browsers reach it, e.g.
+       ``http://bi.company.local:5000``. Used to build the links Excel opens
+       in the browser (the export status page). When not set, the address of
+       the incoming request is used — set this explicitly when the server is
+       behind a proxy or reachable by several names.
+     - —
+
+.. _export_settings:
+
+Export to file (EXPORT)
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``EXPORT`` section of ``settings.json`` turns on file export and the
+preview mode for all cubes (see :ref:`excel_export` for how users work with
+it). Minimal configuration — an empty object is enough:
+
+.. code-block:: json
+
+   {
+       "EXPORT": {},
+       "PUBLIC_URL": "http://bi.company.local:5000"
+   }
+
+All keys of the section are optional:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 50 20
+
+   * - Key
+     - Description
+     - Default value
+
+   * - enabled
+     - Set to ``false`` to turn the feature off while keeping the section
+       (same as removing it).
+     - true
+
+   * - preview_rows
+     - Number of rows shown by the ``Preview: first N rows`` mode of the
+       **Data Output** field. The caption of the member shows the actual
+       configured number.
+     - 1000
+
+   * - hard_limit_rows
+     - Absolute cap on the number of rows in an exported file — a safety net
+       against runaway exports.
+     - 50000000
+
+   * - file_ttl_hours
+     - How long a built export file is kept on the server. Within this
+       window, repeated exports of an unchanged layout return the same file
+       without re-querying the database; after it the file is deleted and
+       the next export builds it again.
+     - 24
+
+   * - decimal_separator
+     - Decimal separator for numbers in the CSV file: ``","`` (comma —
+       matches Excel with Russian regional settings) or ``"."`` (numbers
+       written as-is).
+     - ","
+
+   * - dimension_caption
+     - Name of the service field in the field list. Change it if a cube
+       already has a field named **Data Output** (in that case the feature
+       is disabled for such a cube automatically and a warning is logged).
+     - Data Output
+
+Export files are written to the ``export_files`` folder next to the server
+code, the job registry lives in ``exports.db``; both appear on first use.
+The **Cache** tab of the admin panel shows the current jobs, files and their
+total size, and provides a **Clear Export Jobs and Files** button that also
+removes orphaned files and compacts ``exports.db``. In multi-server
+deployments (``CACHE_BACKEND: redis``) export is not yet cluster-aware:
+route ``/exports/*`` requests to one designated server on the load balancer.
+
 .. _applying_config:
 
 Applying configuration changes
