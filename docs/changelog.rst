@@ -6,7 +6,7 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
-Version 2.0.19 — upcoming
+Version 2.0.18 — 2026-07-29
 ----------------------------
 
 - **Hierarchy filtering without parent levels (--filter_no_parents)** — by
@@ -22,9 +22,6 @@ Version 2.0.19 — upcoming
   consistently everywhere a member filter is used: the pivot itself, report
   filters and slicers, Keep Only / Hide Selected Items, drill through and file
   export. See :doc:`reference`.
-
-Version 2.0.18 — 2026-07-29
-----------------------------
 
 - **Export of large results to a CSV file** — when a Pivot Table layout is too
   detailed for the pivot size cap (``MAX_CELLS``), the full result can now be
