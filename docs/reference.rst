@@ -54,10 +54,27 @@ Tag reference
        of the cube definition before connecting to data.
        If validation fails, the connection is not established and an error is returned.
 
+   * - filter_no_parents
+     - Placed on any level of a multi-level hierarchy, changes how the whole
+       hierarchy is filtered: the ``WHERE`` clause contains only the selected
+       member itself, without equality conditions on its parent levels.
+       By default, selecting e.g. a quarter inside a Year → Quarter hierarchy
+       produces ``year = '2024' AND quarter = 'Q2'``; with this tag only
+       ``quarter = 'Q2'`` is generated.
+
+       Enable it only on hierarchies where member values of every level are
+       globally unique (do not repeat under different parents) — otherwise a
+       filter would match same-named members under other parents.
+       Typical use case: a child member moves between parents over time
+       (a product changes category) and filtering by the parent path would
+       cut off its history.
+
+       Syntax: ``--filter_no_parents``
+
    * - hide
      - Hides a measure or dimension from the list of fields in Excel.
-   
-   * - hierarchy   
+
+   * - hierarchy
      - After the tag, you must specify the name of the hierarchy to which the field belongs. 
        Fields with the same hierarchy name will be grouped together in Excel.
        

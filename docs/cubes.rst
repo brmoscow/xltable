@@ -317,8 +317,17 @@ Example:
 
    times.year as times_year --hierarchy=`Dates`
    times.quarter as times_quarter --hierarchy=`Dates`
-   times.month as times_month --hierarchy=`Dates`   
+   times.month as times_month --hierarchy=`Dates`
    times.day as times_day  --hierarchy=`Dates`
+
+When a user selects a member deep inside a hierarchy, by default the filter
+includes the whole path: picking a quarter with the year expanded produces
+``year = '2024' AND quarter = 'Q2'`` in the ``WHERE`` clause. If member values
+of every level are globally unique (they never repeat under different parents),
+you can add the ``--filter_no_parents`` tag to any level of the hierarchy —
+then only the selected member itself is filtered (``quarter = 'Q2'``), which
+keeps rows whose parent has changed over time (for example, a product that
+moved to another category). See :doc:`reference` for details.
 
 .. _relationships:
 
