@@ -137,7 +137,8 @@ and indicates which of them are available in XLTable.
      - ✓
    * - Partitions
      - ✓
-     -
+     - ✓ (native warehouse partitioning — queries are pushed down, the
+       database prunes partitions)
    * - Pre-computed aggregations
      - ✓
      - ✓

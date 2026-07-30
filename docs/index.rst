@@ -35,8 +35,8 @@ while business users keep working in the tool they know best.
       :link: install
       :link-type: doc
 
-      Installation on Linux and Windows, authentication,
-      Active Directory and database connections.
+      Installation on Linux and Windows, licensing,
+      authentication and Active Directory.
 
    .. grid-item-card:: :octicon:`stack;1em` OLAP cubes
       :link: cubes
@@ -57,14 +57,15 @@ while business users keep working in the tool they know best.
       :link-type: doc
 
       Connect Pivot Tables over XMLA, authentication modes,
-      data refresh and drill through.
+      data refresh, drill through and file export.
 
 Supported data sources
 ----------------------
 
 All heavy computation runs inside your database — XLTable pushes queries down
 to your warehouse, with no extracts and no in-memory copies. A read-only
-service account is all it needs.
+service account is all it needs — see :doc:`databases` for connection
+examples.
 
 .. list-table::
    :header-rows: 1
@@ -136,7 +137,14 @@ documentation as a single file — see :doc:`ai`.
 
    overview
    quickstart
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Using Excel
+   :hidden:
+
    excel
+   export
 
 .. toctree::
    :maxdepth: 1
@@ -144,7 +152,9 @@ documentation as a single file — see :doc:`ai`.
    :hidden:
 
    install
+   databases
    cache
+   settings
 
 .. toctree::
    :maxdepth: 1
