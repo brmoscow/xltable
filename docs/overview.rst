@@ -177,6 +177,10 @@ and indicates which of them are available in XLTable.
    * - Drillthrough (cell to detail rows)
      - ✓
      - ✓
+   * - Full export of a Pivot Table to a CSV file, without the pivot size cap
+       (see :ref:`excel_export`)
+     -
+     - ✓
    * - AI assistants connectivity (MCP)
      -
      - ✓

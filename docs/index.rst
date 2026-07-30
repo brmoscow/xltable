@@ -136,8 +136,14 @@ documentation as a single file — see :doc:`ai`.
 
    overview
    quickstart
-   install
    excel
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Administration
+   :hidden:
+
+   install
    cache
 
 .. toctree::
