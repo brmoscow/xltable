@@ -6,6 +6,23 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
+Version 2.0.19 — upcoming
+----------------------------
+
+- **Hierarchy filtering without parent levels (--filter_no_parents)** — by
+  default, selecting a member deep inside a multi-level hierarchy filters the
+  whole path: picking a quarter with the year expanded produces
+  ``year = '2024' AND quarter = 'Q2'`` in the generated SQL. The new
+  ``--filter_no_parents`` tag, placed on any level of a hierarchy in the cube
+  definition, switches that hierarchy to filtering by the selected member
+  alone (``quarter = 'Q2'``) — useful when a child member moves between
+  parents over time (a product changes category, a store changes region) and
+  filtering by the parent path would cut off its history. Enable it only on
+  hierarchies where member values of every level are globally unique. Applies
+  consistently everywhere a member filter is used: the pivot itself, report
+  filters and slicers, Keep Only / Hide Selected Items, drill through and file
+  export. See :doc:`reference`.
+
 Version 2.0.18 — 2026-07-29
 ----------------------------
 
