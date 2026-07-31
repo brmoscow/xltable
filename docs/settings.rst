@@ -67,6 +67,35 @@ Parameter reference
 
    Default: ``60``
 
+.. confval:: EDITION
+
+   Edition the server runs as:
+
+   - ``"server"`` — the full multi-user server: network endpoint, Basic /
+     Active Directory authentication, a license file is required. This is
+     the default when the key is absent, so existing installations are not
+     affected.
+   - ``"free"`` — the free single-user desktop edition. The endpoint binds
+     to ``127.0.0.1`` only and accepts requests without a password (Excel
+     connects anonymously to ``http://localhost:<port>``); no license file
+     is needed. Cube definitions are always read from the local folder
+     (:confval:`CUBE_SOURCE` is forced to ``"folder"``), and the
+     :confval:`USERS` / :confval:`USER_GROUPS` / :confval:`ADMIN_GROUPS`
+     keys are not required. Requests with a non-local ``Host`` or
+     ``Origin`` header are rejected with ``403`` — the free edition works
+     only on the machine it runs on.
+
+   The value is fixed at server start: changing it in a running server is
+   ignored (with a log message) until restart.
+
+   Example:
+
+   .. code-block:: json
+
+      "EDITION": "free"
+
+   Default: ``"server"``
+
 .. confval:: CUBE_SOURCE
 
    Where the server reads cube definitions from:

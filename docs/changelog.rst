@@ -9,6 +9,16 @@ Stay up to date with the latest releases by following us on
 Version 2.0.19 — unreleased
 ----------------------------
 
+- **Free desktop edition (EDITION=free)** — a new ``"EDITION": "free"`` key
+  in ``settings.json`` switches the server into the free single-user
+  desktop mode: the endpoint listens on ``127.0.0.1`` only, Excel connects
+  to ``http://localhost:<port>`` anonymously (no password), no license
+  file is required, and cube definitions are always read from the local
+  cube folder. Requests coming through a forwarded port (non-local
+  ``Host`` / ``Origin``) are rejected — the free edition works only on the
+  machine it runs on. Without the key the server behaves exactly as
+  before. See :confval:`EDITION`.
+
 - **Local cube definitions (CUBE_SOURCE=folder)** — the server can now read
   cube definitions from local ``.sql`` files instead of the
   ``olap_definition`` table: set ``"CUBE_SOURCE": "folder"`` in
