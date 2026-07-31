@@ -29,7 +29,7 @@ defined in ``settings.json``.
 
 All connection types accept an optional ``query_timeout`` parameter in
 ``CREDENTIAL_DB`` — the maximum execution time of a single database query in
-seconds (default: 300). A query running longer than this is cancelled and an
+seconds (default: 60). A query running longer than this is cancelled and an
 error is returned to Excel instead of holding the connection indefinitely.
 
 ClickHouse
