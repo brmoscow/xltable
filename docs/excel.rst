@@ -127,7 +127,7 @@ field has no single set of underlying rows.
 Working with large results
 --------------------------
 
-A Pivot Table result is capped in size (1,000,000 cells by default — the same
+A Pivot Table result is capped in size (100,000 cells by default — the same
 way SSAS limits oversized results). When a layout is too detailed to fit, the
 detailed result can be previewed right in the pivot or exported in full to a
 CSV file — see :doc:`export`.

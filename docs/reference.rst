@@ -42,150 +42,167 @@ the OLAP cube structure based on them.
 Tag reference
 ^^^^^^^^^^^^^
 
-.. list-table::
-   :header-rows: 1
-   :widths: 30 70
+Every tag below has its own anchor — hover over a name and use the ¶ link
+to share a direct reference to it.
 
-   * - Tag
-     - Description
+.. tag:: definition_check_on
 
-   * - definition_check_on
-     - When present in the cube definition, enforces mandatory syntax validation
-       of the cube definition before connecting to data.
-       If validation fails, the connection is not established and an error is returned.
+   When present in the cube definition, enforces mandatory syntax validation
+   of the cube definition before connecting to data.
+   If validation fails, the connection is not established and an error is returned.
 
-   * - filter_no_parents
-     - Placed on any level of a multi-level hierarchy, changes how the whole
-       hierarchy is filtered: the ``WHERE`` clause contains only the selected
-       member itself, without equality conditions on its parent levels.
-       By default, selecting e.g. a quarter inside a Year → Quarter hierarchy
-       produces ``year = '2024' AND quarter = 'Q2'``; with this tag only
-       ``quarter = 'Q2'`` is generated.
+.. tag:: filter_no_parents
 
-       Enable it only on hierarchies where member values of every level are
-       globally unique (do not repeat under different parents) — otherwise a
-       filter would match same-named members under other parents.
-       Typical use case: a child member moves between parents over time
-       (a product changes category) and filtering by the parent path would
-       cut off its history.
+   Placed on any level of a multi-level hierarchy, changes how the whole
+   hierarchy is filtered: the ``WHERE`` clause contains only the selected
+   member itself, without equality conditions on its parent levels.
+   By default, selecting e.g. a quarter inside a Year → Quarter hierarchy
+   produces ``year = '2024' AND quarter = 'Q2'``; with this tag only
+   ``quarter = 'Q2'`` is generated.
 
-       Syntax: ``--filter_no_parents``
+   Enable it only on hierarchies where member values of every level are
+   globally unique (do not repeat under different parents) — otherwise a
+   filter would match same-named members under other parents.
+   Typical use case: a child member moves between parents over time
+   (a product changes category) and filtering by the parent path would
+   cut off its history.
 
-   * - hide
-     - Hides a measure or dimension from the list of fields in Excel.
+   Syntax: ``--filter_no_parents``
 
-   * - hierarchy
-     - After the tag, you must specify the name of the hierarchy to which the field belongs. 
-       Fields with the same hierarchy name will be grouped together in Excel.
-       
-   * - olap_access_filters
-     - Marks the beginning of a block defining security filters for a specific user role.
-       Each filter is written on its own line (no commas between lines) as
-       ``<alias> in ('v1', 'v2')``, where ``<alias>`` is the field's alias from the cube's
-       SELECT section (display names from ``--translation`` cannot be used). Filters on
-       different fields are combined with AND; the values of one list are alternatives (OR).
-       The filters are enforced on every SQL query the server builds; an explicit
-       filter on the same field in a query is intersected with the allowed values.
+.. tag:: hide
 
-   * - olap_calculated_fields
-     - Marks the beginning of a block containing the list of calculated fields. After the tag, you must specify the name of the folder calculated fields.
+   Hides a measure or dimension from the list of fields in Excel.
 
-   * - olap_calculated_fields_visible
-     - Marks the beginning of a block listing calculated fields available to a specific user role.
+.. tag:: hierarchy
 
-   * - olap_cube
-     - Marks the beginning of a block describing cube properties and metadata.
+   After the tag, you must specify the name of the hierarchy to which the field belongs.
+   Fields with the same hierarchy name will be grouped together in Excel.
 
-   * - olap_dimensions
-     - Marks the beginning of a block listing dimension attributes.
+.. tag:: olap_access_filters
 
-   * - olap_dimensions_visible
-     - Marks the beginning of a block listing dimension attributes available to a specific user role.
+   Marks the beginning of a block defining security filters for a specific user role.
+   Each filter is written on its own line (no commas between lines) as
+   ``<alias> in ('v1', 'v2')``, where ``<alias>`` is the field's alias from the cube's
+   SELECT section (display names from :tag:`translation` cannot be used). Filters on
+   different fields are combined with AND; the values of one list are alternatives (OR).
+   The filters are enforced on every SQL query the server builds; an explicit
+   filter on the same field in a query is intersected with the allowed values.
 
-   * - olap_drillthrough
-     - Marks a block, inside an ``olap_source`` measure-group block, listing the
-       detail columns returned when a user drills through a cell of that measure
-       group in Excel. The value is a comma-separated list of field aliases or
-       display names already defined in the cube. See :ref:`drillthrough`.
+.. tag:: olap_calculated_fields
 
-   * - olap_jinja
-     - Marks the beginning of a block with Jinja template logic that modifies SQL scripts.
+   Marks the beginning of a block containing the list of calculated fields. After the tag, you must specify the name of the folder calculated fields.
 
-   * - olap_measures
-     - Marks the beginning of a block listing measures.
+.. tag:: olap_calculated_fields_visible
 
-   * - olap_measures_visible
-     - Marks the beginning of a block listing measures available to a specific user role.
+   Marks the beginning of a block listing calculated fields available to a specific user role.
 
-   * - olap_source
-     - Marks the beginning of a block defining the source dataset for measures or dimensions. After the tag, you must specify the name of the group of measures or dimension.
+.. tag:: olap_cube
 
-   * - olap_user_groups
-     - Marks the beginning of a block listing security groups assigned to a user role.
+   Marks the beginning of a block describing cube properties and metadata.
 
-   * - olap_user_role
-     - Marks the beginning of a block defining a user role.
+.. tag:: olap_dimensions
 
-   * - relationship
-     - Defines the join type for a ``LEFT JOIN`` clause within an ``olap_source`` block.
-       Valid values:
+   Marks the beginning of a block listing dimension attributes.
 
-       - ``many-to-many`` — join where the dimension table relates to multiple source rows.
-       - ``one-table`` — all measures are in one table; dimension columns are selected directly without a join.
-       - ``part-source`` — the ``LEFT JOIN`` is treated as part of the current ``olap_source`` block rather than a cross-source relationship.
-         Use this to attach extra tables (CTEs, lookup tables) that belong to the same source and should not create a new join path to other sources.
+.. tag:: olap_dimensions_visible
 
-   * - translation
-     - Defines the localized name of a measure or dimension attribute displayed in Excel.
-       The value must be unique within the cube.
+   Marks the beginning of a block listing dimension attributes available to a specific user role.
 
-   * - folder
-     - Overrides the display folder for a field in the Excel field list.
-       By default, fields are grouped under a folder named after their ``olap_source``.
-       Use this tag to place a field into a differently named folder.
+.. tag:: olap_drillthrough
 
-       Syntax: ``--folder=`Folder Name```
+   Marks a block, inside an :tag:`olap_source` measure-group block, listing the
+   detail columns returned when a user drills through a cell of that measure
+   group in Excel. The value is a comma-separated list of field aliases or
+   display names already defined in the cube. See :ref:`drillthrough`.
 
-   * - format
-     - Defines the display format of a measure in Excel Pivot Tables.
-       The value follows the standard **Excel number format** syntax.
-       A semicolon separates the positive and negative patterns: ``positive;negative``.
+.. tag:: olap_jinja
 
-       .. list-table::
-          :header-rows: 1
-          :widths: 38 31 31
+   Marks the beginning of a block with Jinja template logic that modifies SQL scripts.
 
-          * - Format string
-            - Positive value
-            - Negative value
-          * - ``#,##0;-#,##0``
-            - 1,234
-            - -1,234
-          * - ``#,##0.00;-#,##0.00``
-            - 1,234.56
-            - -1,234.56
-          * - ``#,##0.0;-#,##0.0``
-            - 1,234.6
-            - -1,234.6
-          * - ``0%``
-            - 56%
-            - -56%
-          * - ``0.0%``
-            - 56.3%
-            - -56.3%
-          * - ``0.00%``
-            - 56.34%
-            - -56.34%
-          * - ``#,##0;(#,##0)``
-            - 1,234
-            - (1,234)
-          * - ``#,##0.00;(#,##0.00)``
-            - 1,234.56
-            - (1,234.56)
+.. tag:: olap_measures
 
-       The format string is stored in the cube definition and applied by Excel
-       when the field is placed on a Pivot Table. Leaving the tag out lets
-       Excel apply its default general format.
+   Marks the beginning of a block listing measures.
+
+.. tag:: olap_measures_visible
+
+   Marks the beginning of a block listing measures available to a specific user role.
+
+.. tag:: olap_source
+
+   Marks the beginning of a block defining the source dataset for measures or dimensions. After the tag, you must specify the name of the group of measures or dimension.
+
+.. tag:: olap_user_groups
+
+   Marks the beginning of a block listing security groups assigned to a user role.
+
+.. tag:: olap_user_role
+
+   Marks the beginning of a block defining a user role.
+
+.. tag:: relationship
+
+   Defines the join type for a ``LEFT JOIN`` clause within an :tag:`olap_source` block.
+   Valid values:
+
+   - ``many-to-many`` — join where the dimension table relates to multiple source rows.
+   - ``one-table`` — all measures are in one table; dimension columns are selected directly without a join.
+   - ``part-source`` — the ``LEFT JOIN`` is treated as part of the current ``olap_source`` block rather than a cross-source relationship.
+     Use this to attach extra tables (CTEs, lookup tables) that belong to the same source and should not create a new join path to other sources.
+
+.. tag:: translation
+
+   Defines the localized name of a measure or dimension attribute displayed in Excel.
+   The value must be unique within the cube.
+
+.. tag:: folder
+
+   Overrides the display folder for a field in the Excel field list.
+   By default, fields are grouped under a folder named after their :tag:`olap_source`.
+   Use this tag to place a field into a differently named folder.
+
+   Syntax: ``--folder=`Folder Name```
+
+.. tag:: format
+
+   Defines the display format of a measure in Excel Pivot Tables.
+   The value follows the standard **Excel number format** syntax.
+   A semicolon separates the positive and negative patterns: ``positive;negative``.
+
+   .. list-table::
+      :header-rows: 1
+      :widths: 38 31 31
+
+      * - Format string
+        - Positive value
+        - Negative value
+      * - ``#,##0;-#,##0``
+        - 1,234
+        - -1,234
+      * - ``#,##0.00;-#,##0.00``
+        - 1,234.56
+        - -1,234.56
+      * - ``#,##0.0;-#,##0.0``
+        - 1,234.6
+        - -1,234.6
+      * - ``0%``
+        - 56%
+        - -56%
+      * - ``0.0%``
+        - 56.3%
+        - -56.3%
+      * - ``0.00%``
+        - 56.34%
+        - -56.34%
+      * - ``#,##0;(#,##0)``
+        - 1,234
+        - (1,234)
+      * - ``#,##0.00;(#,##0.00)``
+        - 1,234.56
+        - (1,234.56)
+
+   The format string is stored in the cube definition and applied by Excel
+   when the field is placed on a Pivot Table. Leaving the tag out lets
+   Excel apply its default general format.
 
 .. _unified_example:
 

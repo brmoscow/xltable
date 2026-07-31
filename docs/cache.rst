@@ -57,31 +57,31 @@ setting to what it controls; full descriptions are in
    * - Setting
      - Controls
      - Default
-   * - ``SQL_CACHE_ENABLED``
+   * - :confval:`SQL_CACHE_ENABLED`
      - Shared SQL result cache on/off.
      - true
-   * - ``SQL_CACHE_TTL``
+   * - :confval:`SQL_CACHE_TTL`
      - Lifetime (seconds) of shared SQL results.
      - 600
-   * - ``SQL_CACHE_MAX_MB``
+   * - :confval:`SQL_CACHE_MAX_MB`
      - Total size cap of the shared SQL cache (LRU eviction).
      - 256
-   * - ``SQL_CACHE_MAX_RESULT_MB``
+   * - :confval:`SQL_CACHE_MAX_RESULT_MB`
      - A single SQL result larger than this is not cached.
      - 32
-   * - ``METADATA_CACHE_TTL``
+   * - :confval:`METADATA_CACHE_TTL`
      - Lifetime (seconds) of cube metadata and cached session responses.
      - 600
-   * - ``RESULT_CACHE_MAX_MB``
+   * - :confval:`RESULT_CACHE_MAX_MB`
      - A single session response larger than this is not cached.
      - 16
-   * - ``AUTH_CACHE_TIMEOUT``
+   * - :confval:`AUTH_CACHE_TIMEOUT`
      - Lifetime (seconds) of a cached authorization.
      - 3600
-   * - ``CACHE_BACKEND``
+   * - :confval:`CACHE_BACKEND`
      - Cache storage: ``sqlite`` (one machine) or ``redis`` (cluster).
      - sqlite
-   * - ``REDIS_URL``
+   * - :confval:`REDIS_URL`
      - Redis connection string for ``CACHE_BACKEND: redis``.
      - —
 

@@ -4,7 +4,7 @@ Working with large results: preview and file export
 ====================================================
 
 A Pivot Table is designed for aggregated views, so XLTable caps the size of a
-single pivot result (the ``MAX_CELLS`` setting, 1,000,000 cells by default —
+single pivot result (the :confval:`MAX_CELLS` setting, 100,000 cells by default —
 the same way SSAS limits oversized results). When a layout is too detailed to
 fit — for example, sales by store × product × day for three years — the server
 does not return a truncated table silently. Instead Excel shows a message

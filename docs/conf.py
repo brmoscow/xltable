@@ -25,6 +25,20 @@ extensions = [
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 
+def setup(app):
+    # Linkable entries for the two reference lists: every settings.json
+    # parameter and every cube SQL tag gets a stable anchor
+    # (settings.html#confval-MAX_CELLS, reference.html#tag-olap_measures)
+    # and a cross-reference role usable anywhere in the docs
+    # (:confval:`MAX_CELLS`, :tag:`olap_measures`).
+    app.add_object_type('confval', 'confval',
+                        objname='settings.json parameter',
+                        indextemplate='pair: %s; settings.json parameter')
+    app.add_object_type('tag', 'tag',
+                        objname='SQL tag',
+                        indextemplate='pair: %s; SQL tag')
+
+
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

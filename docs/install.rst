@@ -493,7 +493,7 @@ The admin panel is organized into tabs:
   - **Clear Metadata Cache** — removes cached cube definitions, schema lists
     and query results while keeping users signed in. Use it after editing a
     cube so the new definition is picked up immediately (it is also picked up
-    automatically within ``METADATA_CACHE_TTL``, see :ref:`settings_schema`);
+    automatically within :confval:`METADATA_CACHE_TTL`);
   - **Clear All Cache** — removes all cached session data. Users will need to
     re-authenticate after the cache is cleared.
 - **Resources** — direct links to the XLTable documentation and support.
