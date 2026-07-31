@@ -79,8 +79,8 @@ to share a direct reference to it.
 
    .. code-block:: sql
 
-      times.year as times_year --hierarchy=`Dates`
-      times.quarter as times_quarter --hierarchy=`Dates` --filter_no_parents
+      times.year as times_year --hierarchy=`Dates` --filter_no_parents
+      times.quarter as times_quarter --hierarchy=`Dates`
       times.month as times_month --hierarchy=`Dates`
 
 .. tag:: hide
