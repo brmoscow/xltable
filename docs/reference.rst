@@ -51,6 +51,12 @@ to share a direct reference to it.
    of the cube definition before connecting to data.
    If validation fails, the connection is not established and an error is returned.
 
+   Example — the tag occupies a line of its own, anywhere in the definition:
+
+   .. code-block:: sql
+
+      --definition_check_on
+
 .. tag:: filter_no_parents
 
    Placed on any level of a multi-level hierarchy, changes how the whole
@@ -69,14 +75,38 @@ to share a direct reference to it.
 
    Syntax: ``--filter_no_parents``
 
+   Example — one tag on any level switches the whole hierarchy:
+
+   .. code-block:: sql
+
+      times.year as times_year --hierarchy=`Dates`
+      times.quarter as times_quarter --hierarchy=`Dates` --filter_no_parents
+      times.month as times_month --hierarchy=`Dates`
+
 .. tag:: hide
 
    Hides a measure or dimension from the list of fields in Excel.
+
+   Example — a helper measure used only inside calculated fields:
+
+   .. code-block:: sql
+
+      sum(sales.sum) as sales_sum_sum --translation=`Sales Amount` --hide
 
 .. tag:: hierarchy
 
    After the tag, you must specify the name of the hierarchy to which the field belongs.
    Fields with the same hierarchy name will be grouped together in Excel.
+
+   Syntax: ``--hierarchy=`Hierarchy Name```
+
+   Example — a Year → Quarter → Month hierarchy named ``Dates``:
+
+   .. code-block:: sql
+
+      times.year as times_year --hierarchy=`Dates` --translation=`Year`
+      times.quarter as times_quarter --hierarchy=`Dates` --translation=`Quarter`
+      times.month as times_month --hierarchy=`Dates` --translation=`Month`
 
 .. tag:: olap_access_filters
 
@@ -88,25 +118,76 @@ to share a direct reference to it.
    The filters are enforced on every SQL query the server builds; an explicit
    filter on the same field in a query is intersected with the allowed values.
 
+   Example:
+
+   .. code-block:: sql
+
+      --olap_access_filters
+      regions_name in (`North`, `South`)
+      stores_name in (`Downtown North`, `Downtown South`)
+
 .. tag:: olap_calculated_fields
 
    Marks the beginning of a block containing the list of calculated fields. After the tag, you must specify the name of the folder calculated fields.
 
+   Example:
+
+   .. code-block:: sql
+
+      --olap_cube
+      --olap_calculated_fields Calculated fields
+      (sales_sum_qty/stock_avg_qty) as turnover --translation=`Turnover`
+
 .. tag:: olap_calculated_fields_visible
 
    Marks the beginning of a block listing calculated fields available to a specific user role.
+   The value is a comma-separated list of calculated field aliases, or ``all``.
+
+   Example:
+
+   .. code-block:: sql
+
+      --olap_calculated_fields_visible
+      all
 
 .. tag:: olap_cube
 
    Marks the beginning of a block describing cube properties and metadata.
 
+   Example — the cube-level block holds calculated fields and cube-level Jinja:
+
+   .. code-block:: sql
+
+      --olap_cube
+      --olap_calculated_fields Calculated fields
+      (sales_sum_qty/stock_avg_qty) as turnover --translation=`Turnover`
+
 .. tag:: olap_dimensions
 
    Marks the beginning of a block listing dimension attributes.
 
+   Example:
+
+   .. code-block:: sql
+
+      --olap_source Stores
+      SELECT
+      --olap_dimensions
+       stores.id as store_id --translation=`Store ID`
+      ,stores.name as stores_name --translation=`Store`
+      FROM db.Stores stores
+
 .. tag:: olap_dimensions_visible
 
    Marks the beginning of a block listing dimension attributes available to a specific user role.
+   The value is a comma-separated list of attribute aliases, or ``all``.
+
+   Example:
+
+   .. code-block:: sql
+
+      --olap_dimensions_visible
+      regions_name, stores_name
 
 .. tag:: olap_drillthrough
 
@@ -115,29 +196,97 @@ to share a direct reference to it.
    group in Excel. The value is a comma-separated list of field aliases or
    display names already defined in the cube. See :ref:`drillthrough`.
 
+   Example:
+
+   .. code-block:: sql
+
+      --olap_drillthrough
+      stores_name, models_name, times_day_str, sales_sum_qty
+
 .. tag:: olap_jinja
 
    Marks the beginning of a block with Jinja template logic that modifies SQL scripts.
+
+   Example — rewrite the generated SQL of the source (see :doc:`jinja`):
+
+   .. code-block:: sql
+      :force:
+
+      --olap_jinja
+      {{ sql_text | replace("salesly.date_sale", "addYears(salesly.date_sale, 1)") }}
 
 .. tag:: olap_measures
 
    Marks the beginning of a block listing measures.
 
+   Example:
+
+   .. code-block:: sql
+
+      --olap_source Sales
+      SELECT
+      --olap_measures
+       sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity`
+      ,sum(sales.sum) as sales_sum_sum --translation=`Sales Amount`
+      FROM db.Sales sales
+
 .. tag:: olap_measures_visible
 
    Marks the beginning of a block listing measures available to a specific user role.
+   The value is a comma-separated list of measure aliases, or ``all``.
+
+   Example:
+
+   .. code-block:: sql
+
+      --olap_measures_visible
+      sales_sum_qty, stock_avg_qty
 
 .. tag:: olap_source
 
    Marks the beginning of a block defining the source dataset for measures or dimensions. After the tag, you must specify the name of the group of measures or dimension.
 
+   Example — the value is the rest of the line, so names may contain spaces:
+
+   .. code-block:: sql
+
+      --olap_source Sales last year
+      SELECT
+      --olap_measures
+       sum(salesly.qty) as salesly_sum_qty
+      FROM db.Sales salesly
+
 .. tag:: olap_user_groups
 
    Marks the beginning of a block listing security groups assigned to a user role.
+   The value is a comma-separated list of group names.
+
+   Example:
+
+   .. code-block:: sql
+
+      --olap_user_groups
+      olap_users, finance_users
 
 .. tag:: olap_user_role
 
    Marks the beginning of a block defining a user role.
+
+   Example of a complete role block:
+
+   .. code-block:: sql
+
+      --olap_user_role
+      --olap_user_groups
+      olap_users
+      --olap_calculated_fields_visible
+      all
+      --olap_measures_visible
+      sales_sum_qty, stock_avg_qty
+      --olap_dimensions_visible
+      all
+      --olap_access_filters
+      regions_name in (`North`, `South`)
 
 .. tag:: relationship
 
@@ -149,10 +298,28 @@ to share a direct reference to it.
    - ``part-source`` — the ``LEFT JOIN`` is treated as part of the current ``olap_source`` block rather than a cross-source relationship.
      Use this to attach extra tables (CTEs, lookup tables) that belong to the same source and should not create a new join path to other sources.
 
+   Syntax: ``--relationship=`value```
+
+   Examples:
+
+   .. code-block:: sql
+
+      LEFT JOIN db.Managers managers ON sales.store_id = managers.store_id --relationship=`many-to-many`
+      LEFT JOIN db.Sales sales --relationship=`one-table`
+      LEFT JOIN db.Currencies curr ON sales.currency = curr.id --relationship=`part-source`
+
 .. tag:: translation
 
    Defines the localized name of a measure or dimension attribute displayed in Excel.
    The value must be unique within the cube.
+
+   Syntax: ``--translation=`Display Name```
+
+   Example:
+
+   .. code-block:: sql
+
+      stores.name as stores_name --translation=`Store`
 
 .. tag:: folder
 
@@ -162,11 +329,25 @@ to share a direct reference to it.
 
    Syntax: ``--folder=`Folder Name```
 
+   Example:
+
+   .. code-block:: sql
+
+      stores.name as stores_name --translation=`Store` --folder=`Distribution`
+
 .. tag:: format
 
    Defines the display format of a measure in Excel Pivot Tables.
    The value follows the standard **Excel number format** syntax.
    A semicolon separates the positive and negative patterns: ``positive;negative``.
+
+   Syntax: ``--format=`format string```
+
+   Example:
+
+   .. code-block:: sql
+
+      sum(sales.qty) as sales_sum_qty --format=`#,##0;-#,##0`
 
    .. list-table::
       :header-rows: 1

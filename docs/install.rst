@@ -137,9 +137,11 @@ Run the update script:
 The script will:
 
 - Verify the zip integrity
-- Back up ``settings.json`` and the ``.lic`` license file to ``/usr/olap/backup_<timestamp>/``
+- Back up ``settings.json``, the ``.lic`` license file and the local cubes
+  folder (:confval:`CUBES_FOLDER`, default ``cubes/``) to
+  ``/usr/olap/backup_<timestamp>/``
 - Stop the service and replace the xltable installation
-- Restore the backed-up config and license files
+- Restore the backed-up config, license files and local cubes
 - Set file ownership to the service user from the supervisor config
 - Restart the service and show its status
 

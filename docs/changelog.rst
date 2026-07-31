@@ -6,6 +6,25 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
+Version 2.0.19 — unreleased
+----------------------------
+
+- **Local cube definitions (CUBE_SOURCE=folder)** — the server can now read
+  cube definitions from local ``.sql`` files instead of the
+  ``olap_definition`` table: set ``"CUBE_SOURCE": "folder"`` in
+  ``settings.json`` and put one file per cube into the folder set by
+  ``CUBES_FOLDER`` (default ``cubes/`` — the same folder autogen writes to,
+  so a generated cube is live immediately). The file content is the same
+  definition text as in ``olap_definition`` — files move between the two
+  modes unchanged, including row-level security and syntax checking. Files
+  are re-read on every request: saving a file in any SQL editor makes the
+  change visible in Excel right away. Excel sees a single catalog named
+  ``Cubes``; cube SQL still runs through the configured warehouse
+  connection. Without the new key the server behaves exactly as before.
+  See :confval:`CUBE_SOURCE` and :ref:`cube_definition_storage`.
+
+------------------------------------------------------------
+
 Version 2.0.18 — 2026-07-29
 ----------------------------
 

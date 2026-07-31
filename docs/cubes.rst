@@ -57,9 +57,7 @@ sections below.
 Cube definition storage
 -----------------------
 
-XLTable stores cube definitions in a database table.
-
-Each cube definition is a sequence of SQL scripts describing:
+A cube definition is a sequence of SQL scripts describing:
 
 - measure groups
 - dimensions
@@ -68,16 +66,31 @@ Each cube definition is a sequence of SQL scripts describing:
 - access rules
 - Jinja logic
 
-These scripts are written sequentially and stored in the analytical database in a table named ``olap_definition``.
+XLTable reads definitions from one of two sources, selected by the
+:confval:`CUBE_SOURCE` setting:
 
-Table olap_definition structure:
+**Database table (default).** The scripts are stored in the analytical
+database in a table named ``olap_definition``:
 
 - ID — cube identifier
 - Definition — SQL script defining cube structure
 
+Every database that contains an ``olap_definition`` table appears in Excel
+as a catalog, and every row of the table as a cube.
+
+**Local folder** (``"CUBE_SOURCE": "folder"``). The scripts are plain
+``.sql`` files in the folder set by :confval:`CUBES_FOLDER` (default
+``cubes/``): one file = one cube, the file name without the extension is
+the cube name. The file content is byte-for-byte the same definition text —
+a file moved into the ``olap_definition`` table (or back) keeps working
+unchanged. Excel sees a single catalog named ``Cubes``. Files are re-read
+on every request, so saving a file in any SQL editor makes the change
+visible immediately. In both modes the SQL of the cubes runs through the
+same warehouse connection (:confval:`SERVER_DB` / :confval:`CREDENTIAL_DB`).
+
 When a user connects from Excel:
 
-1. XLTable reads cube definitions from this table
+1. XLTable reads cube definitions from the configured source
 2. Displays available cubes
 3. After selection, XLTable builds the list of measures and dimensions
 4. Excel displays them in Pivot Table fields
@@ -126,10 +139,12 @@ counts, min/max) and assigns a role to every column by rules:
 
 The result is a complete, commented cube definition in a ``.sql`` file
 (``cubes/<table>.sql`` by default; an existing file is never silently
-overwritten). Paste its contents into the ``olap_definition`` table (see
-:ref:`cube_definition_storage`) — the cube is ready to open in Excel, and
-the file is the natural place to keep refining it: rename translations,
-arrange folders, add relationships and access rules.
+overwritten). With ``"CUBE_SOURCE": "folder"`` the cube is already live —
+the server reads the same folder, so it appears in Excel right away. In
+the default database mode, paste the file contents into the
+``olap_definition`` table (see :ref:`cube_definition_storage`). Either
+way, the file is the natural place to keep refining the cube: rename
+translations, arrange folders, add relationships and access rules.
 
 ``--full`` uses exact ``count(distinct)`` instead of the approximate
 aggregate during profiling — more precise classification on the boundary
