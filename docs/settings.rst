@@ -77,7 +77,7 @@ Parameter reference
      affected.
    - ``"free"`` — the free single-user desktop edition. The endpoint binds
      to ``127.0.0.1`` only and accepts requests without a password (Excel
-     connects anonymously to ``http://localhost:<port>``); no license file
+     connects anonymously to ``http://127.0.0.1:<port>``); no license file
      is needed. Cube definitions are always read from the local folder
      (:confval:`CUBE_SOURCE` is forced to ``"folder"``), and the
      :confval:`USERS` / :confval:`USER_GROUPS` / :confval:`ADMIN_GROUPS`
@@ -552,6 +552,11 @@ Parameter reference
    in the browser (the export status page). When not set, the address of
    the incoming request is used — set this explicitly when the server is
    behind a proxy or reachable by several names.
+
+   Avoid ``localhost`` in this value — on Windows it resolves to IPv6
+   first and every request waits ~2 s for the fallback to IPv4; use
+   ``127.0.0.1`` or a real host name instead (the server logs a warning
+   at startup if ``localhost`` is configured here).
 
    Example:
 

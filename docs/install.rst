@@ -201,10 +201,12 @@ Installation
 
       C:\xltable\main.exe
 
-4. Open the admin panel in your browser at ``http://localhost:5000/admin``
+4. Open the admin panel in your browser at ``http://127.0.0.1:5000/admin``
    and activate the license (see :ref:`obtaining_license`)
 
-5. In Excel, connect to the server at ``http://localhost:5000``
+5. In Excel, connect to the server at ``http://127.0.0.1:5000``
+   (prefer ``127.0.0.1`` over ``localhost`` — see the note in
+   :doc:`excel`)
 
 Connecting from other computers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -322,7 +324,7 @@ In **IIS Manager → Sites**, select **Default Web Site** (or create a dedicated
 
 **10. Verify**
 
-Open the admin panel in a browser at ``http://localhost/admin``.
+Open the admin panel in a browser at ``http://127.0.0.1/admin``.
 
 In Excel, connect to the server at ``http://<server-name>/``.
 

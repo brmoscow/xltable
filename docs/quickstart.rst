@@ -105,7 +105,7 @@ Open the admin panel in your browser:
 
 .. code-block:: text
 
-   http://localhost:5000/admin
+   http://127.0.0.1:5000/admin
 
 Log in as a user whose group is listed in ``ADMIN_GROUPS``
 (``user1`` in the example above).
@@ -132,7 +132,9 @@ Step 6: Connect Excel
 ----------------------
 
 1. Open Excel and go to **Data → Get Data → From Database → From Analysis Services**.
-2. Enter the server URL: ``http://localhost:5000``
+2. Enter the server URL: ``http://127.0.0.1:5000``
+   (prefer ``127.0.0.1`` over ``localhost`` — the latter adds ~2 s per
+   request on Windows, see the note in :doc:`excel`)
 3. Enter the username and password configured in ``settings.json``.
 4. Select the ``myOLAPcube`` cube.
 5. Click **Finish** — your Pivot Table is ready.
