@@ -6,7 +6,7 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
-Version 2.0.19 — unreleased
+Version 2.0.19 — 2026-08-05
 ----------------------------
 
 - **MCP server for AI assistants** — XLTable now speaks the Model Context

@@ -11,7 +11,7 @@ import os
 project = 'XLTable'
 copyright = '2026, BR Systems, Astana, Kazakhstan'
 author = 'BR Systems'
-release = '2.0.18'
+release = '2.0.19'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

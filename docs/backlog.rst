@@ -56,47 +56,47 @@ in 2026.
      - Done (2.0.15)
 
    * - 9
+     - Semantic layer for AI agents
+     - Expose the XLTable semantic layer (measures, dimensions, hierarchies, access rules)
+       as a structured interface consumable by AI agents and LLM-based tools.
+     - Done (2.0.19)
+
+   * - 10
+     - Free tier with limited functionality
+     - A free edition of XLTable with a restricted feature set for evaluation and small-scale use.
+     - Done (2.0.19)
+
+   * - 11
      - AI assistant for cube design
      - An AI-powered assistant that helps developers design cube structure,
        suggest measure and dimension definitions, and detect common mistakes.
      - Done (Beta)
 
-   * - 10
-     - Semantic layer for AI agents
-     - Expose the XLTable semantic layer (measures, dimensions, hierarchies, access rules)
-       as a structured interface consumable by AI agents and LLM-based tools.
-     - Done (Beta)
-
-   * - 11
+   * - 12
      - Native data types in dimension attributes
      - Currently all dimension attributes are cast to string. Planned support for integer and date types,
        allowing dimension values to be used in Excel with their native format.
      -
 
-   * - 12
+   * - 13
      - Sort by another field
      - Ability to sort a dimension attribute by the values of a different field
        (for example, sort month names by month number).
      -
 
-   * - 13
+   * - 14
      - Slicers support
      - Native support for Excel slicers connected to XLTable cube dimensions.
      -
 
-   * - 14
+   * - 15
      - DAX support
      - Support for DAX query language alongside MDX for cube interaction.
      -
 
-   * - 15
+   * - 16
      - Power BI connection
      - Support for connecting Power BI to XLTable as a data source.
-     -
-
-   * - 16
-     - Free tier with limited functionality
-     - A free edition of XLTable with a restricted feature set for evaluation and small-scale use.
      -
 
    * - 17
