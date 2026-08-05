@@ -1,5 +1,5 @@
-AI assistants (MCP)
-===================
+MCP server
+==========
 
 XLTable has a built-in `MCP <https://modelcontextprotocol.io>`_ server: an AI
 assistant such as Claude can list your cubes, inspect their dimensions and

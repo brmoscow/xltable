@@ -1,5 +1,5 @@
-AI assistants
-=============
+AI-friendly documentation
+=========================
 
 Asking ChatGPT, Claude or another AI assistant about XLTable? Don't paste
 links to individual documentation pages — most assistants only read the one

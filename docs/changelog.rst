@@ -24,7 +24,7 @@ Version 2.0.19 — 2026-08-05
 - **Free desktop edition (EDITION=free)** — a new ``"EDITION": "free"`` key
   in ``settings.json`` switches the server into the free single-user
   desktop mode: the endpoint listens on ``127.0.0.1`` only, Excel connects
-  to ``http://localhost:<port>`` anonymously (no password), no license
+  to ``http://127.0.0.1:<port>`` anonymously (no password), no license
   file is required, and cube definitions are always read from the local
   cube folder. Requests coming through a forwarded port (non-local
   ``Host`` / ``Origin``) are rejected — the free edition works only on the
