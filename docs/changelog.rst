@@ -9,6 +9,18 @@ Stay up to date with the latest releases by following us on
 Version 2.0.19 — unreleased
 ----------------------------
 
+- **MCP server for AI assistants** — XLTable now speaks the Model Context
+  Protocol: an AI assistant can list cubes, inspect dimensions and measures
+  and run aggregated pivot queries through the same live instance, cubes and
+  cache that serve Excel. Claude Desktop connects via a one-click Desktop
+  Extension package (``xltable-<version>.mcpb``) that launches the built-in
+  stdio bridge ``main.exe --mcp-bridge`` — no Node.js, no manual JSON
+  editing; other MCP clients can use the bridge or the Streamable HTTP
+  endpoint ``/mcp`` directly. The assistant works only through cubes — raw
+  SQL access to the warehouse is never exposed. Available in the free
+  desktop edition; the server edition endpoint is under development.
+  See :doc:`mcp`.
+
 - **Free desktop edition (EDITION=free)** — a new ``"EDITION": "free"`` key
   in ``settings.json`` switches the server into the free single-user
   desktop mode: the endpoint listens on ``127.0.0.1`` only, Excel connects

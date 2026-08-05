@@ -97,7 +97,7 @@ Why XLTable?
   SSAS/XMLA workflow, no SQL, no retraining
 - Centralized semantic layer: dimensions, measures, hierarchies, calculated fields
 - One model, two ways to explore: the same cube answers Excel Pivot Tables
-  and AI assistants (MCP connector)
+  and AI assistants (:doc:`MCP connector <mcp>`)
 - Code-first: cube definitions are plain SQL files — keep them in Git, review
   changes in pull requests, deploy through your CI/CD flow
 - Fine-grained access control down to rows and members, Active Directory / LDAP integration
@@ -145,6 +145,13 @@ documentation as a single file — see :doc:`ai`.
 
    excel
    export
+
+.. toctree::
+   :maxdepth: 1
+   :caption: AI assistants
+   :hidden:
+
+   mcp
 
 .. toctree::
    :maxdepth: 1
