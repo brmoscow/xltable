@@ -25,17 +25,27 @@ Tools
    * - Tool
      - What it does
    * - ``list_cubes``
-     - Lists the cubes available on the server (the contents of the local
-       cube folder).
+     - Lists the cubes available on the server (the free edition reads them
+       from the local cube folder).
    * - ``describe_cube``
      - Returns the cube schema in an assistant-friendly form: dimensions with
        their levels, and measures.
    * - ``query_cube``
      - Runs an aggregated pivot query: group by dimension levels, aggregate
        measures, filter rows before aggregation, limit the result size.
+   * - ``list_databases``
+     - Server edition with ``CUBE_SOURCE=database`` only: lists the databases
+       (cube catalogs) of the warehouse.
 
 Security roles from the cube definition apply on the MCP path the same way
 they apply in Excel.
+
+When the server reads cube definitions from the ``olap_definition`` table
+(``CUBE_SOURCE=database``), the tools also accept an optional ``database``
+argument — the assistant takes the name from ``list_databases``. If the
+warehouse has a single database, it is selected automatically and the
+argument can be omitted. In the free edition there is always exactly one
+catalog (the cube folder), so neither the tool nor the argument appears.
 
 Claude Desktop: one-click extension
 -----------------------------------
@@ -101,6 +111,11 @@ Everything else is enforced by the engine, exactly as on the Excel path:
 - **Licensing.** The MCP connection occupies the user's named seat — the
   same seat as their Excel connection (one name = one seat), so connecting
   an assistant does not consume an extra license seat.
+- **Cube catalogs.** Both cube sources work: the watched folder
+  (``CUBE_SOURCE=folder``) and the ``olap_definition`` table
+  (``CUBE_SOURCE=database``). With the database source the tools gain the
+  optional ``database`` argument and the ``list_databases`` tool (see
+  `Tools`_).
 
 .. warning::
 

@@ -22,7 +22,10 @@ Version 2.0.19 — 2026-08-05
   the server edition ``/mcp`` requires Basic authentication with a user
   from ``USERS`` (same accounts and session cache as the Excel endpoint),
   row-level security and the named license seat of that user apply exactly
-  as in Excel. See :doc:`mcp`.
+  as in Excel. Cubes can come from the local folder or from the
+  ``olap_definition`` catalog — with the database source the tools accept
+  an optional ``database`` argument and a ``list_databases`` tool appears.
+  See :doc:`mcp`.
 
 - **Free desktop edition (EDITION=free)** — a new ``"EDITION": "free"`` key
   in ``settings.json`` switches the server into the free single-user
