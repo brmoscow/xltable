@@ -78,9 +78,10 @@ Parameter reference
    - ``"free"`` — the free single-user desktop edition. The endpoint binds
      to ``127.0.0.1`` only and accepts requests without a password (Excel
      connects anonymously to ``http://127.0.0.1:<port>``); no license file
-     is needed. The built-in :doc:`MCP server <mcp>` for AI assistants is
-     available in this edition. Cube definitions are always read from the
-     local folder
+     is needed. The built-in :doc:`MCP server <mcp>` for AI assistants
+     works here anonymously (in the server edition it requires Basic
+     authentication — see :doc:`mcp`). Cube definitions are always read
+     from the local folder
      (:confval:`CUBE_SOURCE` is forced to ``"folder"``), and the
      :confval:`USERS` / :confval:`USER_GROUPS` / :confval:`ADMIN_GROUPS`
      keys are not required. Requests with a non-local ``Host`` or
