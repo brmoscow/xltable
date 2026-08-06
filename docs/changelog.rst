@@ -17,9 +17,12 @@ Version 2.0.19 — 2026-08-05
   stdio bridge ``main.exe --mcp-bridge`` — no Node.js, no manual JSON
   editing; other MCP clients can use the bridge or the Streamable HTTP
   endpoint ``/mcp`` directly. The assistant works only through cubes — raw
-  SQL access to the warehouse is never exposed. Available in the free
-  desktop edition; the server edition endpoint is under development.
-  See :doc:`mcp`.
+  SQL access to the warehouse is never exposed. Available in both editions:
+  the free desktop edition connects anonymously on the local machine; in
+  the server edition ``/mcp`` requires Basic authentication with a user
+  from ``USERS`` (same accounts and session cache as the Excel endpoint),
+  row-level security and the named license seat of that user apply exactly
+  as in Excel. See :doc:`mcp`.
 
 - **Free desktop edition (EDITION=free)** — a new ``"EDITION": "free"`` key
   in ``settings.json`` switches the server into the free single-user

@@ -11,11 +11,9 @@ The assistant works only through cubes: it sends cube, dimension and measure
 names, and XLTable builds and executes the SQL. Raw SQL access to the
 warehouse is never exposed to the assistant.
 
-.. note::
-
-   MCP connectivity is currently available in the free desktop edition
-   (``EDITION=free``). The server-edition endpoint with Basic authentication,
-   licensing seats and row-level security is under development.
+MCP connectivity is available in both editions: the free desktop edition
+connects anonymously on the local machine, the server edition requires the
+user's XLTable credentials — see `Server edition`_ below.
 
 Tools
 -----
@@ -81,9 +79,51 @@ no client-specific dependencies:
 
 - **stdio clients** — configure the command ``main.exe --mcp-bridge``.
   Options: ``--url`` overrides the endpoint address, ``--timeout`` the HTTP
-  timeout in seconds.
+  timeout in seconds; ``--user`` / ``--password`` add server-edition
+  credentials (see below).
 - **HTTP clients** — point the client directly at
   ``http://127.0.0.1:<port>/mcp`` (Streamable HTTP, JSON responses).
+
+Server edition
+--------------
+
+In the server edition the ``/mcp`` endpoint requires HTTP Basic
+authentication with a user from ``USERS`` in ``settings.json`` — the same
+accounts, session cache and ``AUTH_CACHE_TIMEOUT`` as the Excel (XMLA)
+endpoint. A request without valid credentials is answered with
+``401 Unauthorized``.
+
+Everything else is enforced by the engine, exactly as on the Excel path:
+
+- **Row-level security.** Cube security roles are applied by user name and
+  groups: the assistant sees the same cubes, fields and rows the user sees
+  in Excel — nothing more.
+- **Licensing.** The MCP connection occupies the user's named seat — the
+  same seat as their Excel connection (one name = one seat), so connecting
+  an assistant does not consume an extra license seat.
+
+.. warning::
+
+   Basic authentication sends the password with every request. Never expose
+   ``/mcp`` over the network by plain HTTP — publish it through an HTTPS
+   reverse proxy (IIS or nginx), the same pattern used for the XMLA
+   endpoint (see :doc:`install`). Plain HTTP is acceptable only on
+   ``127.0.0.1``.
+
+Connecting to a server:
+
+- **Claude Desktop** — install the same ``.mcpb`` extension and fill in the
+  optional fields: **Server URL** (``https://your-server/mcp``), **Server
+  user** and **Server password**. Claude Desktop stores the password in the
+  OS keychain and hands it to the bridge through an environment variable —
+  it is kept out of both the config file and the process command line.
+- **stdio clients** — ``main.exe --mcp-bridge --url https://your-server/mcp
+  --user <name> --password <password>``; the password can also be supplied
+  via the ``XLTABLE_MCP_PASSWORD`` environment variable instead of the
+  command line.
+- **HTTP clients** (server platforms, MCP Inspector, …) — send a standard
+  ``Authorization: Basic`` header with each request to
+  ``https://your-server/mcp``.
 
 Privacy
 -------
