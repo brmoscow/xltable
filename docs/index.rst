@@ -43,14 +43,7 @@ while business users keep working in the tool they know best.
       :link-type: doc
 
       Measures, dimensions, hierarchies, security roles and
-      drillthrough — all defined in plain SQL.
-
-   .. grid-item-card:: :octicon:`code;1em` Jinja templating
-      :link: jinja
-      :link-type: doc
-
-      Adapt the generated SQL dynamically: row-level security,
-      relative dates, conditional logic.
+      drillthrough — plain SQL plus :doc:`Jinja templating <jinja>`.
 
    .. grid-item-card:: :octicon:`table;1em` Connecting Excel
       :link: excel
@@ -58,6 +51,13 @@ while business users keep working in the tool they know best.
 
       Connect Pivot Tables over XMLA, authentication modes,
       data refresh, drill through and file export.
+
+   .. grid-item-card:: :octicon:`hubot;1em` AI assistants (MCP)
+      :link: mcp
+      :link-type: doc
+
+      Ask questions in plain language — Claude and other MCP
+      clients answer from the same cubes as Excel.
 
 Supported data sources
 ----------------------

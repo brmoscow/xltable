@@ -55,6 +55,17 @@ No Node.js or manual JSON editing is required.
 4. Ask Claude a question about your data — the XLTable tools appear
    automatically. A good first prompt: *“What cubes do I have?”*
 
+.. note::
+
+   Claude Desktop installed from the **Microsoft Store** may fail to install
+   any extension with a *“Private dir leaf redirects (junction/substitute-name
+   plant)”* error — a quirk of its sandboxed file system, not of the XLTable
+   package. Workaround: create two folders manually and retry —
+   ``%APPDATA%\Claude\Claude Extensions`` and
+   ``%APPDATA%\Claude\Claude Extensions Settings``. The regular Claude Desktop
+   installer from `claude.ai/download <https://claude.ai/download>`_ is not
+   affected.
+
 Claude Desktop launches ``main.exe --mcp-bridge`` in the background: a thin
 stdio bridge that forwards the MCP session to the running server at
 ``http://127.0.0.1:<port>/mcp`` (the port comes from ``SERVER_PORT`` in

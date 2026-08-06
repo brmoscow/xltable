@@ -182,7 +182,7 @@ and indicates which of them are available in XLTable.
        (see :ref:`excel_export`)
      -
      - ✓
-   * - AI assistants connectivity (MCP)
+   * - AI assistants connectivity (built-in :doc:`MCP server <mcp>`)
      -
      - ✓
    * - **Administration**
