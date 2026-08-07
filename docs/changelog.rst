@@ -25,7 +25,9 @@ Version 2.0.19 — 2026-08-05
   as in Excel. Cubes can come from the local folder or from the
   ``olap_definition`` catalog — with the database source the tools accept
   an optional ``database`` argument and a ``list_databases`` tool appears.
-  See :doc:`mcp`.
+  Platforms whose authorization field only accepts Bearer tokens (e.g.
+  Yandex AI Studio) can pass the same credentials as
+  ``Bearer <base64 of user:password>``. See :doc:`mcp`.
 
 - **Free desktop edition (EDITION=free)** — a new ``"EDITION": "free"`` key
   in ``settings.json`` switches the server into the free single-user

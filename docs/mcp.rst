@@ -139,6 +139,10 @@ Connecting to a server:
 - **HTTP clients** (server platforms, MCP Inspector, …) — send a standard
   ``Authorization: Basic`` header with each request to
   ``https://your-server/mcp``.
+- **Platforms whose authorization field only accepts Bearer tokens**
+  (e.g. Yandex AI Studio) — pass the same credentials packed as a token:
+  ``Authorization: Bearer <base64 of user:password>``. This is the same
+  account checked by the same code — only the header format differs.
 
 Privacy
 -------
