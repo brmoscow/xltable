@@ -150,7 +150,9 @@ Parameter reference
 
    Enables debug logging of XLTable operations (MDX, generated SQL, Jinja
    diffs, result preview). Log files will be located in the folder
-   ``...\xltable\log``.
+   ``...\xltable\log``. Applies to MCP requests too: each request to
+   ``/mcp`` leaves a JSON-RPC request/response pair in ``log`` in addition
+   to the SQL and context dumps (see :doc:`mcp`).
 
    Example:
 
@@ -165,7 +167,8 @@ Parameter reference
    Dumps every raw XMLA request and response to a separate file in the
    ``log`` folder. Intended only for diagnosing Excel/XMLA protocol issues:
    a single Excel action generates dozens of files. Independent of
-   :confval:`WRITE_LOG`.
+   :confval:`WRITE_LOG`. MCP request/response dumps are included as well,
+   so protocol dumps cover both paths.
 
    Example:
 

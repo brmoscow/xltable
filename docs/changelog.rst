@@ -27,7 +27,13 @@ Version 2.0.19 — 2026-08-05
   an optional ``database`` argument and a ``list_databases`` tool appears.
   Platforms whose authorization field only accepts Bearer tokens (e.g.
   Yandex AI Studio) can pass the same credentials as
-  ``Bearer <base64 of user:password>``. See :doc:`mcp`.
+  ``Bearer <base64 of user:password>``. For administrators the MCP path is
+  as observable as the Excel path: with ``WRITE_LOG`` enabled each MCP
+  request leaves request/response, SQL and context dumps in ``log`` and
+  prints the familiar ``REQUEST``/``CONTEXT``/``SQL``/``RESULT`` blocks to
+  the console; MCP queries share the SQL result cache and the metadata
+  cache policy with Excel — a slice computed by the assistant opens
+  instantly in Excel and vice versa. See :doc:`mcp`.
 
 - **Free desktop edition (EDITION=free)** — a new ``"EDITION": "free"`` key
   in ``settings.json`` switches the server into the free single-user

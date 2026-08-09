@@ -144,6 +144,36 @@ Connecting to a server:
   ``Authorization: Bearer <base64 of user:password>``. This is the same
   account checked by the same code — only the header format differs.
 
+Logging and cache
+-----------------
+
+For an administrator the MCP path behaves exactly like the Excel (XMLA)
+path — same debug output, same log artifacts, same caches:
+
+- **Console.** With :confval:`WRITE_LOG` enabled, every ``query_cube`` call
+  prints the familiar debug blocks to the server console: ``REQUEST``
+  (catalog and cube), ``PIVOT SPEC`` (the pivot specification sent by the
+  assistant — the MCP counterpart of the ``MDX`` block), ``CONTEXT``,
+  ``SQL`` and ``RESULT``.
+- **Log files.** With :confval:`WRITE_LOG` enabled, each MCP request leaves
+  the same artifacts in the ``log`` folder as an XMLA request: a
+  request/response pair named
+  ``<timestamp>_req_<user>_<id>.txt`` / ``..._res_<user>_<id>.txt`` (the
+  body is the JSON-RPC message instead of XML) plus the generated SQL and
+  the Jinja context dump. A failed SQL query writes an ``error_sql`` dump
+  regardless of ``WRITE_LOG``, as on the Excel path. MCP request/response
+  dumps are also written when :confval:`DUMP_XMLA` is enabled, so protocol
+  dumps cover both paths.
+- **Shared SQL cache.** MCP queries go through the same SQL result cache as
+  Excel, keyed by the generated SQL text — a slice computed for the
+  assistant opens instantly in Excel and vice versa (for example, the query
+  that fills an Excel filter drop-down and a ``query_cube`` call for the
+  same dimension level share one cache entry).
+- **Metadata cache.** Cube definitions are cached with the same
+  :confval:`METADATA_CACHE_TTL` policy as on the Excel path; with the
+  watched-folder cube source the cache is bypassed, so an edited ``.sql``
+  cube is visible to the assistant immediately (hot reload).
+
 Privacy
 -------
 
