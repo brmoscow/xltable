@@ -20,9 +20,13 @@ Version 2.0.19 — 2026-08-05
   SQL access to the warehouse is never exposed. Available in both editions:
   the free desktop edition connects anonymously on the local machine; in
   the server edition ``/mcp`` requires Basic authentication with a user
-  from ``USERS`` (same accounts and session cache as the Excel endpoint),
-  row-level security and the named license seat of that user apply exactly
-  as in Excel. Cubes can come from the local folder or from the
+  from ``USERS`` (same accounts and session cache as the Excel endpoint)
+  and row-level security applies exactly as in Excel. MCP access is
+  licensed separately: the new ``max_mcp_users`` license field defines its
+  own pool of named MCP seats, additional to the regular Excel seats (a
+  license without the field disables MCP with a clear error while Excel
+  keeps working; the admin panel shows and releases MCP seats in a
+  dedicated section of the License tab). Cubes can come from the local folder or from the
   ``olap_definition`` catalog — with the database source the tools accept
   an optional ``database`` argument and a ``list_databases`` tool appears.
   Platforms whose authorization field only accepts Bearer tokens (e.g.
