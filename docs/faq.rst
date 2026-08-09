@@ -355,11 +355,11 @@ reached" message in Excel; existing users are unaffected. The admin panel
 shows who occupies the seats and when each user was last active. To add
 seats, contact the vendor for an updated license file.
 
-MCP access (AI assistants) is licensed separately: the ``max_mcp_users``
-license field defines its own pool of named MCP seats, additional to the
-regular ones — using MCP does not consume the user's Excel seat and vice
-versa. A license without the field means MCP is disabled while Excel keeps
-working. See :doc:`mcp` for details.
+MCP access (AI assistants) is a license feature flag (``"mcp": true``), not
+a separate seat count: when the license includes MCP, seats are still counted
+per named user regardless of the interface — a user connecting from both
+Excel and an AI assistant occupies one seat. A license without the flag means
+MCP is disabled while Excel keeps working. See :doc:`mcp` for details.
 
 Is a trial installation on Microsoft Windows available? Why would a Windows server be needed?
 -----------------------------------------------------------------------------------------------

@@ -108,8 +108,10 @@ Everything else is enforced by the engine, exactly as on the Excel path:
 - **Row-level security.** Cube security roles are applied by user name and
   groups: the assistant sees the same cubes, fields and rows the user sees
   in Excel — nothing more.
-- **Licensing.** MCP access is licensed separately from Excel access and has
-  its own pool of named seats — see `MCP licensing`_ below.
+- **Licensing.** MCP availability is a license feature flag; named seats are
+  counted per user, whatever interface the user comes through — the MCP
+  connection occupies the same seat as the user's Excel connection (one name
+  = one seat). See `MCP licensing`_ below.
 - **Cube catalogs.** Both cube sources work: the watched folder
   (``CUBE_SOURCE=folder``) and the ``olap_definition`` table
   (``CUBE_SOURCE=database``). With the database source the tools gain the
@@ -146,30 +148,22 @@ Connecting to a server:
 MCP licensing
 -------------
 
-In the server edition MCP access is a separately licensed feature, controlled
-by the ``max_mcp_users`` field of the license — the number of **named users**
-allowed to use MCP:
+In the server edition MCP availability is controlled by the boolean ``mcp``
+field of the license — a feature flag, not a separate seat count:
 
-- **License without the field (or with 0).** MCP is disabled: every request
-  to ``/mcp`` — even with valid credentials — is answered with a clear
-  JSON-RPC error *“MCP is not included in your license”*. Excel/XMLA access
-  is not affected in any way. If your license predates MCP support, contact
-  the vendor for an updated license file and upload it on the **License**
-  tab of the admin panel.
-- **License with ``max_mcp_users: N``.** Up to ``N`` distinct users can use
-  MCP. An MCP seat is assigned to a user on their first MCP request; repeated
-  requests of the same user reuse the same seat. User ``N+1`` receives a
-  clear *“MCP user limit reached”* error — their Excel access keeps working.
-- **Separate seat pool.** MCP seats live in their own registry, in addition
-  to the regular named seats: using MCP does not consume the user's Excel
-  seat and vice versa. The registry survives cache clears and server
-  restarts, exactly like the regular seat registry.
-- **Seat release.** An MCP seat is freed automatically after the same
-  inactivity period as regular seats (``seat_release_days``, 30 days by
-  default), or manually on the **License** tab of the admin panel — the
-  **MCP user seats** section shows who occupies the seats and offers a
-  **Release** button. Releasing an MCP seat does not sign the user out of
-  Excel: the MCP seat is additional, so only their MCP access is affected.
+- **License without the flag (or with ``false``).** MCP is disabled: every
+  request to ``/mcp`` — even with valid credentials — is answered with a
+  clear JSON-RPC error *“MCP is not included in your license”*. Excel/XMLA
+  access is not affected in any way. If your license predates MCP support,
+  contact the vendor for an updated license file and upload it on the
+  **License** tab of the admin panel.
+- **License with ``"mcp": true``.** Every licensed user may use MCP.
+- **One seat pool, counted per user.** Named seats are not counted per
+  interface: a user occupies one seat whether they connect from Excel, from
+  an AI assistant via MCP, or both — one name = one seat. The seat is
+  assigned by the first data query, exactly as on the Excel path, and is
+  shown and released in the usual **Named user seats** section of the admin
+  panel. Connecting an assistant does not consume an extra seat.
 
 The free edition has no license at all, and MCP works there without any of
 the above — this section applies to the server edition only.
