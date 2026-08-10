@@ -9,6 +9,16 @@ Stay up to date with the latest releases by following us on
 Version 2.0.19 — 2026-08-05
 ----------------------------
 
+- **Fixed: unrelated errors no longer reported as cube syntax problems** —
+  when a cube definition carried only warnings (e.g. ``--olap_drillthrough``
+  referencing compound-aggregate measures or unknown fields), any unexpected
+  processing error during a query was masked by the *"There are syntax
+  problems in the cube definition"* message listing those warnings — looking
+  like a random cube error that went away in a new workbook. Now the syntax
+  problem list is shown only when the definition actually contains errors;
+  otherwise the real error message is returned to Excel, and it is always
+  written to the server log with a full traceback for diagnostics.
+
 - **MCP server for AI assistants** — XLTable now speaks the Model Context
   Protocol: an AI assistant can list cubes, inspect dimensions and measures
   and run aggregated pivot queries through the same live instance, cubes and
