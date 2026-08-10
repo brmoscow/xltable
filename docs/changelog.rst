@@ -49,6 +49,22 @@ Version 2.0.19 — 2026-08-05
   cache policy with Excel — a slice computed by the assistant opens
   instantly in Excel and vice versa. See :doc:`mcp`.
 
+- **Cubes can be created from the chat** — with the folder cube source
+  (``CUBE_SOURCE=folder``) the MCP server offers two more tools:
+  ``list_warehouse_tables`` lists the tables and views of the connected
+  warehouse (names only, filtered by a substring — the chat counterpart of
+  the autogen wizard's table filter), and ``autogen_cube`` generates a cube
+  from a single table with the same engine as ``main.exe autogen`` — the
+  wizard, the direct call and the assistant are three fronts over one
+  generator. The new ``.sql`` file lands in the cube folder and is live
+  immediately: *“I have a table sales — make a cube and show me sales by
+  month”* works in one chat, no console needed. An existing cube file is
+  never overwritten silently — without an explicit ``overwrite=true`` the
+  call fails and nothing changes (and MCP clients ask for confirmation
+  before running the tool, since it writes). Open Pivot Tables keep the old
+  cube metadata until refreshed — the assistant reminds the user to press
+  **Refresh**. See :ref:`mcp_create`.
+
 - **The assistant works alongside Excel** — because Excel and MCP share one
   live engine, the assistant sees what the user is looking at: the new
   ``get_pivot_context`` tool returns the layout of the user's last Pivot

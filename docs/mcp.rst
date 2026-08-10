@@ -38,6 +38,14 @@ Tools
    * - ``get_pivot_context``
      - Returns the layout of the last Pivot Table the user queried from
        Excel — see `Working alongside Excel`_.
+   * - ``list_warehouse_tables``
+     - Folder cube source only: lists the tables and views of the connected
+       warehouse — names only, optionally filtered by a substring. The chat
+       counterpart of the autogen wizard's table-filter step.
+   * - ``autogen_cube``
+     - Folder cube source only: generates a cube from a single warehouse
+       table with the same engine as ``main.exe autogen`` — see
+       `Creating cubes from the chat`_.
    * - ``list_databases``
      - Server edition with ``CUBE_SOURCE=database`` only: lists the databases
        (cube catalogs) of the warehouse.
@@ -154,6 +162,50 @@ teammates rather than parallel worlds:
 The reverse direction is deliberately manual: XMLA is a pull protocol, so the
 assistant cannot push a layout *into* Excel — it can only tell the user which
 fields to drag where.
+
+.. _mcp_create:
+
+Creating cubes from the chat
+----------------------------
+
+*“I have a table sales — make a cube and show me sales by month”* works in a
+single chat, no console needed. Two tools cover it when cubes are read from
+the cube folder (``CUBE_SOURCE=folder`` — the free edition and folder-based
+servers):
+
+- ``list_warehouse_tables`` lists the tables and views of the connected
+  warehouse, optionally narrowed by a case-insensitive substring — the same
+  step as the table filter of the console wizard, for the *“I don't remember
+  what the table is called”* moment. Only names are exposed: no data, no raw
+  SQL.
+- ``autogen_cube`` takes an exact table name from that list and runs the same
+  :ref:`autogen engine <cube_autogen>` that powers ``main.exe autogen``:
+  profile the table, classify the columns into dimensions, date hierarchies
+  and measures, write a ``.sql`` cube file into the cube folder. The server
+  picks the file up immediately, so the new cube can be queried with
+  ``query_cube`` — and refined by hand later, like any generated cube.
+
+Two safety rules hold on this path:
+
+- **An existing cube file is never overwritten silently.** It may have been
+  edited by hand; without ``overwrite=true`` the call fails with an explicit
+  message and changes nothing — the decision to replace a cube is always
+  yours, made in the chat. ``autogen_cube`` is also marked as a *writing*
+  tool, so MCP clients such as Claude Desktop ask for confirmation before
+  running it.
+- **The table name must match the warehouse listing exactly.** The assistant
+  can only pick tables that ``list_warehouse_tables`` returned — the same
+  boundary as everywhere else in the MCP surface: names in, SQL stays on the
+  server.
+
+An Excel Pivot Table that is already open keeps the previous cube metadata
+until it is refreshed: after creating or overwriting a cube, press **Refresh**
+in the Pivot Table (the assistant will remind you). New Excel connections and
+``query_cube`` see the cube immediately.
+
+When cube definitions live in the ``olap_definition`` table
+(``CUBE_SOURCE=database``), the creation tools are not offered — the autogen
+engine writes files, and there is no cube folder to write to.
 
 Claude Desktop: one-click extension
 -----------------------------------

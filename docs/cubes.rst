@@ -125,6 +125,11 @@ The wizard lists the tables of the configured database, lets you narrow the
 list by a substring and pick a table by number, then shows how each column
 was classified — and why — before asking for confirmation.
 
+The console wizard and the direct call are two fronts over one generation
+engine. The third front is an AI assistant: with the :doc:`MCP server <mcp>`
+connected, *“make a cube from the sales table”* runs the same engine from the
+chat — see :ref:`Creating cubes from the chat <mcp_create>`.
+
 Autogen makes one light profiling pass over the table (row count, distinct
 counts, min/max) and assigns a role to every column by rules:
 
