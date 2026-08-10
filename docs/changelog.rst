@@ -39,6 +39,20 @@ Version 2.0.19 — 2026-08-05
   cache policy with Excel — a slice computed by the assistant opens
   instantly in Excel and vice versa. See :doc:`mcp`.
 
+- **The assistant works alongside Excel** — because Excel and MCP share one
+  live engine, the assistant sees what the user is looking at: the new
+  ``get_pivot_context`` tool returns the layout of the user's last Pivot
+  Table query (cube, row/column levels, measures, filters) together with a
+  ready-made ``query_cube`` specification that reproduces the same slice —
+  for prompts like *“explain this number”* or *“continue my analysis”*.
+  The context is per user, survives closing the workbook, and is withheld
+  with an explicit note if the cube or its fields have since become
+  unavailable to the user (edited cube, changed security roles). Pressing
+  **Refresh** in Excel now also marks the shared SQL cache as stale for the
+  assistant, so after a refresh ``query_cube`` re-reads the warehouse
+  instead of answering from a pre-refresh cache entry. See
+  :ref:`mcp_pivot_context`.
+
 - **Semantics for AI agents in the cube definition** — four optional tags let
   the cube author describe the model to an assistant instead of leaving it to
   guess from a bare schema: :tag:`olap_description` (what the cube is, its

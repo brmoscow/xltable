@@ -35,6 +35,9 @@ Tools
    * - ``query_cube``
      - Runs an aggregated pivot query: group by dimension levels, aggregate
        measures, filter rows before aggregation, limit the result size.
+   * - ``get_pivot_context``
+     - Returns the layout of the last Pivot Table the user queried from
+       Excel — see `Working alongside Excel`_.
    * - ``list_databases``
      - Server edition with ``CUBE_SOURCE=database`` only: lists the databases
        (cube catalogs) of the warehouse.
@@ -113,6 +116,44 @@ guessing ``North Region``. Values are never stored in the cube file: they
 cannot go stale, and they honor row-level security — a user sees only the
 values their access filters allow. Levels with more than 30 distinct values
 are skipped: enumerating them for an assistant is neither useful nor cheap.
+
+.. _mcp_pivot_context:
+
+Working alongside Excel
+-----------------------
+
+Excel and the assistant talk to the **same live engine**, which makes them
+teammates rather than parallel worlds:
+
+- **The assistant sees what you are looking at.** Every Pivot Table query
+  Excel sends is parsed by the server anyway; XLTable keeps the last parsed
+  layout per user, and ``get_pivot_context`` returns it: the cube, the
+  dimension levels on rows and columns, the measures and the filters — in
+  the same names ``describe_cube`` uses, plus a ready-made specification
+  that reproduces the same slice through ``query_cube``. Typical prompts:
+  *“Explain this number”*, *“Continue my analysis”*, *“Do your figures match
+  my Pivot Table?”*. If no pivot has been queried yet, the tool says so
+  explicitly instead of failing. With several workbooks open, the most
+  recent pivot wins; closing a workbook does not lose the context.
+
+  The context belongs to the user: in the server edition each user gets only
+  their own last pivot, and if the cube (or some of its fields) has since
+  become unavailable to them — the cube was edited, or security roles
+  changed — the tool returns an explicit note instead of the stale layout.
+
+- **Refresh is honored across both paths.** Pressing **Refresh** in Excel
+  marks the user's cached SQL results as stale — and the assistant respects
+  the same mark: after a Refresh, ``query_cube`` re-reads the warehouse
+  instead of answering from a cache entry fetched before it. The assistant
+  and the Pivot Table cannot drift apart after a refresh.
+
+- **The cache warms up in both directions.** A slice computed for the
+  assistant opens instantly in Excel, and vice versa (see
+  `Logging and cache`_).
+
+The reverse direction is deliberately manual: XMLA is a pull protocol, so the
+assistant cannot push a layout *into* Excel — it can only tell the user which
+fields to drag where.
 
 Claude Desktop: one-click extension
 -----------------------------------
