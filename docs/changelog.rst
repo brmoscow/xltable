@@ -95,6 +95,13 @@ Version 2.0.19 — 2026-08-05
   connection. Without the new key the server behaves exactly as before.
   See :confval:`CUBE_SOURCE` and :ref:`cube_definition_storage`.
 
+- **Fixed: number formats with several measures in one Pivot Table** — when
+  two or more measures were placed in the **Values** area, cells lost the
+  number formats set by the :tag:`format` tag and Excel displayed plain
+  ``General`` numbers; with a single measure the format applied correctly.
+  Formats now apply regardless of how many measures the report contains and
+  of where the **Values** header is placed (columns or rows).
+
 ------------------------------------------------------------
 
 Version 2.0.18 — 2026-07-29
