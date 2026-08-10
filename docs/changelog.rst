@@ -39,6 +39,24 @@ Version 2.0.19 — 2026-08-05
   cache policy with Excel — a slice computed by the assistant opens
   instantly in Excel and vice versa. See :doc:`mcp`.
 
+- **Semantics for AI agents in the cube definition** — four optional tags let
+  the cube author describe the model to an assistant instead of leaving it to
+  guess from a bare schema: :tag:`olap_description` (what the cube is, its
+  grain, the questions it answers — shown briefly by ``list_cubes`` and in
+  full by ``describe_cube``), :tag:`olap_ai_instructions` (free-form
+  instructions returned as written), and the field-level :tag:`description`
+  (business meaning, units, caveats) and :tag:`synonyms` (alternative names
+  separated by ``;``, complementing :tag:`translation`). On top of that,
+  ``describe_cube`` returns **sample values of low-cardinality dimension
+  levels straight from the engine** — the same query that fills a filter
+  drop-down in Excel, so the values are never stale and always respect the
+  user's row-level security. The tags are metadata for assistants only: Excel
+  and the XMLA path ignore them, generated SQL does not change, and cube files
+  stay portable between servers. Autogen now leaves an empty
+  :tag:`olap_description` with a hint at the end of every generated cube.
+  Cubes without the new tags work exactly as before. See
+  :ref:`cube_ai_semantics` and :ref:`mcp_semantics`.
+
 - **Free desktop edition (EDITION=free)** — a new ``"EDITION": "free"`` key
   in ``settings.json`` switches the server into the free single-user
   desktop mode: the endpoint listens on ``127.0.0.1`` only, Excel connects

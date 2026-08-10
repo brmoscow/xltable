@@ -48,6 +48,9 @@ this sequence:
    ...
    --olap_user_role               ← 5. user roles / access rules (optional)
    ...
+   --olap_description             ← 6. semantics for AI agents (optional)
+   --olap_ai_instructions              — always last, see below
+   ...
 
 Blocks are separated by a blank line. Refer back to this map as you read the
 sections below.
@@ -135,7 +138,11 @@ counts, min/max) and assigns a role to every column by rules:
 - booleans and small low-cardinality integers become category dimensions;
 - text columns become dimensions; near-unique text on large tables
   (comments, URLs) is excluded from the cube;
-- a ``count(*)`` measure is always added.
+- a ``count(*)`` measure is always added;
+- an empty :tag:`olap_description` block is left at the end of the file, with
+  a hint inside, for you to describe the cube to AI assistants (see
+  :ref:`cube_ai_semantics`). Field-level descriptions and synonyms are never
+  generated — only a person knows what the columns mean.
 
 The result is a complete, commented cube definition in a ``.sql`` file
 (``cubes/<table>.sql`` by default; an existing file is never silently
@@ -597,6 +604,52 @@ Do not confuse the two visibility mechanisms: the ``--hide`` tag hides a field
 **globally**, for everyone (typically a helper measure used only inside calculated
 fields), whereas the ``..._visible`` tags control visibility **per role** — each role
 sees only the measures, dimensions and attributes listed for it.
+
+.. _cube_ai_semantics:
+
+Semantics for AI agents
+-----------------------
+
+A cube definition can carry a description of itself, written for an AI
+assistant that queries the cube over :doc:`MCP <mcp>`. Four optional tags
+hold it:
+
+- :tag:`olap_description` — cube level: what the data is, its grain, which
+  questions the cube answers;
+- :tag:`olap_ai_instructions` — cube level: free-form instructions the
+  assistant should follow for this cube;
+- :tag:`description` — field level: business meaning, units, caveats;
+- :tag:`synonyms` — field level: alternative names of the field, separated
+  by ``;``.
+
+.. code-block:: sql
+
+   --olap_source Sales
+   SELECT
+   --olap_measures
+    sum(sales.sum) as sales_sum_sum --translation=`Sales Amount`
+        --description=`Revenue including VAT, in KZT`
+        --synonyms=`revenue;turnover;sales`
+   FROM db.Sales sales
+
+   --olap_description
+   Sales fact cube, one row per sale line.
+
+   Answers questions about revenue and quantity by store, model and period.
+   --olap_ai_instructions
+   Compare years only over completed months.
+
+The two cube-level blocks run to the next ``--olap_*`` tag or to the end of
+the definition, so write them **at the very end** of the file, after the user
+roles. Lines starting with ``--`` inside a block are comments and do not
+become part of the text.
+
+These tags are metadata for assistants only: Excel and the XMLA path ignore
+them, the generated SQL does not change, and the file stays
+connection-agnostic — the same definition works unchanged on any XLTable
+server. What the assistant does with them, and how sample values of
+low-cardinality dimensions are added from the live engine, is described in
+:ref:`mcp_semantics`.
 
 .. _sql_generation_logic:
 

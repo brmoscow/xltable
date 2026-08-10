@@ -57,6 +57,23 @@ to share a direct reference to it.
 
       --definition_check_on
 
+.. tag:: description
+
+   Business meaning of a single field, written for AI agents: what the value
+   means, its units and any caveats. Shown by the MCP ``describe_cube`` tool
+   (see :ref:`mcp_semantics`); Excel and the XMLA path ignore it entirely.
+   It complements :tag:`translation`, which stays the short display name
+   users see in a PivotTable.
+
+   Syntax: ``--description=`Free text```
+
+   Example:
+
+   .. code-block:: sql
+
+      sum(sales.sum) as sales_sum_sum --translation=`Sales Amount`
+          --description=`Revenue including VAT, in KZT`
+
 .. tag:: filter_no_parents
 
    Placed on any level of a multi-level hierarchy, changes how the whole
@@ -126,6 +143,26 @@ to share a direct reference to it.
       regions_name in (`North`, `South`)
       stores_name in (`Downtown North`, `Downtown South`)
 
+.. tag:: olap_ai_instructions
+
+   Marks a cube-level block of free-form instructions for an AI agent
+   querying this cube — conventions and caveats a correct answer depends on.
+   The MCP ``describe_cube`` tool returns the text as written
+   (see :ref:`mcp_semantics`); Excel and the XMLA path ignore the block.
+
+   The block runs to the next ``--olap_*`` tag or to the end of the
+   definition, so place it at the very end of the file. Lines starting with
+   ``--`` inside the block are treated as comments and are not part of the
+   text.
+
+   Example:
+
+   .. code-block:: sql
+
+      --olap_ai_instructions
+      Compare years only over completed months.
+      "Revenue" always means Sales Amount, not Sales Quantity.
+
 .. tag:: olap_calculated_fields
 
    Marks the beginning of a block containing the list of calculated fields. After the tag, you must specify the name of the folder calculated fields.
@@ -161,6 +198,29 @@ to share a direct reference to it.
       --olap_cube
       --olap_calculated_fields Calculated fields
       (sales_sum_qty/stock_avg_qty) as turnover --translation=`Turnover`
+
+.. tag:: olap_description
+
+   Marks a cube-level block describing the cube for AI agents: what the data
+   is, the grain (one row per what) and the questions the cube answers. The
+   MCP ``list_cubes`` tool shows the first paragraph, ``describe_cube``
+   returns the whole text (see :ref:`mcp_semantics`); Excel and the XMLA path
+   ignore the block.
+
+   The block runs to the next ``--olap_*`` tag or to the end of the
+   definition, so place it at the very end of the file. Lines starting with
+   ``--`` inside the block are treated as comments and are not part of the
+   text — that is how :ref:`autogen <cube_autogen>` leaves an empty tag with
+   a hint inside.
+
+   Example:
+
+   .. code-block:: sql
+
+      --olap_description
+      Sales fact cube, one row per sale line.
+
+      Answers questions about revenue and quantity by store, model and period.
 
 .. tag:: olap_dimensions
 
@@ -308,6 +368,24 @@ to share a direct reference to it.
       LEFT JOIN db.Sales sales --relationship=`one-table`
       LEFT JOIN db.Currencies curr ON sales.currency = curr.id --relationship=`part-source`
 
+.. tag:: synonyms
+
+   Alternative names of a field for AI agents — the words a person may use
+   for it in a question. Returned by the MCP ``describe_cube`` tool
+   (see :ref:`mcp_semantics`); Excel and the XMLA path ignore the tag. It
+   complements :tag:`translation` (one display name for Excel) rather than
+   replacing it.
+
+   Syntax: ``--synonyms=`name1;name2;name3``` — items are separated by
+   semicolons, surrounding spaces are trimmed.
+
+   Example:
+
+   .. code-block:: sql
+
+      sum(sales.sum) as sales_sum_sum --translation=`Sales Amount`
+          --synonyms=`revenue;turnover;sales`
+
 .. tag:: translation
 
    Defines the localized name of a measure or dimension attribute displayed in Excel.
@@ -419,7 +497,7 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     --olap_source Sales
     SELECT
     --olap_measures
-     sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity` --format=`#,##0;-#,##0`
+     sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity` --format=`#,##0;-#,##0` --description=`Units sold, pcs` --synonyms=`quantity;units;pieces`
     ,sum(sales.sum) as sales_sum_sum --translation=`Sales Amount` --format=`#,##0.00;-#,##0.00` --hide
     FROM db.Sales sales
     LEFT JOIN db.Stores stores on sales.store = stores.id
@@ -494,6 +572,14 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     all
     --olap_access_filters
     regions_name in (`North`, `South`)
+
+    --olap_description
+    Sales fact cube, one row per sale line.
+
+    Answers questions about quantity and stock by store, region, manager,
+    model and date.
+    --olap_ai_instructions
+    Compare years only over completed months.
     ' AS definition
 
 ------------------------------------------------------------

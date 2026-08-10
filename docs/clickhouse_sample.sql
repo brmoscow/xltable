@@ -190,8 +190,8 @@ with calendar as (
 --olap_source Sales
 SELECT
 --olap_measures
- sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity`      --format=`#,##0;-#,##0`
-,sum(sales.sum) as sales_sum_sum --translation=`Sales Amount`        --format=`#,##0.00;-#,##0.00`
+ sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity`      --format=`#,##0;-#,##0`         --description=`Units sold, pcs`     --synonyms=`quantity;units;pieces`
+,sum(sales.sum) as sales_sum_sum --translation=`Sales Amount`        --format=`#,##0.00;-#,##0.00`    --description=`Revenue, currency units` --synonyms=`revenue;turnover;sales`
 FROM db.Sales sales
 LEFT JOIN db.Stores stores ON sales.store = stores.id
 LEFT JOIN db.Models models ON sales.model = models.id
@@ -221,7 +221,7 @@ LEFT JOIN db.Models models ON stock.model = models.id
 SELECT
 --olap_dimensions
  stores.id as store_id    --translation=`Store ID`
-,stores.name as stores_name --translation=`Store`
+,stores.name as stores_name --translation=`Store` --description=`Retail store the sale belongs to` --synonyms=`shop;outlet;point of sale`
 FROM db.Stores stores
 LEFT JOIN db.Regions regions ON stores.region = regions.id
 
@@ -263,4 +263,14 @@ all
 --olap_dimensions_visible
 all
 --olap_access_filters
+
+--olap_description
+Sales fact cube, one row per sale line, with stock levels alongside.
+
+Answers questions about sales quantity and amount, and average stock, by
+store, region, manager, model and date (2023-2025).
+--olap_ai_instructions
+Compare years only over completed months.
+Turnover is Sales Quantity divided by Average Stock Quantity - use the
+calculated field instead of dividing the two measures yourself.
 ' AS definition;

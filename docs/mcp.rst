@@ -26,10 +26,12 @@ Tools
      - What it does
    * - ``list_cubes``
      - Lists the cubes available on the server (the free edition reads them
-       from the local cube folder).
+       from the local cube folder), each with a short description when the
+       cube author wrote one.
    * - ``describe_cube``
      - Returns the cube schema in an assistant-friendly form: dimensions with
-       their levels, and measures.
+       their levels, and measures — plus the semantics the cube author
+       described (see `Describing cubes for AI`_).
    * - ``query_cube``
      - Runs an aggregated pivot query: group by dimension levels, aggregate
        measures, filter rows before aggregation, limit the result size.
@@ -46,6 +48,71 @@ argument — the assistant takes the name from ``list_databases``. If the
 warehouse has a single database, it is selected automatically and the
 argument can be omitted. In the free edition there is always exactly one
 catalog (the cube folder), so neither the tool nor the argument appears.
+
+.. _mcp_semantics:
+
+Describing cubes for AI
+-----------------------
+
+An assistant answers far better when it sees *described* fields instead of a
+bare schema. Four optional tags in the cube definition carry that description;
+they are metadata only — Excel and the XMLA path ignore them completely, and a
+cube file with them keeps working unchanged on any XLTable server.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Tag
+     - What it adds
+   * - :tag:`olap_description`
+     - Cube level: what the data is, its grain, which questions it answers.
+       ``list_cubes`` shows the first paragraph, ``describe_cube`` returns the
+       whole text.
+   * - :tag:`olap_ai_instructions`
+     - Cube level: free-form instructions for the assistant, returned by
+       ``describe_cube`` as written.
+   * - :tag:`description`
+     - Field level: business meaning, units, caveats.
+   * - :tag:`synonyms`
+     - Field level: alternative names the user may use in a question,
+       separated by ``;``. Complements :tag:`translation` (one display name
+       for Excel), it does not replace it.
+
+Cube-level blocks run to the next ``--olap_*`` tag or to the end of the file,
+so write them **at the very end** of the definition. Lines starting with
+``--`` inside a block are comments and are not part of the text.
+
+.. code-block:: sql
+
+   --olap_source Sales
+   SELECT
+   --olap_measures
+    sum(sales.sum) as sales_sum_sum --translation=`Sales Amount`
+        --description=`Revenue including VAT, in KZT`
+        --synonyms=`revenue;turnover;sales`
+   FROM db.Sales sales
+
+   --olap_description
+   Sales fact cube, one row per sale line.
+
+   Answers questions about revenue and quantity by store, model and period.
+   --olap_ai_instructions
+   Compare years only over completed months.
+
+Start with :tag:`olap_description` — it is what an assistant reads first, and
+:ref:`autogen <cube_autogen>` already leaves an empty one at the bottom of
+every generated cube for you to fill in. Add field descriptions and synonyms
+later, for the fields whose names are ambiguous on their own.
+
+**Sample values come from the engine, not from the file.** For every
+low-cardinality dimension level, ``describe_cube`` also returns the actual
+list of its values, fetched live with the same query that fills a filter
+drop-down in Excel — so the assistant knows to filter by ``North`` rather than
+guessing ``North Region``. Values are never stored in the cube file: they
+cannot go stale, and they honor row-level security — a user sees only the
+values their access filters allow. Levels with more than 30 distinct values
+are skipped: enumerating them for an assistant is neither useful nor cheap.
 
 Claude Desktop: one-click extension
 -----------------------------------
