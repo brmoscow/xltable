@@ -52,8 +52,12 @@ this sequence:
    --olap_ai_instructions              — always last, see below
    ...
 
-Blocks are separated by a blank line. Refer back to this map as you read the
-sections below.
+By convention blocks are separated by a blank line (the parser splits the
+text by the ``--olap_*`` markers themselves, so the blank line is a style
+recommendation, not a syntax rule). One real positional rule: at least one
+line — a comment or a CTE — must precede ``--olap_cube``; a definition that
+starts with the tag on its very first line silently loses the cube-level
+block. Refer back to this map as you read the sections below.
 
 .. _cube_definition_storage:
 
@@ -581,11 +585,21 @@ Under ``olap_user_groups``, list the user groups that belong to this role.
 Under the ``..._visible`` tags, list the measure groups, dimensions, individual measures, or dimension attributes visible to this role.
 Under ``olap_access_filters``, define the row-level filters applied to this role.
 
+Every role block must contain **all five directives**, even when a list is
+empty or ``all`` — a block with a missing directive crashes cube processing.
+The order of the directives inside the block is free, with one exception:
+``--olap_access_filters`` must come **last** — its value is read to the end
+of the role block, so any directive placed below it would be misread as a
+filter line.
+
 Each filter occupies its own line and has the form ``<alias> in ('value1', 'value2')``.
 The name to the left of ``in`` is the field's **alias** from the cube's SELECT section —
 the name after ``AS`` (or, when the field has no ``AS``, the expression itself with dots
-replaced by underscores: ``t.store_name`` becomes ``t_store_name``). The match is
-case-insensitive. Display names assigned with ``--translation`` cannot be used here.
+replaced by underscores: ``t.store_name`` becomes ``t_store_name``). Applying the
+filter is case-insensitive, but write the alias in the same case as in the SELECT
+section anyway: the automatic inclusion of a filtered field that is not listed
+under ``..._visible`` matches the alias case-sensitively. Display names assigned
+with ``--translation`` cannot be used here.
 
 To filter by several fields in one role, put each filter on its own line. Unlike the
 ``..._visible`` tags, the lines are **not** separated by commas — inside this block commas
@@ -690,8 +704,10 @@ XLTable actually runs against the database.
 
 **Check the definition before connecting** — add the ``definition_check_on`` tag to
 the cube definition. When present, XLTable performs a mandatory syntax validation of
-the whole definition before connecting to data; if validation fails, the connection
-is refused and an error is returned, so a broken definition never reaches users.
+the whole definition before connecting to data; findings of severity **error** refuse
+the connection with an error message, so a broken definition never reaches users
+(warnings — naming style, missing translations — are only reported, the cube keeps
+working).
 
 **Inspect the generated SQL** — set ``WRITE_LOG`` to ``true`` in ``settings.json``.
 XLTable then writes every generated SQL query to the log folder

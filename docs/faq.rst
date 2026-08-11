@@ -361,6 +361,19 @@ per named user regardless of the interface — a user connecting from both
 Excel and an AI assistant occupies one seat. A license without the flag means
 MCP is disabled while Excel keeps working. See :doc:`mcp` for details.
 
+Is the license tied to a specific server?
+------------------------------------------
+
+Yes. The license file is bound to the machine it was issued for: the
+**License** tab of the admin panel shows a *server ID* (a fingerprint of the
+machine), which you send to the vendor when requesting a license. A license
+issued for one server ID does not work on another machine — when migrating
+the server to new hardware, changing its hostname or moving to another VM,
+request a replacement license file for the new server ID (the admin panel of
+the new installation shows it even before a license is uploaded). The
+license also carries an expiry date and a maximum product version; both are
+shown on the **License** tab.
+
 Is a trial installation on Microsoft Windows available? Why would a Windows server be needed?
 -----------------------------------------------------------------------------------------------
 
@@ -407,8 +420,9 @@ The Pivot Table reports "too many data cells".
 -----------------------------------------------
 
 - The result size limit is measured in cells of the pivoted table (rows ×
-  columns × measures), 100,000 by default. Adjust ``MAX_CELLS`` in
-  ``settings.json`` if needed (the legacy ``MAX_ROWS`` key is still accepted).
+  columns × measures), set by the required ``MAX_CELLS`` key in
+  ``settings.json`` (100,000 in the shipped configuration). Adjust it if
+  needed (the legacy ``MAX_ROWS`` key is still accepted).
 - Add filters in the Pivot Table to reduce the result set.
 - A separate message appears when the columns area produces more than
   16,384 columns (the Excel sheet limit) — move fields from columns to rows

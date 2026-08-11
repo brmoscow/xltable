@@ -273,7 +273,8 @@ Parameter reference
 
       "MAX_CELLS": 500000
 
-   Default: ``100000``
+   This key is required: the server reports a configuration error at
+   startup when it is missing.
 
 .. confval:: MAX_FILTER_MEMBERS
 
@@ -348,7 +349,8 @@ Parameter reference
 
       "LDAP_CACHE_TIMEOUT": 300
 
-   Default: ``300``
+   Default: not set (when neither this key nor ``AUTH_CACHE_TIMEOUT`` is
+   set, ``3600`` is used)
 
 .. confval:: METADATA_CACHE_TTL
 
@@ -429,7 +431,9 @@ Parameter reference
 
       "SQL_CACHE_MAX_MB": 512
 
-   Default: ``256``
+   Default: ``256``. A non-numeric or non-positive value does not disable
+   the cache — it falls back to the default with an error logged (to turn
+   the cache off, use :confval:`SQL_CACHE_ENABLED`).
 
 .. confval:: SQL_CACHE_MAX_RESULT_MB
 
@@ -444,7 +448,8 @@ Parameter reference
 
       "SQL_CACHE_MAX_RESULT_MB": 64
 
-   Default: ``32``
+   Default: ``32``. As with :confval:`SQL_CACHE_MAX_MB`, a non-numeric or
+   non-positive value falls back to the default with an error logged.
 
 .. confval:: CACHE_BACKEND
 
@@ -531,7 +536,6 @@ Parameter reference
 
       "CREDENTIAL_ACTIVE_DIRECTORY": {
           "server_address": "dc.company.org",
-          "domain": "company",
           "domain_full": "company.org",
           "username": "service_olap",
           "password": "...",
@@ -547,6 +551,10 @@ Parameter reference
    :ref:`export_settings`. When the section is absent, the feature is
    fully off and leaves no trace: cube metadata, menus and server
    behavior are exactly as before.
+
+   File export is currently supported for **ClickHouse** only (the data
+   is streamed to the file by the connector); on other databases do not
+   enable this section — the export would fail at run time.
 
    Example — an empty object is enough to enable the feature:
 
@@ -677,6 +685,22 @@ All keys of the section are optional:
       "EXPORT": {"dimension_caption": "Export"}
 
    Default: ``Data Output``
+
+.. confval:: EXPORT.excel_max_rows
+
+   Exports with more rows than this (plus the header line) are downloaded
+   as ``.csv.zip`` instead of a plain ``.csv`` — opening a larger CSV
+   directly in Excel would silently truncate it at the worksheet limit.
+   The default equals the Excel worksheet limit; there is normally no
+   reason to change it.
+
+   Example:
+
+   .. code-block:: json
+
+      "EXPORT": {"excel_max_rows": 500000}
+
+   Default: ``1048576``
 
 Export files are written to the ``export_files`` folder next to the server
 code, the job registry lives in ``exports.db``; both appear on first use.

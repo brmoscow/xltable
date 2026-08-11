@@ -137,8 +137,7 @@ Authorization — either of:
 
 - ``Authorization: Bearer <token>`` with a token listed in ``API_TOKENS``
   (recommended for pipelines — no admin password in scripts);
-- admin credentials via HTTP Basic auth (an ``OWNERS`` account or a user
-  from an admin group).
+- admin credentials via HTTP Basic auth (a user from an admin group).
 
 The ``scope`` parameter (query string, form field or JSON body) selects what
 is cleared:

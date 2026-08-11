@@ -25,7 +25,7 @@ Prerequisites
 - Ubuntu 22.04+ server with ``sudo`` access
 - Network access to analytical databases
 - Open ports 80 or 443 for Excel clients
-- XLTable distribution zip placed in ``/usr/olap/`` (e.g. ``xltable-1.0.0-ubuntu.zip``)
+- XLTable distribution zip placed in ``/usr/olap/`` (e.g. ``xltable-2.0.20-ubuntu.zip``)
 
 Prepare system
 ^^^^^^^^^^^^^^
@@ -299,7 +299,7 @@ The application folder will be at ``C:\olap\xltable\``.
 
 **6. Configure settings**
 
-Edit the configuration file ``C:\olap\xltable\setting\settings.json`` and fill in all required fields (database connections, license path, etc.).
+Edit the configuration file ``C:\olap\xltable\setting\settings.json`` and fill in all required fields (database connections, users, etc.). The license file is not referenced from the configuration — upload it via the admin panel and it is stored as ``xltable.lic`` next to the server code.
 
 **7. Configure IIS with web.config**
 
@@ -423,7 +423,6 @@ Example structure:
 
     "CREDENTIAL_ACTIVE_DIRECTORY": {
         "server_address": "dc.company.org",
-        "domain": "company",
         "domain_full": "company.org",
         "username": "service_olap",
         "password": "...",
@@ -500,6 +499,9 @@ The admin panel is organized into tabs:
     automatically within :confval:`METADATA_CACHE_TTL`);
   - **Clear All Cache** — removes all cached session data. Users will need to
     re-authenticate after the cache is cleared.
+  - when file export is enabled (:confval:`EXPORT`), an **Exports** block
+    with the current jobs, files and their total size, and a **Clear Export
+    Jobs and Files** button (see :ref:`export_settings`).
 - **Resources** — direct links to the XLTable documentation and support.
 
 ------------------------------------------------------------

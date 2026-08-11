@@ -119,6 +119,11 @@ Drill through to detail rows
 new sheet listing the underlying detail rows behind that aggregated value — the
 individual records that were summed into the cell.
 
+Excel itself blocks drill-through in a few cases, and the request never reaches
+the server: a subtotal cell while an axis field is filtered, and any cell while
+a report filter or slicer has more than one value selected. Drill into a specific
+value cell with a single-value filter context to see the detail rows.
+
 The columns shown are configured per measure group in the cube definition with the
 ``olap_drillthrough`` tag (see :ref:`drillthrough`). The cell's row, column and
 slicer context is applied automatically as a filter, so you only see the rows that
@@ -134,8 +139,9 @@ field has no single set of underlying rows.
 Working with large results
 --------------------------
 
-A Pivot Table result is capped in size (100,000 cells by default — the same
-way SSAS limits oversized results). When a layout is too detailed to fit, the
+A Pivot Table result is capped in size (100,000 cells in the shipped
+configuration, set by ``MAX_CELLS`` — the same way SSAS limits oversized
+results). When a layout is too detailed to fit, the
 detailed result can be previewed right in the pivot or exported in full to a
 CSV file — see :doc:`export`.
 

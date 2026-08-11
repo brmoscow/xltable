@@ -49,7 +49,9 @@ to share a direct reference to it.
 
    When present in the cube definition, enforces mandatory syntax validation
    of the cube definition before connecting to data.
-   If validation fails, the connection is not established and an error is returned.
+   If validation reports an error-severity finding, the connection is not
+   established and an error is returned; warnings are only reported and do
+   not block the cube.
 
    Example — the tag occupies a line of its own, anywhere in the definition:
 
@@ -114,6 +116,7 @@ to share a direct reference to it.
 
    After the tag, you must specify the name of the hierarchy to which the field belongs.
    Fields with the same hierarchy name will be grouped together in Excel.
+   Allowed on dimension attributes only (measure groups have no hierarchies).
 
    Syntax: ``--hierarchy=`Hierarchy Name```
 
@@ -153,7 +156,7 @@ to share a direct reference to it.
    The block runs to the next ``--olap_*`` tag or to the end of the
    definition, so place it at the very end of the file. Lines starting with
    ``--`` inside the block are treated as comments and are not part of the
-   text.
+   text. If the tag appears more than once, the first non-empty block wins.
 
    Example:
 
@@ -179,6 +182,8 @@ to share a direct reference to it.
 
    Marks the beginning of a block listing calculated fields available to a specific user role.
    The value is a comma-separated list of calculated field aliases, or ``all``.
+   A measure-group or dimension source name may be listed too, making all of its
+   fields visible.
 
    Example:
 
@@ -211,7 +216,8 @@ to share a direct reference to it.
    definition, so place it at the very end of the file. Lines starting with
    ``--`` inside the block are treated as comments and are not part of the
    text — that is how :ref:`autogen <cube_autogen>` leaves an empty tag with
-   a hint inside.
+   a hint inside. If the tag appears more than once, the first non-empty
+   block wins (so the empty autogen stub does not shadow a real description).
 
    Example:
 
@@ -241,6 +247,7 @@ to share a direct reference to it.
 
    Marks the beginning of a block listing dimension attributes available to a specific user role.
    The value is a comma-separated list of attribute aliases, or ``all``.
+   A dimension source name may be listed too, making all of its attributes visible.
 
    Example:
 
@@ -294,6 +301,7 @@ to share a direct reference to it.
 
    Marks the beginning of a block listing measures available to a specific user role.
    The value is a comma-separated list of measure aliases, or ``all``.
+   A measure-group source name may be listed too, making all of its measures visible.
 
    Example:
 
@@ -418,6 +426,8 @@ to share a direct reference to it.
    Defines the display format of a measure in Excel Pivot Tables.
    The value follows the standard **Excel number format** syntax.
    A semicolon separates the positive and negative patterns: ``positive;negative``.
+   The tag is also accepted on dimension attributes, but the format is not
+   applied to them in Excel yet — only measure cells carry a format string.
 
    Syntax: ``--format=`format string```
 

@@ -160,6 +160,7 @@ connection block:
            "user": "<user>",
            "password": "<password>",
            "ssl_disabled": true,
+           "ssl_ca": "",
            "query_timeout": 60
        },
        "WRITE_LOG": false,

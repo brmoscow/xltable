@@ -286,8 +286,8 @@ Full example
            'translations': {'Sales Quantity': 'SALES_SUM_QTY', 'Store': 'STORE'},
            # source tables (alias -> table info, `sql` is the FROM expression)
            'tables': {'sales': {'sql': 'db.Sales sales'}, 'stores': {'sql': 'db.Stores stores'}},
-           # join graph between tables
-           'tables_joins': {'sales': {'stores': {'sql': 'sales.store_id = stores.id'}}},
+           # join graph between tables ('sql' is the whole LEFT JOIN clause)
+           'tables_joins': {'sales': {'stores': {'sql': 'LEFT JOIN db.Stores stores ON sales.store_id = stores.id'}}},
        },
 
        # --- BLOCK 2: request — this request, values are level_name ------
@@ -350,7 +350,8 @@ Static description of the cube, the same for every request.
    * - ``cube.tables``
      - Source tables keyed by alias; ``sql`` holds the ``FROM`` expression.
    * - ``cube.tables_joins``
-     - Join graph between tables: ``tables_joins[a][b].sql`` is the join condition.
+     - Join graph between tables: ``tables_joins[a][b].sql`` is the full
+       ``LEFT JOIN ... ON ...`` clause that links table ``a`` to table ``b``.
 
 request — the current request
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

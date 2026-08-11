@@ -62,3 +62,8 @@ Enabling the feature
 The feature is enabled by the administrator (the ``EXPORT`` section in
 ``settings.json`` — see :ref:`export_settings`); without it the **Data
 Output** field and the export menu item are not shown.
+
+File export is currently supported for **ClickHouse** only — the data is
+streamed into the file by the database connector, bypassing the server's
+memory. On other databases leave the ``EXPORT`` section off: the menu
+would appear, but the export itself would fail.

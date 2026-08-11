@@ -280,7 +280,8 @@ inserts accordingly, and adjust the ``% 8`` modulo to match the new count.
 **Use a different dataset name**
 
 Replace every occurrence of ``olap`` with your own dataset name.
-Also update the ``key_path`` and ``project_id`` in ``settings.json``.
+Also update the ``key_path`` in ``settings.json`` (the project is taken from
+the service-account key file, not from ``settings.json``).
 
 ------------------------------------------------------------
 
