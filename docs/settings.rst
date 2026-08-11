@@ -301,8 +301,11 @@ Parameter reference
    "Server is overloaded ... Please try again later" with the specific
    reason on data refresh. Metadata (Discover) requests and session
    open/close requests are never rejected, so connecting to a cube and
-   already open connections keep working. Each threshold is
-   optional; omit the whole block to disable the guard. Note: inside a
+   already open connections keep working. The same guard covers MCP tool
+   calls that query the warehouse (``query_cube``, ``describe_cube``,
+   ``list_warehouse_tables``, ``autogen_cube``) — the AI assistant gets the
+   same message, while lightweight metadata tools keep responding. Each
+   threshold is optional; omit the whole block to disable the guard. Note: inside a
    container the measured resources are the host's, not the container
    limits.
 
