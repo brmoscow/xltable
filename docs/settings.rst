@@ -34,6 +34,10 @@ Parameter reference
    keys depends on :confval:`SERVER_DB` — see :doc:`databases` for a
    connection example for every supported database type.
 
+   This block can be reviewed and tested on the **Connection** page of the
+   web admin console; the free desktop edition can also edit and save it
+   there — see :doc:`connection`.
+
    Example (ClickHouse):
 
    .. code-block:: json
@@ -704,7 +708,7 @@ All keys of the section are optional:
 
 Export files are written to the ``export_files`` folder next to the server
 code, the job registry lives in ``exports.db``; both appear on first use.
-The **Cache** tab of the admin panel shows the current jobs, files and their
+The **Cache** page of the admin panel shows the current jobs, files and their
 total size, and provides a **Clear Export Jobs and Files** button that also
 removes orphaned files and compacts ``exports.db``. In multi-server
 deployments (``CACHE_BACKEND: redis``) export is not yet cluster-aware:

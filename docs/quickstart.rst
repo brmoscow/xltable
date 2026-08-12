@@ -83,6 +83,14 @@ Example for ClickHouse:
 
 For other database types, see :ref:`database_connections`.
 
+.. tip::
+
+   Once the server is running, the connection can be reviewed and tested on
+   the **Connection** page of the admin console
+   (``http://127.0.0.1:5000/admin``); the free desktop edition can fill in
+   and save the whole connection right there, without editing the JSON —
+   see :doc:`connection`.
+
 ------------------------------------------------------------
 
 Step 3: Start the server

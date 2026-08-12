@@ -117,14 +117,15 @@ a working starting point that you refine by hand instead of writing the
 definition from scratch.
 
 In the **free desktop edition** the easiest way is the web wizard: open the
-admin console (``http://127.0.0.1:5000/admin``) and switch to the **Create
-cube** tab. The wizard walks the same steps in the browser: filter the
+admin console (``http://127.0.0.1:5000/admin``) and open the **Create
+cube** page of the **Cubes** section. The wizard walks the same steps in
+the browser: filter the
 warehouse tables by a substring and pick one, review how each column was
 classified — and why, name the cube and save. If a cube file with that name
 already exists, the wizard always asks — overwrite, save under another name
 or cancel; nothing is ever overwritten silently. The saved cube appears on
-the **Cubes** tab (the live list of the cubes folder with the parse status of
-each file) and in Excel immediately. The classification is applied as
+the **Cubes** page (the live list of the cubes folder with the parse status
+of each file) and in Excel immediately. The classification is applied as
 proposed — to adjust a role, edit the saved ``.sql`` file in any SQL editor;
 the server reloads it on save.
 

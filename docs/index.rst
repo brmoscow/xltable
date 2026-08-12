@@ -160,6 +160,7 @@ documentation as a single file — see :doc:`ai`.
 
    install
    databases
+   connection
    cache
    settings
 

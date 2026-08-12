@@ -316,7 +316,7 @@ field of the license — a feature flag, not a separate seat count:
   clear JSON-RPC error *“MCP is not included in your license”*. Excel/XMLA
   access is not affected in any way. If your license predates MCP support,
   contact the vendor for an updated license file and upload it on the
-  **License** tab of the admin panel.
+  **License** page of the admin panel.
 - **License with ``"mcp": true``.** Every licensed user may use MCP.
 - **One seat pool, counted per user.** Named seats are not counted per
   interface: a user occupies one seat whether they connect from Excel, from

@@ -464,7 +464,23 @@ For local users, the group is assigned via ``USER_GROUPS``; for AD users — via
 Features
 ^^^^^^^^
 
-The admin panel is organized into tabs:
+The admin panel is organized as a left-side menu of sections, each section
+holding one or more pages. The menu skeleton is the same in both editions:
+
+- **Server**: Status;
+- **Connection**: Connection (see :doc:`connection`; read-only with a
+  **Test connection** button on the server edition, editable in the free
+  desktop edition);
+- **Cubes**: Cubes, Create cube — *free desktop edition only*, the section
+  is absent on the server edition;
+- **Maintenance**: License, Cache;
+- **Help**: Resources.
+
+The open page is addressable: the URL hash selects a page (for example,
+``/admin#cache`` opens the Cache page), and the page you were on is restored
+after a browser reload.
+
+The pages:
 
 - **Status** — confirms the server is running, shows the active
   database backend, the active cache backend (``sqlite`` — cache local to
@@ -505,13 +521,11 @@ The admin panel is organized into tabs:
 - **Resources** — direct links to the XLTable documentation and support.
 
 In the **free desktop edition** the admin console is the analyst's main
-workspace, so the tab layout differs: two working tabs are added — **Cubes**
-(the live list of cube files in the cubes folder, with the parse status of
-each) and **Create cube** (a web wizard that generates a cube from one
-warehouse table) — while the service tabs **License** and **Cache** are
-grouped into a single **Maintenance** tab. The working tabs are described in
-:ref:`cube_autogen` and :doc:`connection`; the Maintenance content is the
-same License and Cache functionality described above.
+workspace, and the menu additionally shows the **Cubes** section with two
+pages: **Cubes** (the live list of cube files in the cubes folder, with the
+parse status of each) and **Create cube** (a web wizard that generates a
+cube from one warehouse table) — see :ref:`cube_autogen`. Everything else,
+including the License and Cache pages, is the same as described above.
 
 ------------------------------------------------------------
 

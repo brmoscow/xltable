@@ -347,7 +347,7 @@ cache does not free the seat. A seat is released:
 - automatically, after a period of user inactivity defined by the license
   (30 days by default) — so seats of employees who left are recycled without
   administrator involvement;
-- manually, by an administrator on the **License** tab of the admin panel
+- manually, by an administrator on the **License** page of the admin panel
   (the **Release** button, which also signs that user out).
 
 When all seats are taken, a new user receives a clear "Named user limit
@@ -365,7 +365,7 @@ Is the license tied to a specific server?
 ------------------------------------------
 
 Yes. The license file is bound to the machine it was issued for: the
-**License** tab of the admin panel shows a *server ID* (a fingerprint of the
+**License** page of the admin panel shows a *server ID* (a fingerprint of the
 machine), which you send to the vendor when requesting a license. A license
 issued for one server ID does not work on another machine — when migrating
 the server to new hardware, changing its hostname or moving to another VM,
