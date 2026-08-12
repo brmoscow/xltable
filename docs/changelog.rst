@@ -6,6 +6,46 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
+Version 2.0.20 — upcoming
+--------------------------
+
+- **Cubes and Create cube tabs in the admin console (free edition)** — the
+  admin console of the free desktop edition became the analyst's main
+  workspace. The new **Cubes** tab lists the cubes folder live: cube name,
+  description, file path, modification time and the parse status of every
+  ``.sql`` file — a broken cube now shows the exact parser error in the
+  browser instead of surfacing only as a failure in Excel. The new **Create
+  cube** tab is a web wizard over the same generation engine as ``main.exe
+  autogen`` and the MCP ``autogen_cube`` tool: filter the warehouse tables by
+  a substring, pick one, review the proposed classification of every column
+  (role and reason), name the cube and save it into the cubes folder — the
+  server picks it up instantly. If a cube file with that name already exists,
+  the wizard asks — overwrite, save under another name or cancel; nothing is
+  overwritten silently. The final screen shows the exact steps to open the
+  new cube in Excel. Service tabs (**License**, **Cache**) are grouped into a
+  single **Maintenance** tab so day-to-day work is not mixed with service
+  operations; the server edition admin console is unchanged. See
+  :ref:`cube_autogen` and :ref:`admin_panel`.
+
+- **Connection setup in the admin console** — the web admin console got a
+  **Connection** tab. In the free desktop edition it is a full connection
+  editor: pick the warehouse type, fill in the form, press *Test connection*
+  and save — ``settings.json`` never has to be edited by hand, the saved
+  connection is applied without a restart (the query cache is cleared, so
+  metadata of the previous warehouse does not linger). Saved passwords are
+  write-only: they are never sent to the browser, and an empty password
+  field keeps the stored value. *Test connection* checks the values entered
+  in the form and answers with a clear message (host unreachable / wrong
+  credentials / database not found / "found N tables") instead of a stack
+  trace. On the first start of the free edition, while the connection is
+  empty, the server console prints a direct link to the form. In the server
+  edition the tab is read-only diagnostics behind the usual admin
+  authentication: the current connection (secrets masked) plus *Test
+  connection* against the saved configuration; editing stays in
+  ``settings.json`` on the server. See :doc:`connection`.
+
+------------------------------------------------------------
+
 Version 2.0.19 — 2026-08-05
 ----------------------------
 

@@ -114,25 +114,36 @@ Generating a cube automatically (autogen)
 
 A first-draft cube definition can be generated from a single table or view —
 a working starting point that you refine by hand instead of writing the
-definition from scratch:
+definition from scratch.
+
+In the **free desktop edition** the easiest way is the web wizard: open the
+admin console (``http://127.0.0.1:5000/admin``) and switch to the **Create
+cube** tab. The wizard walks the same steps in the browser: filter the
+warehouse tables by a substring and pick one, review how each column was
+classified — and why, name the cube and save. If a cube file with that name
+already exists, the wizard always asks — overwrite, save under another name
+or cancel; nothing is ever overwritten silently. The saved cube appears on
+the **Cubes** tab (the live list of the cubes folder with the parse status of
+each file) and in Excel immediately. The classification is applied as
+proposed — to adjust a role, edit the saved ``.sql`` file in any SQL editor;
+the server reloads it on save.
+
+The same engine is also available from the command line:
 
 .. code-block:: text
 
-   main.exe autogen                     # interactive wizard
+   main.exe autogen                     # console wizard
    main.exe autogen shop.sales          # direct: generate for a table
    main.exe autogen shop.sales --full   # exact distinct counts (slower)
 
 (on Linux: ``python main.py autogen ...``; the database connection is taken
 from ``settings.json``, same as for the server.)
 
-The wizard lists the tables of the configured database, lets you narrow the
-list by a substring and pick a table by number, then shows how each column
-was classified — and why — before asking for confirmation.
-
-The console wizard and the direct call are two fronts over one generation
-engine. The third front is an AI assistant: with the :doc:`MCP server <mcp>`
-connected, *“make a cube from the sales table”* runs the same engine from the
-chat — see :ref:`Creating cubes from the chat <mcp_create>`.
+The web wizard, the console wizard and the direct call are fronts over one
+generation engine. Another front is an AI assistant: with the
+:doc:`MCP server <mcp>` connected, *“make a cube from the sales table”* runs
+the same engine from the chat — see
+:ref:`Creating cubes from the chat <mcp_create>`.
 
 Autogen makes one light profiling pass over the table (row count, distinct
 counts, min/max) and assigns a role to every column by rules:

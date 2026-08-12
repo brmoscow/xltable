@@ -504,6 +504,15 @@ The admin panel is organized into tabs:
     Jobs and Files** button (see :ref:`export_settings`).
 - **Resources** — direct links to the XLTable documentation and support.
 
+In the **free desktop edition** the admin console is the analyst's main
+workspace, so the tab layout differs: two working tabs are added — **Cubes**
+(the live list of cube files in the cubes folder, with the parse status of
+each) and **Create cube** (a web wizard that generates a cube from one
+warehouse table) — while the service tabs **License** and **Cache** are
+grouped into a single **Maintenance** tab. The working tabs are described in
+:ref:`cube_autogen` and :doc:`connection`; the Maintenance content is the
+same License and Cache functionality described above.
+
 ------------------------------------------------------------
 
 Database connections
