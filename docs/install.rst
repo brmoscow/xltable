@@ -467,7 +467,8 @@ Features
 The admin panel is organized as a left-side menu of sections, each section
 holding one or more pages. The menu skeleton is the same in both editions:
 
-- **Server**: Status;
+- **Server**: Start (*free desktop edition only* — the onboarding checklist,
+  see :ref:`start_page`), Status;
 - **Connection**: Connection (see :doc:`connection`; read-only with a
   **Test connection** button on the server edition, editable in the free
   desktop edition);
@@ -524,8 +525,58 @@ In the **free desktop edition** the admin console is the analyst's main
 workspace, and the menu additionally shows the **Cubes** section with two
 pages: **Cubes** (the live list of cube files in the cubes folder, with the
 parse status of each) and **Create cube** (a web wizard that generates a
-cube from one warehouse table) — see :ref:`cube_autogen`. Everything else,
-including the License and Cache pages, is the same as described above.
+cube from one warehouse table) — see :ref:`cube_autogen`. The **Server**
+section additionally starts with the **Start** page — the onboarding
+checklist described in :ref:`start_page`. Everything else, including the
+License and Cache pages, is the same as described above.
+
+------------------------------------------------------------
+
+.. _start_page:
+
+Start page and first launch (free desktop edition)
+--------------------------------------------------
+
+The free desktop edition guides the first launch end to end: run
+``main.exe`` → the browser opens on the **Start** page of the admin console
+→ four steps later a PivotTable and an AI agent are looking at your data.
+
+**Automatic browser launch.** ``main.exe`` always starts the server. When
+the cubes folder is empty (a fresh install) *and* the console is
+interactive (the exe was started by a person, not by a scheduler or a
+service), the browser opens on the Start page automatically after the
+server is up. A non-interactive start never opens anything — the link to
+the Start page is printed to the console/log in every case, together with
+the admin console address and the Excel connection breadcrumb.
+
+**The Start page** is the default landing page of the admin console until
+the onboarding is complete; after all four steps are done the console opens
+on the **Cubes** page and Start stays in the menu as a reference. It is a
+checklist of four steps, and the status of every step is derived from real
+system facts — there is nothing to tick manually:
+
+1. **Connect your warehouse** — green once the credentials are set and a
+   connection to the warehouse has actually succeeded (a successful *Test
+   connection* on the Connection page, or any successful warehouse query);
+   otherwise the page offers a button to the **Connection** page.
+2. **Create your first cube** — green once the cubes folder contains at
+   least one valid ``.sql`` cube (parsed by the same parser that serves
+   Excel); otherwise a button leads to the **Create cube** wizard.
+3. **Connect Excel** — green after the first request from Excel reaches the
+   server. Until then the page shows the exact breadcrumb: **Data → Get
+   Data → From Database → From Analysis Services**, server name
+   ``http://127.0.0.1:<port>``, no login needed. Excel talks to the server
+   through the MSOLAP provider, which normally ships with Office; if Excel
+   cannot find Analysis Services, see :doc:`excel`.
+4. **Connect an AI agent** — green after the first agent request reaches
+   the built-in MCP endpoint. Until then the page offers to download
+   ``xltable.mcpb`` — the Claude Desktop extension file shipped next to
+   ``main.exe`` (see :doc:`mcp`).
+
+The statuses update live while the page is open. The completed checkmarks
+of steps 3–4 are stored in the server cache and survive restarts; **Clear
+All Cache** on the Cache page resets them (steps 1–2 are recomputed from
+the configuration and the cubes folder).
 
 ------------------------------------------------------------
 

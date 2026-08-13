@@ -9,6 +9,25 @@ Stay up to date with the latest releases by following us on
 Version 2.0.20 — upcoming
 --------------------------
 
+- **Start page and automatic first launch (free edition)** — the free
+  desktop edition now guides the first run end to end: start ``main.exe``
+  with an empty cubes folder from an interactive console, and the browser
+  opens on the new **Start** page of the admin console — an onboarding
+  checklist of four steps (connect the warehouse → create the first cube →
+  connect Excel → connect an AI agent). The status of every step is derived
+  from real system facts, nothing is ticked manually: the warehouse step
+  turns green after the first successful connection, the cube step when a
+  valid ``.sql`` appears in the cubes folder, the Excel and AI steps on the
+  first real request from Excel or an agent — live, while the page is open.
+  The Excel step shows the exact connection breadcrumb (including the
+  MSOLAP provider hint), the AI step offers to download ``xltable.mcpb``
+  shipped next to the exe. Start is the default landing page until the
+  checklist is complete; after that the console opens on **Cubes** and
+  Start stays in the menu as a reference. A non-interactive start (service,
+  scheduler) never opens a browser — the console always prints the admin
+  address, the Excel breadcrumb and the Start link instead. See
+  :ref:`start_page`.
+
 - **Unified admin console navigation** — the admin console switched from a
   tab strip to a left-side menu of sections (**Server**: Status;
   **Connection**: Connection; **Cubes**: Cubes, Create cube — free desktop
