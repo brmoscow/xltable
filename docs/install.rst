@@ -467,15 +467,17 @@ Features
 The admin panel is organized as a left-side menu of sections, each section
 holding one or more pages. The menu skeleton is the same in both editions:
 
-- **Server**: Start (*free desktop edition only* — the onboarding checklist,
-  see :ref:`start_page`), Status;
-- **Connection**: Connection (see :doc:`connection`; read-only with a
-  **Test connection** button on the server edition, editable in the free
-  desktop edition);
+- **Quick start** — a standalone menu item above the sections, *free
+  desktop edition only*: the onboarding checklist, see :ref:`start_page`;
+- **Connection**: Warehouse connection (see :doc:`connection`; read-only
+  with a **Test connection** button on the server edition, editable in the
+  free desktop edition);
 - **Cubes**: Cubes, Create cube — *free desktop edition only*, the section
   is absent on the server edition;
-- **Maintenance**: License, Cache;
-- **Help**: Resources.
+- **Administration**: Server status, License, Cache;
+- **Help**: Resources, plus Get the server edition (*free desktop edition
+  only* — what the server edition adds and how to get it; the cube files
+  created in the free edition work on the server unchanged).
 
 The open page is addressable: the URL hash selects a page (for example,
 ``/admin#cache`` opens the Cache page), and the page you were on is restored
@@ -483,7 +485,7 @@ after a browser reload.
 
 The pages:
 
-- **Status** — confirms the server is running, shows the active
+- **Server status** — confirms the server is running, shows the active
   database backend, the active cache backend (``sqlite`` — cache local to
   this machine, or ``redis`` with the server address — cache shared by the
   whole cluster; the actual mode after a possible fallback, see
@@ -525,40 +527,46 @@ In the **free desktop edition** the admin console is the analyst's main
 workspace, and the menu additionally shows the **Cubes** section with two
 pages: **Cubes** (the live list of cube files in the cubes folder, with the
 parse status of each) and **Create cube** (a web wizard that generates a
-cube from one warehouse table) — see :ref:`cube_autogen`. The **Server**
-section additionally starts with the **Start** page — the onboarding
-checklist described in :ref:`start_page`. Everything else, including the
-License and Cache pages, is the same as described above.
+cube from one warehouse table) — see :ref:`cube_autogen`. The menu starts
+with the standalone **Quick start** item — the onboarding checklist
+described in :ref:`start_page` — and the Help section additionally offers
+**Get the server edition**. Everything else, including the License and
+Cache pages, is the same as described above.
 
 ------------------------------------------------------------
 
 .. _start_page:
 
-Start page and first launch (free desktop edition)
---------------------------------------------------
+Quick start page and first launch (free desktop edition)
+--------------------------------------------------------
 
 The free desktop edition guides the first launch end to end: run
-``main.exe`` → the browser opens on the **Start** page of the admin console
-→ four steps later a PivotTable and an AI agent are looking at your data.
+``main.exe`` → the browser opens on the **Quick start** page of the admin
+console → four steps later a PivotTable and an AI agent are looking at
+your data.
 
 **Automatic browser launch.** ``main.exe`` always starts the server. When
 the cubes folder is empty (a fresh install) *and* the console is
 interactive (the exe was started by a person, not by a scheduler or a
-service), the browser opens on the Start page automatically after the
+service), the browser opens on the Quick start page automatically after the
 server is up. A non-interactive start never opens anything — the link to
-the Start page is printed to the console/log in every case, together with
-the admin console address and the Excel connection breadcrumb.
+the Quick start page is printed to the console/log in every case, together
+with the admin console address and the Excel connection breadcrumb.
 
-**The Start page** is the default landing page of the admin console until
-the onboarding is complete; after all four steps are done the console opens
-on the **Cubes** page and Start stays in the menu as a reference. It is a
-checklist of four steps, and the status of every step is derived from real
-system facts — there is nothing to tick manually:
+**The Quick start page** is the default landing page of the admin console
+until the onboarding is complete; after all four steps are done the console
+opens on the **Cubes** page and Quick start stays in the menu as a
+reference. While the onboarding is in progress, the pages involved in the
+steps (Warehouse connection, the Create cube wizard) show a link back to
+Quick start, so it is easy to return to the plan after finishing a step.
+It is a checklist of four steps, and the status of every step is derived
+from real system facts — there is nothing to tick manually:
 
 1. **Connect your warehouse** — green once the credentials are set and a
    connection to the warehouse has actually succeeded (a successful *Test
-   connection* on the Connection page, or any successful warehouse query);
-   otherwise the page offers a button to the **Connection** page.
+   connection* on the Warehouse connection page, or any successful warehouse
+   query); otherwise the page offers a button to the **Warehouse
+   connection** page.
 2. **Create your first cube** — green once the cubes folder contains at
    least one valid ``.sql`` cube (parsed by the same parser that serves
    Excel); otherwise a button leads to the **Create cube** wizard.

@@ -9,10 +9,10 @@ Stay up to date with the latest releases by following us on
 Version 2.0.20 — upcoming
 --------------------------
 
-- **Start page and automatic first launch (free edition)** — the free
+- **Quick start page and automatic first launch (free edition)** — the free
   desktop edition now guides the first run end to end: start ``main.exe``
   with an empty cubes folder from an interactive console, and the browser
-  opens on the new **Start** page of the admin console — an onboarding
+  opens on the new **Quick start** page of the admin console — an onboarding
   checklist of four steps (connect the warehouse → create the first cube →
   connect Excel → connect an AI agent). The status of every step is derived
   from real system facts, nothing is ticked manually: the warehouse step
@@ -21,23 +21,26 @@ Version 2.0.20 — upcoming
   first real request from Excel or an agent — live, while the page is open.
   The Excel step shows the exact connection breadcrumb (including the
   MSOLAP provider hint), the AI step offers to download ``xltable.mcpb``
-  shipped next to the exe. Start is the default landing page until the
-  checklist is complete; after that the console opens on **Cubes** and
-  Start stays in the menu as a reference. A non-interactive start (service,
-  scheduler) never opens a browser — the console always prints the admin
-  address, the Excel breadcrumb and the Start link instead. See
-  :ref:`start_page`.
+  shipped next to the exe. Quick start is the default landing page until the
+  checklist is complete (the pages involved in the steps link back to it);
+  after that the console opens on **Cubes** and Quick start stays in the
+  menu as a reference. A non-interactive start (service, scheduler) never
+  opens a browser — the console always prints the admin address, the Excel
+  breadcrumb and the Quick start link instead. See :ref:`start_page`.
 
 - **Unified admin console navigation** — the admin console switched from a
-  tab strip to a left-side menu of sections (**Server**: Status;
-  **Connection**: Connection; **Cubes**: Cubes, Create cube — free desktop
-  edition only; **Maintenance**: License, Cache; **Help**: Resources). The
-  menu skeleton is the same in both editions, so an analyst who uses the
-  free desktop at home and the server edition at work always finds things
-  in the same place; the editions differ only in which pages exist and in
-  their mode (the **Cubes** section is absent on the server edition, the
-  Connection page is read-only there). The open page is addressable via the
-  URL hash (``/admin#cache``) and survives a browser reload. See
+  tab strip to a left-side menu of sections (**Quick start** — a standalone
+  item, free desktop edition only; **Connection**: Warehouse connection;
+  **Cubes**: Cubes, Create cube — free desktop edition only;
+  **Administration**: Server status, License, Cache; **Help**: Resources,
+  plus **Get the server edition** in the free desktop edition — what the
+  server edition adds and how to get it). The menu skeleton is the same in
+  both editions, so an analyst who uses the free desktop at home and the
+  server edition at work always finds things in the same place; the
+  editions differ only in which pages exist and in their mode (the
+  **Cubes** section is absent on the server edition, the Warehouse
+  connection page is read-only there). The open page is addressable via
+  the URL hash (``/admin#cache``) and survives a browser reload. See
   :ref:`admin_panel`.
 
 - **Cubes and Create cube pages in the admin console (free edition)** — the
@@ -52,10 +55,10 @@ Version 2.0.20 — upcoming
   (role and reason), name the cube and save it into the cubes folder — the
   server picks it up instantly. If a cube file with that name already exists,
   the wizard asks — overwrite, save under another name or cancel; nothing is
-  overwritten silently. The final screen shows the exact steps to open the
-  new cube in Excel. Service pages (**License**, **Cache**) live in the
-  **Maintenance** section of the menu, so day-to-day work is not mixed with
-  service operations. See :ref:`cube_autogen` and :ref:`admin_panel`.
+  overwritten silently. Service pages (**Server status**, **License**,
+  **Cache**) live in the **Administration** section of the menu, so
+  day-to-day work is not mixed with service operations. See
+  :ref:`cube_autogen` and :ref:`admin_panel`.
 
 - **Connection setup in the admin console** — the web admin console got a
   **Connection** page. In the free desktop edition it is a full connection

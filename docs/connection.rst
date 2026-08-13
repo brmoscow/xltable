@@ -3,7 +3,7 @@
 Connection setup in the admin console
 =====================================
 
-The **Connection** page of the web admin console shows the warehouse
+The **Warehouse connection** page of the web admin console shows the warehouse
 connection of the server (:confval:`SERVER_DB` and :confval:`CREDENTIAL_DB`
 from ``settings.json``) and can test it against the live warehouse.
 
@@ -18,7 +18,8 @@ file (see `Server edition`_ below).
 Opening the tab
 ---------------
 
-Open the admin console in a browser and switch to **Connection**:
+Open the admin console in a browser and switch to **Warehouse connection**
+(the Connection section of the menu):
 
 .. code-block:: text
 
@@ -33,7 +34,7 @@ On the very first start of the free edition, while the connection is not
 configured yet, the server console prints the direct hint::
 
    Warehouse connection is not configured yet — set it up at
-   http://127.0.0.1:5000/admin (Connection tab)
+   http://127.0.0.1:5000/admin (Warehouse connection page)
 
 The server and the admin console work fine before the warehouse is
 configured — cube queries simply return a clear connection error until the
