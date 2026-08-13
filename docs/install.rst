@@ -574,9 +574,11 @@ system facts — there is nothing to tick manually:
    ``main.exe`` (see :doc:`mcp`).
 
 The statuses update live while the page is open. The completed checkmarks
-of steps 3–4 are stored in the server cache and survive restarts; **Clear
-All Cache** on the Cache page resets them (steps 1–2 are recomputed from
-the configuration and the cubes folder).
+of steps 3–4 are stored in the server cache and survive restarts and
+``settings.json`` changes (saving the connection is itself an onboarding
+step and does not reset the checklist); the only operation that resets
+them is **Clear All Cache** on the Cache page (steps 1–2 are then
+recomputed from the configuration and the cubes folder).
 
 ------------------------------------------------------------
 
