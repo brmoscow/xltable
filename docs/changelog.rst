@@ -24,7 +24,13 @@ Version 2.0.20 — upcoming
   to do, **Save connection** checks the connection first (a failing check
   asks for a second press instead of blocking), and the Quick start
   checklist keeps only the current step expanded — the steps ahead collapse
-  to their titles until it is their turn.
+  to their titles until it is their turn (steps 3 and 4 are independent
+  exits — Excel and AI — and open together; a collapsed step expands on
+  click). The checklist now opens with a three-sentence "How it works"
+  primer, and the connection instructions moved to a new **Connect Excel &
+  AI** page of the Help section — present in both editions, so server
+  administrators finally have the Excel/MCP connection reference right in
+  the admin console.
 
 - **Named user seats moved to their own Seats page** — the seat registry
   (who occupies the licensed seats, with a per-seat Release button) now

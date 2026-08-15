@@ -493,7 +493,11 @@ holding one or more pages. The menu skeleton is the same in both editions:
 - **Cubes**: Cubes, Create cube — *free desktop edition only*, the section
   is absent on the server edition;
 - **Administration**: Server status, License, Seats, Cache;
-- **Help**: Resources, plus Get the server edition (*free desktop edition
+- **Help**: Connect Excel & AI (how to point Excel PivotTables and MCP
+  clients at this server — the Excel breadcrumb and, in the free edition,
+  ready-to-copy AI client configs; on the server edition the page shows the
+  addresses and sign-in rules and links :ref:`mcp_clients` for per-client
+  configs), Resources, plus Get the server edition (*free desktop edition
   only* — what the server edition adds and how to get it; the cube files
   created in the free edition work on the server unchanged).
 
