@@ -9,6 +9,23 @@ Stay up to date with the latest releases by following us on
 Version 2.0.20 — upcoming
 --------------------------
 
+- **The admin console got a visual overhaul** — a calm, dense console look
+  in both editions: full-width layout, compact data tables instead of
+  cards, a monospaced face (IBM Plex Mono, embedded — no external
+  requests) for all data values, and a live status line in the header
+  written as a SQL comment — cube count, warehouse and host, serving
+  address, edition and version at a glance. Every page header now carries
+  a **Docs ↗** link straight to the matching section of this
+  documentation, and the footer links the product site. Animations are
+  reduced to a single one (the Quick start step checkmark) and the
+  ``prefers-reduced-motion`` system setting is respected.
+
+- **Named user seats moved to their own Seats page** — on the server
+  edition the seat registry (who occupies the licensed seats, with a
+  per-seat Release button) now lives on the **Seats** page of the
+  Administration section; the **License** page keeps the license details,
+  the server ID and the upload form. See :ref:`admin_panel`.
+
 - **The desktop executable is now ``XLTable.exe``** — the Windows desktop
   binary was renamed from the anonymous ``main.exe`` and carries proper
   Windows file properties (product name, company, version, description

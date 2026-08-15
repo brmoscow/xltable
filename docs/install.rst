@@ -492,10 +492,14 @@ holding one or more pages. The menu skeleton is the same in both editions:
   free desktop edition);
 - **Cubes**: Cubes, Create cube — *free desktop edition only*, the section
   is absent on the server edition;
-- **Administration**: Server status, License, Cache;
+- **Administration**: Server status, License, Seats (*server edition
+  only*), Cache;
 - **Help**: Resources, plus Get the server edition (*free desktop edition
   only* — what the server edition adds and how to get it; the cube files
   created in the free edition work on the server unchanged).
+
+Every page header carries a **Docs ↗** link that opens the section of this
+documentation describing that page.
 
 The open page is addressable: the URL hash selects a page (for example,
 ``/admin#cache`` opens the Cache page), and the page you were on is restored
@@ -511,15 +515,18 @@ The pages:
   loaded (``settings.json`` is re-read automatically when it changes, see
   :ref:`settings_schema`).
 - **License** — current license details, the server ID to send to the vendor
-  when requesting a license, and the license file upload form. If the license
-  limits the number of named users, this tab also shows the **named user
-  seats**: which users occupy the licensed seats, when each was first and last
-  seen, and a **Release** button per seat. Licensing is per *named* user — a
-  seat is taken on the first request of a user and is not freed by signing out
-  or clearing the cache; it is released automatically after a period of
-  inactivity defined by the license (30 days by default) or manually with the
-  **Release** button (which also signs that user out). When all seats are
-  taken, a new user gets a clear "Named user limit reached" message in Excel.
+  when requesting a license, and the license file upload form. In the free
+  desktop edition the page simply notes that no license file is required.
+- **Seats** (*server edition only*) — the registry of **named user seats**
+  when the license limits the number of named users: which users occupy the
+  licensed seats, when each was first and last seen, and a **Release**
+  button per seat. Licensing is per *named* user — a seat is taken on the
+  first request of a user (whichever interface it comes through — Excel/XMLA
+  or MCP) and is not freed by signing out or clearing the cache; it is
+  released automatically after a period of inactivity defined by the license
+  (30 days by default) or manually with the **Release** button (which also
+  signs that user out). When all seats are taken, a new user gets a clear
+  "Named user limit reached" message in Excel.
 - **Cache** — cache overview and management (how the cache is organized is
   described in :doc:`cache`):
 
