@@ -18,7 +18,13 @@ Version 2.0.20 — upcoming
   a **Docs ↗** link straight to the matching section of this
   documentation, and the footer links the product site. Animations are
   reduced to a single one (the Quick start step checkmark) and the
-  ``prefers-reduced-motion`` system setting is respected.
+  ``prefers-reduced-motion`` system setting is respected. Smaller touches:
+  the cube list refreshes itself while the page is open (no Reload button),
+  a parse error on the Cubes page is followed by a plain-words hint on what
+  to do, **Save connection** checks the connection first (a failing check
+  asks for a second press instead of blocking), and the Quick start
+  checklist keeps only the current step expanded — the steps ahead collapse
+  to their titles until it is their turn.
 
 - **Named user seats moved to their own Seats page** — the seat registry
   (who occupies the licensed seats, with a per-seat Release button) now
