@@ -576,10 +576,13 @@ not exist yet.
 **Repeated launch.** Starting ``XLTable.exe`` while the server is already
 running does not fail with a "port is busy" error: the second window
 detects the running server, opens the admin console in the browser
-(interactive start only) and quietly exits. If the port is occupied by
-another program — 5000 is a popular development port — the console prints
-a clear message with the port number and the path to ``settings.json``
-where to change ``SERVER_PORT``.
+(interactive start only) and quietly exits — instantly, before any heavy
+startup work. If the port is occupied by another program — 5000 is a
+popular development port — the console prints a clear message with the
+port number and the path to ``settings.json`` where to change
+``SERVER_PORT``. An older XLTable (``main.exe`` from a release before
+2.0.20) still running on the port is reported as another program — close
+its window instead of changing the port.
 
 **The Quick start page** is the default landing page of the admin console
 until the onboarding is complete; after all four steps are done the console

@@ -18,22 +18,36 @@ Version 2.0.20 — upcoming
   it to ``XLTable.exe`` after upgrading. Server installations (Ubuntu,
   Windows Server/IIS) are not affected.
 
-- **Smoother first and repeated launch (free edition)** — four small
+- **Smoother first and repeated launch (free edition)** — a set of small
   quality-of-life fixes for the desktop server:
 
   - the cubes folder is created automatically at startup when missing
-    (previously the server only logged a warning and served an empty list);
+    (previously the server only logged a warning and served an empty list;
+    in the server edition the creation of a previously missing folder is
+    logged as a warning — a typo in ``CUBES_FOLDER`` no longer hides
+    silently behind an empty cube list);
   - starting ``XLTable.exe`` when the server is already running no longer
     fails with a port error: the second window opens the admin console in
-    your browser and quietly exits;
+    your browser and quietly exits — instantly, before any heavy startup
+    work; a corporate HTTP proxy no longer confuses the detection
+    (the identification ping bypasses proxies for ``127.0.0.1``);
   - if the port is taken by another program (5000 is a popular dev port),
     the console prints a clear message with the port number and the path to
     ``settings.json`` where to change ``SERVER_PORT`` — instead of a
-    traceback;
+    traceback; the message also covers the case of an older XLTable
+    (``main.exe``) still holding the port;
+  - the server now anchors itself to its own folder at startup, so a
+    shortcut without a "Start in" folder, a Task Scheduler task or a batch
+    file started from another directory all find ``settings.json``, logs
+    and cubes correctly;
   - if the installation folder is not writable (for example, the zip was
-    unpacked into ``Program Files`` without administrator rights), the
-    server explains the problem and suggests reinstalling into a folder in
-    your user profile — instead of crashing silently.
+    unpacked into ``Program Files`` without administrator rights), or
+    ``settings.json`` is missing or damaged, the server explains the
+    problem in plain words and waits for Enter — instead of crashing
+    silently;
+  - the ``.mcpb`` Desktop Extension for Claude Desktop now ships inside the
+    distribution archive next to ``XLTable.exe``, so the download button on
+    the Quick start page works out of the box.
 
 - **Quick start page and automatic first launch (free edition)** — the free
   desktop edition now guides the first run end to end: start ``XLTable.exe``
