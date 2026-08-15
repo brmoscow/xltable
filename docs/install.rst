@@ -492,8 +492,7 @@ holding one or more pages. The menu skeleton is the same in both editions:
   free desktop edition);
 - **Cubes**: Cubes, Create cube — *free desktop edition only*, the section
   is absent on the server edition;
-- **Administration**: Server status, License, Seats (*server edition
-  only*), Cache;
+- **Administration**: Server status, License, Seats, Cache;
 - **Help**: Resources, plus Get the server edition (*free desktop edition
   only* — what the server edition adds and how to get it; the cube files
   created in the free edition work on the server unchanged).
@@ -517,10 +516,11 @@ The pages:
 - **License** — current license details, the server ID to send to the vendor
   when requesting a license, and the license file upload form. In the free
   desktop edition the page simply notes that no license file is required.
-- **Seats** (*server edition only*) — the registry of **named user seats**
-  when the license limits the number of named users: which users occupy the
-  licensed seats, when each was first and last seen, and a **Release**
-  button per seat. Licensing is per *named* user — a seat is taken on the
+- **Seats** — the registry of **named user seats** when the license limits
+  the number of named users: which users occupy the licensed seats, when
+  each was first and last seen, and a **Release** button per seat. In the
+  free desktop edition the page simply explains that seats come with a
+  server edition license (one local user needs none). Licensing is per *named* user — a seat is taken on the
   first request of a user (whichever interface it comes through — Excel/XMLA
   or MCP) and is not freed by signing out or clearing the cache; it is
   released automatically after a period of inactivity defined by the license

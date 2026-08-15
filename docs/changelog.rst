@@ -20,11 +20,13 @@ Version 2.0.20 — upcoming
   reduced to a single one (the Quick start step checkmark) and the
   ``prefers-reduced-motion`` system setting is respected.
 
-- **Named user seats moved to their own Seats page** — on the server
-  edition the seat registry (who occupies the licensed seats, with a
-  per-seat Release button) now lives on the **Seats** page of the
-  Administration section; the **License** page keeps the license details,
-  the server ID and the upload form. See :ref:`admin_panel`.
+- **Named user seats moved to their own Seats page** — the seat registry
+  (who occupies the licensed seats, with a per-seat Release button) now
+  lives on the **Seats** page of the Administration section; the
+  **License** page keeps the license details, the server ID and the upload
+  form. The page exists in both editions — in the free desktop edition it
+  explains that seats come with a server edition license. See
+  :ref:`admin_panel`.
 
 - **The desktop executable is now ``XLTable.exe``** — the Windows desktop
   binary was renamed from the anonymous ``main.exe`` and carries proper
