@@ -95,6 +95,15 @@ Parameter reference
    The value is fixed at server start: changing it in a running server is
    ignored (with a log message) until restart.
 
+   .. note::
+
+      ``"free"`` is supported only by the Windows desktop distribution.
+      The Linux and Windows Server (IIS) distributions are built
+      server-only: started with ``"EDITION": "free"``, they refuse to serve
+      and print a message pointing to the desktop distribution — on those
+      installations the network socket is bound by gunicorn or IIS, so the
+      free edition's local-only guarantee could not be enforced.
+
    Example:
 
    .. code-block:: json

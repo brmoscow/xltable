@@ -18,6 +18,15 @@ Version 2.0.20 — upcoming
   it to ``XLTable.exe`` after upgrading. Server installations (Ubuntu,
   Windows Server/IIS) are not affected.
 
+- **Server distributions are built server-only** — the Linux and Windows
+  Server (IIS) distributions no longer start with ``"EDITION": "free"``:
+  they refuse with a clear message pointing to the desktop distribution.
+  The free edition's local-only guarantee relies on the server binding the
+  socket to ``127.0.0.1`` itself, which gunicorn and IIS deployments do not
+  go through — the free edition ships as the Windows desktop distribution
+  only. Existing server installations are not affected (they do not set
+  ``EDITION``). See :confval:`EDITION`.
+
 - **Smoother first and repeated launch (free edition)** — a set of small
   quality-of-life fixes for the desktop server:
 
