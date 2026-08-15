@@ -58,6 +58,20 @@ Version 2.0.20 — upcoming
     distribution archive next to ``XLTable.exe``, so the download button on
     the Quick start page works out of the box.
 
+- **Step 4 of Quick start offers a choice of AI clients (free edition)** —
+  the *Connect an AI agent* step of the onboarding checklist is no longer a
+  single ``.mcpb`` download button: pick the client you can use at work —
+  **Claude Desktop** (recommended, one-click ``.mcpb`` as before),
+  **Copilot in VS Code**, **Claude Code**, a **local model** in LM Studio
+  (zero egress — with a local model nothing is sent to any cloud), or any
+  other MCP client with a universal JSON config. Every option comes with
+  2–4 steps and a ready-to-copy config with the real server port already
+  substituted; the step still turns green on the first agent request,
+  whichever client it comes from. The documentation gained a matching
+  :ref:`AI clients <mcp_clients>` section, including honest notes on what
+  each client requires and why cloud platforms (ChatGPT, Gemini) cannot
+  reach a local MCP server — that scenario is served by the server edition.
+
 - **Quick start page and automatic first launch (free edition)** — the free
   desktop edition now guides the first run end to end: start ``XLTable.exe``
   with an empty cubes folder from an interactive console, and the browser

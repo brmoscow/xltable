@@ -207,8 +207,37 @@ When cube definitions live in the ``olap_definition`` table
 (``CUBE_SOURCE=database``), the creation tools are not offered — the autogen
 engine writes files, and there is no cube folder to write to.
 
+.. _mcp_clients:
+
+AI clients
+----------
+
+MCP is an open protocol, and the XLTable server has no client-specific
+dependencies — pick whichever assistant you can use. In the free desktop
+edition every client below talks to the same local endpoint::
+
+   http://127.0.0.1:<port>/mcp
+
+(Streamable HTTP; the port is ``SERVER_PORT`` from ``settings.json``, ``5000``
+by default). **No authorization is required or expected**: the free edition
+serves one local user and ignores ``Authorization`` headers — leave credential
+fields empty, and if a client insists on a value, enter anything.
+
+Step 4 of the **Quick start** page in the admin console (see
+:ref:`start_page`) offers the same choice of clients with the real port
+already substituted and every config ready to copy.
+
+.. note::
+
+   MCP support in AI clients changes monthly. The instructions below were
+   verified against each client's official documentation in August 2026 —
+   if a client's menus have moved since, its own MCP page is the authority.
+
 Claude Desktop: one-click extension
------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*What you need:* Claude Desktop for Windows, signed in with any Claude
+account — the free plan is enough.
 
 Claude Desktop connects through a Desktop Extension package,
 ``xltable-<version>.mcpb``, shipped alongside the XLTable distribution.
@@ -245,18 +274,133 @@ stdio bridge that forwards the MCP session to the running server at
 itself: if XLTable is not running, the assistant gets the error
 *“XLTable is not running — start XLTable.exe”* — open ``XLTable.exe`` and ask again.
 
-Other MCP clients
------------------
+.. note::
 
-Any MCP client can connect — the server follows the MCP specification and has
-no client-specific dependencies:
+   Do not try **Settings → Connectors → Add custom connector** for the local
+   server: custom connectors are contacted *from Anthropic's cloud*, not from
+   your machine, and require a public HTTPS URL — ``127.0.0.1`` is
+   unreachable that way. The ``.mcpb`` extension is the supported path.
 
-- **stdio clients** — configure the command ``XLTable.exe --mcp-bridge``.
-  Options: ``--url`` overrides the endpoint address, ``--timeout`` the HTTP
-  timeout in seconds; ``--user`` / ``--password`` add server-edition
-  credentials (see below).
-- **HTTP clients** — point the client directly at
-  ``http://127.0.0.1:<port>/mcp`` (Streamable HTTP, JSON responses).
+Claude Code
+~~~~~~~~~~~
+
+*What you need:* `Claude Code <https://code.claude.com>`_ installed; it works
+with a Claude Pro/Max subscription or Claude Console API credits.
+
+Add the server with one command in any terminal::
+
+   claude mcp add --transport http xltable http://127.0.0.1:5000/mcp
+
+(replace ``5000`` with your ``SERVER_PORT`` if you changed it). By default the
+server is registered for the current project; add ``--scope user`` to have it
+in every project. Verify with ``claude mcp list`` — the server should show as
+connected while XLTable is running — and ask about your cubes in a session.
+
+Copilot in VS Code
+~~~~~~~~~~~~~~~~~~
+
+*What you need:* VS Code 1.102 or newer, signed in to GitHub Copilot — the
+free Copilot plan works. On **Copilot Business/Enterprise** an organization
+administrator must enable the *“MCP servers in Copilot”* policy first: it is
+**off by default**, and until then MCP servers do not work for those users.
+
+For Microsoft-centric organizations this is often the one approved AI channel.
+Save this as ``.vscode/mcp.json`` in your workspace (or run the **MCP: Add
+Server** command and pick *HTTP*):
+
+.. code-block:: json
+
+   {
+     "servers": {
+       "xltable": {
+         "type": "http",
+         "url": "http://127.0.0.1:5000/mcp"
+       }
+     }
+   }
+
+Note the root key: VS Code uses ``servers``, not the ``mcpServers`` most other
+clients read. Then open Copilot Chat, switch it to **Agent** mode and trust
+the server when asked — the XLTable tools appear under the tools button of
+the chat.
+
+Local models: LM Studio and compatible hosts
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*What you need:* `LM Studio <https://lmstudio.ai>`_ (free, no account needed)
+and a model marked for tool use in its catalog (the hammer icon) — for
+example Qwen3 8B or Llama 3.1 8B.
+
+A local model is the **zero-egress** option: the warehouse, the cube layer
+*and* the assistant all run on your machine, and nothing — not even tool
+results — is sent to any cloud.
+
+1. In the chat's right sidebar open the **Program** tab, click
+   **Install → Edit mcp.json** and add:
+
+   .. code-block:: json
+
+      {
+        "mcpServers": {
+          "xltable": {
+            "url": "http://127.0.0.1:5000/mcp"
+          }
+        }
+      }
+
+2. Save the file — LM Studio picks it up immediately. Enable the server in
+   the same tab and ask the model about your cubes; LM Studio asks for
+   confirmation on each tool call.
+
+Be honest with your expectations: **small local models handle tool calling
+noticeably worse than cloud models** — LM Studio's own documentation warns
+that models not trained for tool use may emit malformed calls. XLTable's
+surface is deliberately friendly to them (few tools, short schemas, clear
+error messages), but if answers go astray, try a larger model. Other local
+MCP hosts work with the same URL — for example `Jan <https://jan.ai>`_
+(Settings → MCP Servers, HTTP transport). Ollama has no official built-in
+MCP client support as of this writing.
+
+Any other MCP client
+~~~~~~~~~~~~~~~~~~~~
+
+Any client that supports the **streamable HTTP** transport (Cursor, Windsurf,
+Cherry Studio, …) connects with a config equivalent to:
+
+.. code-block:: json
+
+   {
+     "mcpServers": {
+       "xltable": {
+         "type": "http",
+         "url": "http://127.0.0.1:5000/mcp"
+       }
+     }
+   }
+
+There is no official config-file standard — this ``mcpServers`` shape is a
+convention most clients follow. Known deviations: VS Code uses ``servers``
+as the root key (see above), Windsurf expects ``serverUrl`` instead of
+``url``, and some clients accept ``"type": "streamable-http"`` as an alias
+of ``"type": "http"``. Keep the URL, adjust the keys. Do not add
+``headers`` — the free edition needs none.
+
+Clients that only speak **stdio** can use the built-in bridge instead:
+configure the command ``XLTable.exe --mcp-bridge``. Options: ``--url``
+overrides the endpoint address, ``--timeout`` the HTTP timeout in seconds;
+``--user`` / ``--password`` add server-edition credentials (see below).
+
+ChatGPT, Gemini and other cloud platforms
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ChatGPT, Gemini and the cloud AI platforms cannot connect to a local MCP
+server at all: their connectors run in the vendor's cloud and require a
+public HTTPS endpoint, so ``http://127.0.0.1`` is out of reach by design
+(ChatGPT rejects plain-HTTP URLs even for localhost). This is not an XLTable
+limitation to work around — it is what the **server edition** is for: a
+centrally hosted XLTable with per-user authentication that remote clients
+can reach. See the **Get the server edition** page in the Help section of
+the admin console, or :doc:`install` for the server edition setup.
 
 Server edition
 --------------

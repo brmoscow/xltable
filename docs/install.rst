@@ -608,9 +608,13 @@ from real system facts — there is nothing to tick manually:
    through the MSOLAP provider, which normally ships with Office; if Excel
    cannot find Analysis Services, see :doc:`excel`.
 4. **Connect an AI agent** — green after the first agent request reaches
-   the built-in MCP endpoint. Until then the page offers to download
-   ``xltable.mcpb`` — the Claude Desktop extension file shipped next to
-   ``XLTable.exe`` (see :doc:`mcp`).
+   the built-in MCP endpoint, whichever client it comes from. The page
+   offers a choice of clients with ready-to-copy configs: **Claude
+   Desktop** (the recommended one-click ``xltable.mcpb`` extension shipped
+   next to ``XLTable.exe``), **Copilot in VS Code**, **Claude Code**, a
+   **local model** in LM Studio (zero egress — nothing leaves the machine),
+   or any other MCP client with a universal JSON config (see
+   :ref:`mcp_clients`).
 
 The statuses update live while the page is open. The completed checkmarks
 of steps 3–4 are stored in the server cache and survive restarts and
