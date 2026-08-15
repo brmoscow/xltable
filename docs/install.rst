@@ -191,51 +191,69 @@ Installation
 1. Download the distribution archive and extract it to a folder of your
    choice, e.g. ``C:\xltable\``
 
-2. Edit the configuration file ``C:\xltable\setting\settings.json``
-   (database connection, users — see :ref:`database_connections`
-   and :ref:`settings_schema`)
+   .. note::
 
-3. Start the server by double-clicking ``main.exe`` (or from the command line):
+      Pick a folder you can write to — ``settings.json``, the cache and the
+      logs live next to ``XLTable.exe``. If the folder is read-only (for
+      example, ``C:\Program Files\`` without administrator rights), the
+      server reports the problem at startup and suggests moving to a folder
+      in your user profile instead of failing silently.
+
+2. Start the server by double-clicking ``XLTable.exe`` (or from the command line):
 
    .. code-block:: text
 
-      C:\xltable\main.exe
+      C:\xltable\XLTable.exe
 
-4. Open the admin panel in your browser at ``http://127.0.0.1:5000/admin``
-   and activate the license (see :ref:`obtaining_license`)
+3. The distribution runs as the **free desktop edition** out of the box: on
+   an interactive first start the browser opens the **Quick start**
+   checklist of the admin console (``http://127.0.0.1:5000/admin``, see
+   :ref:`start_page`), and the warehouse connection is configured right
+   there on the **Warehouse connection** page — ``settings.json`` does not
+   have to be edited by hand (see :ref:`database_connections` and
+   :ref:`settings_schema` for the file reference)
 
-5. In Excel, connect to the server at ``http://127.0.0.1:5000``
+4. In Excel, connect to the server at ``http://127.0.0.1:5000``
    (prefer ``127.0.0.1`` over ``localhost`` — see the note in
    :doc:`excel`)
 
-Connecting from other computers
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+To run the **server edition** standalone instead, set
+``"EDITION": "server"`` in ``settings.json`` (see :confval:`EDITION`),
+configure the users, restart, then open the admin panel and activate the
+license (see :ref:`obtaining_license`).
 
-To let Excel users on other machines connect, allow inbound TCP port 5000
-in Windows Firewall (run as administrator):
+.. note::
 
-.. code-block:: text
-
-   netsh advfirewall firewall add rule name="xltable" dir=in action=allow protocol=TCP localport=5000
-
-They can then connect to ``http://<server-name-or-ip>:5000``.
+   The desktop installation is meant for one person on one machine: the
+   free edition listens on ``127.0.0.1`` only and rejects network requests
+   by design. For a multi-user server that Excel users reach over the
+   network, use a production installation — :ref:`install_ubuntu` or
+   :ref:`install_windows` (Windows Server with IIS).
 
 Autostart
 ^^^^^^^^^
 
-To start the server automatically at logon, put a shortcut to ``main.exe``
+To start the server automatically at logon, put a shortcut to ``XLTable.exe``
 into the Startup folder: press :kbd:`Win+R`, type ``shell:startup``, and copy
 the shortcut there. For unattended servers, use Task Scheduler
-(trigger **At startup**, action — run ``C:\xltable\main.exe``).
+(trigger **At startup**, action — run ``C:\xltable\XLTable.exe``).
 
 Update
 ^^^^^^
 
-1. Stop ``main.exe`` (close the window or end the process in Task Manager)
+1. Stop ``XLTable.exe`` (close the window or end the process in Task Manager)
 2. Back up ``settings.json`` and the license file ``.lic``
 3. Extract the new distribution archive into ``C:\xltable\``, overwriting existing files
 4. Restore the backed-up ``settings.json`` and ``.lic``
-5. Start ``main.exe``
+5. Start ``XLTable.exe``
+
+.. note::
+
+   Upgrading from a release before 2.0.20: the executable was renamed from
+   ``main.exe`` to ``XLTable.exe``. Delete the old ``main.exe`` left after
+   step 3, and re-point anything that referenced it — a Startup shortcut,
+   a Task Scheduler action, a batch file, or the Claude Desktop extension
+   (**Settings → Extensions → XLTable OLAP → Configure**).
 
 ------------------------------------------------------------
 
@@ -541,17 +559,27 @@ Quick start page and first launch (free desktop edition)
 --------------------------------------------------------
 
 The free desktop edition guides the first launch end to end: run
-``main.exe`` → the browser opens on the **Quick start** page of the admin
+``XLTable.exe`` → the browser opens on the **Quick start** page of the admin
 console → four steps later a PivotTable and an AI agent are looking at
 your data.
 
-**Automatic browser launch.** ``main.exe`` always starts the server. When
+**Automatic browser launch.** ``XLTable.exe`` always starts the server. When
 the cubes folder is empty (a fresh install) *and* the console is
 interactive (the exe was started by a person, not by a scheduler or a
 service), the browser opens on the Quick start page automatically after the
 server is up. A non-interactive start never opens anything — the link to
 the Quick start page is printed to the console/log in every case, together
 with the admin console address and the Excel connection breadcrumb.
+The cubes folder itself is created automatically at startup when it does
+not exist yet.
+
+**Repeated launch.** Starting ``XLTable.exe`` while the server is already
+running does not fail with a "port is busy" error: the second window
+detects the running server, opens the admin console in the browser
+(interactive start only) and quietly exits. If the port is occupied by
+another program — 5000 is a popular development port — the console prints
+a clear message with the port number and the path to ``settings.json``
+where to change ``SERVER_PORT``.
 
 **The Quick start page** is the default landing page of the admin console
 until the onboarding is complete; after all four steps are done the console
@@ -579,7 +607,7 @@ from real system facts — there is nothing to tick manually:
 4. **Connect an AI agent** — green after the first agent request reaches
    the built-in MCP endpoint. Until then the page offers to download
    ``xltable.mcpb`` — the Claude Desktop extension file shipped next to
-   ``main.exe`` (see :doc:`mcp`).
+   ``XLTable.exe`` (see :doc:`mcp`).
 
 The statuses update live while the page is open. The completed checkmarks
 of steps 3–4 are stored in the server cache and survive restarts and

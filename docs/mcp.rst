@@ -44,7 +44,7 @@ Tools
        counterpart of the autogen wizard's table-filter step.
    * - ``autogen_cube``
      - Folder cube source only: generates a cube from a single warehouse
-       table with the same engine as ``main.exe autogen`` — see
+       table with the same engine as ``XLTable.exe autogen`` — see
        `Creating cubes from the chat`_.
    * - ``list_databases``
      - Server edition with ``CUBE_SOURCE=database`` only: lists the databases
@@ -179,7 +179,7 @@ servers):
   what the table is called”* moment. Only names are exposed: no data, no raw
   SQL.
 - ``autogen_cube`` takes an exact table name from that list and runs the same
-  :ref:`autogen engine <cube_autogen>` that powers ``main.exe autogen``:
+  :ref:`autogen engine <cube_autogen>` that powers ``XLTable.exe autogen``:
   profile the table, classify the columns into dimensions, date hierarchies
   and measures, write a ``.sql`` cube file into the cube folder. The server
   picks the file up immediately, so the new cube can be queried with
@@ -216,12 +216,14 @@ No Node.js or manual JSON editing is required. In the free desktop edition
 the file can also be downloaded right from the **Quick start** page of the admin
 console (step 4 of the onboarding checklist, see :ref:`start_page`).
 
-1. Start XLTable (``main.exe``) and keep the window open — the extension
+1. Start XLTable (``XLTable.exe``) and keep the window open — the extension
    talks to the running server.
 2. Open the ``.mcpb`` file with Claude Desktop (double-click it, or drag it
    onto **Settings → Extensions**) and click **Install**.
-3. When asked for **XLTable executable (main.exe)**, pick the ``main.exe``
-   you run — for example ``C:\xltable\main.exe``.
+3. When asked for **XLTable executable (XLTable.exe)**, pick the ``XLTable.exe``
+   you run — for example ``C:\xltable\XLTable.exe`` (named ``main.exe`` in
+   releases before 2.0.20; after upgrading, point the extension to the new
+   name in **Settings → Extensions → XLTable OLAP → Configure**).
 4. Ask Claude a question about your data — the XLTable tools appear
    automatically. A good first prompt: *“What cubes do I have?”*
 
@@ -236,12 +238,12 @@ console (step 4 of the onboarding checklist, see :ref:`start_page`).
    installer from `claude.ai/download <https://claude.ai/download>`_ is not
    affected.
 
-Claude Desktop launches ``main.exe --mcp-bridge`` in the background: a thin
+Claude Desktop launches ``XLTable.exe --mcp-bridge`` in the background: a thin
 stdio bridge that forwards the MCP session to the running server at
 ``http://127.0.0.1:<port>/mcp`` (the port comes from ``SERVER_PORT`` in
 ``settings.json`` next to the executable). The bridge never starts the server
 itself: if XLTable is not running, the assistant gets the error
-*“XLTable is not running — start main.exe”* — open ``main.exe`` and ask again.
+*“XLTable is not running — start XLTable.exe”* — open ``XLTable.exe`` and ask again.
 
 Other MCP clients
 -----------------
@@ -249,7 +251,7 @@ Other MCP clients
 Any MCP client can connect — the server follows the MCP specification and has
 no client-specific dependencies:
 
-- **stdio clients** — configure the command ``main.exe --mcp-bridge``.
+- **stdio clients** — configure the command ``XLTable.exe --mcp-bridge``.
   Options: ``--url`` overrides the endpoint address, ``--timeout`` the HTTP
   timeout in seconds; ``--user`` / ``--password`` add server-edition
   credentials (see below).
@@ -295,7 +297,7 @@ Connecting to a server:
   user** and **Server password**. Claude Desktop stores the password in the
   OS keychain and hands it to the bridge through an environment variable —
   it is kept out of both the config file and the process command line.
-- **stdio clients** — ``main.exe --mcp-bridge --url https://your-server/mcp
+- **stdio clients** — ``XLTable.exe --mcp-bridge --url https://your-server/mcp
   --user <name> --password <password>``; the password can also be supplied
   via the ``XLTABLE_MCP_PASSWORD`` environment variable instead of the
   command line.

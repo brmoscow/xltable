@@ -133,9 +133,9 @@ The same engine is also available from the command line:
 
 .. code-block:: text
 
-   main.exe autogen                     # console wizard
-   main.exe autogen shop.sales          # direct: generate for a table
-   main.exe autogen shop.sales --full   # exact distinct counts (slower)
+   XLTable.exe autogen                     # console wizard
+   XLTable.exe autogen shop.sales          # direct: generate for a table
+   XLTable.exe autogen shop.sales --full   # exact distinct counts (slower)
 
 (on Linux: ``python main.py autogen ...``; the database connection is taken
 from ``settings.json``, same as for the server.)

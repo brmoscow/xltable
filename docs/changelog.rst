@@ -9,8 +9,34 @@ Stay up to date with the latest releases by following us on
 Version 2.0.20 — upcoming
 --------------------------
 
+- **The desktop executable is now ``XLTable.exe``** — the Windows desktop
+  binary was renamed from the anonymous ``main.exe`` and carries proper
+  Windows file properties (product name, company, version, description
+  "XLTable OLAP Server") in file Properties and security dialogs. If the old
+  path is written anywhere — a logon shortcut or scheduled task, a batch
+  file, or the Claude Desktop extension (the ``.mcpb`` file picker) — update
+  it to ``XLTable.exe`` after upgrading. Server installations (Ubuntu,
+  Windows Server/IIS) are not affected.
+
+- **Smoother first and repeated launch (free edition)** — four small
+  quality-of-life fixes for the desktop server:
+
+  - the cubes folder is created automatically at startup when missing
+    (previously the server only logged a warning and served an empty list);
+  - starting ``XLTable.exe`` when the server is already running no longer
+    fails with a port error: the second window opens the admin console in
+    your browser and quietly exits;
+  - if the port is taken by another program (5000 is a popular dev port),
+    the console prints a clear message with the port number and the path to
+    ``settings.json`` where to change ``SERVER_PORT`` — instead of a
+    traceback;
+  - if the installation folder is not writable (for example, the zip was
+    unpacked into ``Program Files`` without administrator rights), the
+    server explains the problem and suggests reinstalling into a folder in
+    your user profile — instead of crashing silently.
+
 - **Quick start page and automatic first launch (free edition)** — the free
-  desktop edition now guides the first run end to end: start ``main.exe``
+  desktop edition now guides the first run end to end: start ``XLTable.exe``
   with an empty cubes folder from an interactive console, and the browser
   opens on the new **Quick start** page of the admin console — an onboarding
   checklist of four steps (connect the warehouse → create the first cube →
@@ -49,8 +75,9 @@ Version 2.0.20 — upcoming
   description, file path, modification time and the parse status of every
   ``.sql`` file — a broken cube now shows the exact parser error in the
   browser instead of surfacing only as a failure in Excel. The new **Create
-  cube** page is a web wizard over the same generation engine as ``main.exe
-  autogen`` and the MCP ``autogen_cube`` tool: filter the warehouse tables by
+  cube** page is a web wizard over the same generation engine as
+  ``XLTable.exe autogen`` and the MCP ``autogen_cube`` tool: filter the
+  warehouse tables by
   a substring, pick one, review the proposed classification of every column
   (role and reason), name the cube and save it into the cubes folder — the
   server picks it up instantly. If a cube file with that name already exists,

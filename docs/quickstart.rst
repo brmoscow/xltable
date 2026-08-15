@@ -14,6 +14,15 @@ By the end of this guide you will have:
 
 For a production installation on Linux or Windows Server, see :doc:`install`.
 
+.. note::
+
+   This guide sets up the **server edition** for a trial: named users, a
+   license, network access for other Excel users. The distribution starts
+   as the **free desktop edition** out of the box — a single-user, local-only
+   server whose first run is guided end to end by the **Quick start** page
+   of the admin console (see :ref:`start_page`); if that is what you need,
+   just start ``XLTable.exe`` and follow the checklist in the browser.
+
 ------------------------------------------------------------
 
 Prerequisites
@@ -53,6 +62,7 @@ Example for ClickHouse:
 .. code-block:: json
 
    {
+      "EDITION": "server",
       "SERVER_DB": "ClickHouse",
       "CREDENTIAL_DB": {
          "user": "..",
@@ -78,8 +88,13 @@ Example for ClickHouse:
 
 .. note::
 
-   Changes to ``settings.json`` are picked up automatically within a few
-   seconds of saving — no service restart is required.
+   The ``settings.json`` shipped in the distribution is the free desktop
+   configuration (``"EDITION": "free"``) — replace it with the example
+   above; ``"EDITION": "server"`` is what enables named users, the license
+   and network access (see :confval:`EDITION`). Changes to ``settings.json``
+   are picked up automatically within a few seconds of saving — no service
+   restart is required (changing ``EDITION`` is the exception: it needs a
+   restart).
 
 For other database types, see :ref:`database_connections`.
 
@@ -96,11 +111,11 @@ For other database types, see :ref:`database_connections`.
 Step 3: Start the server
 ------------------------
 
-Start the server by double-clicking ``main.exe`` (or from the command line):
+Start the server by double-clicking ``XLTable.exe`` (or from the command line):
 
 .. code-block:: text
 
-   C:\xltable\main.exe
+   C:\xltable\XLTable.exe
 
 The server listens on port 5000.
 
@@ -149,18 +164,6 @@ Step 6: Connect Excel
 
 Connection to XLTable is identical to connecting to Microsoft SQL Server Analysis Services (SSAS).
 For details on authentication modes and advanced connection options, see :doc:`excel`.
-
-Connecting from other computers
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-To let Excel users on other machines connect, allow inbound TCP port 5000
-in Windows Firewall (run as administrator):
-
-.. code-block:: text
-
-   netsh advfirewall firewall add rule name="xltable" dir=in action=allow protocol=TCP localport=5000
-
-They can then connect to ``http://<server-name-or-ip>:5000``.
 
 ------------------------------------------------------------
 

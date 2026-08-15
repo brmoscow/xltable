@@ -100,7 +100,7 @@ configuration reload never sees a half-written file.
 The saved connection is applied within a few seconds without a restart. The
 settings fingerprint changes, so the cache is cleared — metadata of the
 previous warehouse does not survive the switch; the page says so after
-saving. A running console command like ``main.exe autogen`` started after the
+saving. A running console command like ``XLTable.exe autogen`` started after the
 save sees the new warehouse immediately.
 
 Server edition
