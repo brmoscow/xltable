@@ -6,7 +6,7 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
-Version 2.0.20 — upcoming
+Version 2.1.0 — upcoming
 --------------------------
 
 - **The admin console got a visual overhaul** — a calm, dense console look

@@ -44,4 +44,4 @@ only the relevant pages instead of the full document.
 
    Both files exist for every published version of the documentation —
    replace ``stable`` in the URL with a version number (for example
-   ``2.0.20``) or ``latest`` to match the XLTable release you are running.
+   ``2.1.0``) or ``latest`` to match the XLTable release you are running.

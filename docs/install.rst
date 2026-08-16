@@ -25,7 +25,7 @@ Prerequisites
 - Ubuntu 22.04+ server with ``sudo`` access
 - Network access to analytical databases
 - Open ports 80 or 443 for Excel clients
-- XLTable distribution zip placed in ``/usr/olap/`` (e.g. ``xltable-2.0.20-ubuntu.zip``)
+- XLTable distribution zip placed in ``/usr/olap/`` (e.g. ``xltable-2.1.0-ubuntu.zip``)
 
 Prepare system
 ^^^^^^^^^^^^^^
@@ -259,13 +259,13 @@ logs are all preserved.
 
 .. note::
 
-   Upgrading from a release before 2.0.20 (zip-only, ``main.exe``): install
+   Upgrading from a release before 2.1.0 (zip-only, ``main.exe``): install
    with ``XLTable-<version>-setup.exe`` — the old extracted folder is not
    updated in place; delete it after moving ``settings.json`` (and your
    cubes folder, if you keep cubes next to the executable) into the new
    locations. Re-point anything that referenced ``main.exe`` — a Startup
    shortcut, a Task Scheduler action, a batch file, or the Claude Desktop
-   extension (**Settings → Extensions → XLTable OLAP → Configure**).
+   extension (**Settings → Extensions → XLTable → Configure**).
 
 Uninstall
 ^^^^^^^^^
@@ -660,7 +660,7 @@ startup work. If the port is occupied by another program — 5000 is a
 popular development port — the console prints a clear message with the
 port number and the path to ``settings.json`` where to change
 ``SERVER_PORT``. An older XLTable (``main.exe`` from a release before
-2.0.20) still running on the port is reported as another program — close
+2.1.0) still running on the port is reported as another program — close
 its window instead of changing the port.
 
 **The Quick start page** is the default landing page of the admin console
