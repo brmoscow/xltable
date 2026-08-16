@@ -185,27 +185,45 @@ components are required. This is the fastest way to get started
 (see also :doc:`quickstart`); for production deployments on Windows Server
 with IIS, see :ref:`install_windows`.
 
+The desktop distribution comes in two forms:
+
+- **Installer** ``XLTable-<version>-setup.exe`` — the recommended path:
+  a Next-Finish wizard that installs into your user profile, no
+  administrator rights and no UAC prompt;
+- **Portable zip** ``xltable-<version>-win64.zip`` — for locked-down
+  environments where running installers is not allowed, or when you want
+  the server on a USB stick / a custom folder. See :ref:`install_windows_zip`.
+
 Installation
 ^^^^^^^^^^^^
 
-1. Download the distribution archive and extract it to a folder of your
-   choice, e.g. ``C:\xltable\``
+1. Download ``XLTable-<version>-setup.exe`` and run it. Administrator
+   rights are **not** required — the installer works entirely inside your
+   user profile and never shows a UAC elevation prompt.
 
    .. note::
 
-      Pick a folder you can write to — ``settings.json``, the cache and the
-      logs live next to ``XLTable.exe``. If the folder is read-only (for
-      example, ``C:\Program Files\`` without administrator rights), the
-      server reports the problem at startup and suggests moving to a folder
-      in your user profile instead of failing silently.
+      Until our code signing certificate is in place, Windows SmartScreen
+      may show a *"Windows protected your PC"* warning, because the
+      publisher cannot be verified automatically. Click **More info** →
+      **Run anyway**.
 
-2. Start the server by double-clicking ``XLTable.exe`` (or from the command line):
+2. Walk through the wizard (Next → Install → Finish). The installer:
 
-   .. code-block:: text
+   - installs XLTable into ``%LOCALAPPDATA%\Programs\XLTable``;
+   - creates a Start menu shortcut **XLTable** (a desktop shortcut is an
+     optional checkbox, off by default);
+   - creates the cubes folder ``Documents\XLTable\cubes`` and points
+     :confval:`CUBES_FOLDER` there — cube files stay in plain sight,
+     editable in any SQL editor, and survive both updates and uninstall;
+   - on later runs, updates the program files **without touching**
+     ``settings.json``, the cubes, the cache or the logs.
 
-      C:\xltable\XLTable.exe
+3. Start the server from the Start menu (**XLTable**), or let the
+   installer launch it on the finish page. The console window keeps the
+   server alive — closing the window stops the server.
 
-3. The distribution runs as the **free desktop edition** out of the box: on
+4. The installation runs as the **free desktop edition** out of the box: on
    an interactive first start the browser opens the **Quick start**
    checklist of the admin console (``http://127.0.0.1:5000/admin``, see
    :ref:`start_page`), and the warehouse connection is configured right
@@ -213,7 +231,7 @@ Installation
    have to be edited by hand (see :ref:`database_connections` and
    :ref:`settings_schema` for the file reference)
 
-4. In Excel, connect to the server at ``http://127.0.0.1:5000``
+5. In Excel, connect to the server at ``http://127.0.0.1:5000``
    (prefer ``127.0.0.1`` over ``localhost`` — see the note in
    :doc:`excel`)
 
@@ -230,30 +248,80 @@ license (see :ref:`obtaining_license`).
    network, use a production installation — :ref:`install_ubuntu` or
    :ref:`install_windows` (Windows Server with IIS).
 
+Update
+^^^^^^
+
+Run the new ``XLTable-<version>-setup.exe`` — it installs over the
+existing copy. If the server is running, the installer asks you to close
+the console window first. ``settings.json`` (with your warehouse
+connection), the cubes in ``Documents\XLTable\cubes``, the cache and the
+logs are all preserved.
+
+.. note::
+
+   Upgrading from a release before 2.0.20 (zip-only, ``main.exe``): install
+   with ``XLTable-<version>-setup.exe`` — the old extracted folder is not
+   updated in place; delete it after moving ``settings.json`` (and your
+   cubes folder, if you keep cubes next to the executable) into the new
+   locations. Re-point anything that referenced ``main.exe`` — a Startup
+   shortcut, a Task Scheduler action, a batch file, or the Claude Desktop
+   extension (**Settings → Extensions → XLTable OLAP → Configure**).
+
+Uninstall
+^^^^^^^^^
+
+Uninstall from **Settings → Apps → Installed apps → XLTable** (close the
+server window first). Your cube files in ``Documents\XLTable\cubes`` are
+**never** deleted. The uninstaller asks whether to also delete the
+settings, cache and logs — by default they are kept, because
+``settings.json`` stores your warehouse connection including the password;
+keep them if you plan to install XLTable again. If you installed the
+Claude Desktop extension, remove it in Claude Desktop itself
+(**Settings → Extensions**).
+
 Autostart
 ^^^^^^^^^
 
 To start the server automatically at logon, put a shortcut to ``XLTable.exe``
 into the Startup folder: press :kbd:`Win+R`, type ``shell:startup``, and copy
-the shortcut there. For unattended servers, use Task Scheduler
-(trigger **At startup**, action — run ``C:\xltable\XLTable.exe``).
+the shortcut there (the installed executable lives in
+``%LOCALAPPDATA%\Programs\XLTable``). For unattended servers, use Task
+Scheduler (trigger **At startup**, action — run ``XLTable.exe``).
 
-Update
-^^^^^^
+.. _install_windows_zip:
+
+Portable zip
+^^^^^^^^^^^^
+
+The zip archive contains the same distribution without an installer —
+nothing is written outside the folder you extract it to, and the cubes
+folder defaults to ``cubes`` next to the executable.
+
+1. Download ``xltable-<version>-win64.zip``. Before extracting,
+   right-click the file → **Properties** → **Unblock** — otherwise Windows
+   marks every extracted file as downloaded from the internet and warns on
+   the first start.
+
+2. Extract the archive to a folder of your choice, e.g. ``C:\xltable\``
+
+   .. note::
+
+      Pick a folder you can write to — ``settings.json``, the cache and the
+      logs live next to ``XLTable.exe``. If the folder is read-only (for
+      example, ``C:\Program Files\`` without administrator rights), the
+      server reports the problem at startup and suggests moving to a folder
+      in your user profile instead of failing silently.
+
+3. Start the server by double-clicking ``XLTable.exe`` and continue from
+   step 4 of the installer path above.
+
+To update a portable installation:
 
 1. Stop ``XLTable.exe`` (close the window or end the process in Task Manager)
-2. Back up ``settings.json`` and the license file ``.lic``
+2. Back up ``settings.json`` and the license file ``.lic`` (server edition)
 3. Extract the new distribution archive into ``C:\xltable\``, overwriting existing files
 4. Restore the backed-up ``settings.json`` and ``.lic``
 5. Start ``XLTable.exe``
-
-.. note::
-
-   Upgrading from a release before 2.0.20: the executable was renamed from
-   ``main.exe`` to ``XLTable.exe``. Delete the old ``main.exe`` left after
-   step 3, and re-point anything that referenced it — a Startup shortcut,
-   a Task Scheduler action, a batch file, or the Claude Desktop extension
-   (**Settings → Extensions → XLTable OLAP → Configure**).
 
 ------------------------------------------------------------
 

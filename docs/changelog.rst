@@ -58,6 +58,23 @@ Version 2.0.20 — upcoming
   only. Existing server installations are not affected (they do not set
   ``EDITION``). See :confval:`EDITION`.
 
+- **The Windows desktop distribution now ships as an installer** —
+  ``XLTable-<version>-setup.exe``: a Next-Finish wizard that installs into
+  your user profile (``%LOCALAPPDATA%\Programs\XLTable``) with **no
+  administrator rights and no UAC prompt**, creates a Start menu shortcut
+  (a desktop shortcut is an optional checkbox), creates the cubes folder
+  ``Documents\XLTable\cubes`` and points the configuration there — cube
+  files stay in plain sight and follow the Documents folder wherever it
+  lives (OneDrive folder redirection included). Updates install over the
+  existing copy without touching ``settings.json``, the cubes, the cache
+  or the logs; if the server is running, the installer asks to close the
+  console window first. Uninstall never deletes the cubes and by default
+  keeps the settings and cache too (``settings.json`` stores the warehouse
+  password) — deleting them is an explicit choice. Files laid down by the
+  installer carry no mark-of-the-web, so ``XLTable.exe`` itself never
+  triggers a SmartScreen warning. The portable zip remains available as an
+  alternative for locked-down environments. See :ref:`install_windows_desktop`.
+
 - **Smoother first and repeated launch (free edition)** — a set of small
   quality-of-life fixes for the desktop server:
 

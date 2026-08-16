@@ -240,7 +240,8 @@ Claude Desktop: one-click extension
 account — the free plan is enough.
 
 Claude Desktop connects through a Desktop Extension package,
-``xltable-<version>.mcpb``, shipped alongside the XLTable distribution.
+``xltable.mcpb``, shipped alongside the XLTable distribution
+(``xltable-<version>.mcpb`` in releases before 2.0.20).
 No Node.js or manual JSON editing is required. In the free desktop edition
 the file can also be downloaded right from the **Quick start** page of the admin
 console (step 4 of the onboarding checklist, see :ref:`start_page`).
@@ -250,9 +251,13 @@ console (step 4 of the onboarding checklist, see :ref:`start_page`).
 2. Open the ``.mcpb`` file with Claude Desktop (double-click it, or drag it
    onto **Settings → Extensions**) and click **Install**.
 3. When asked for **XLTable executable (XLTable.exe)**, pick the ``XLTable.exe``
-   you run — for example ``C:\xltable\XLTable.exe`` (named ``main.exe`` in
-   releases before 2.0.20; after upgrading, point the extension to the new
-   name in **Settings → Extensions → XLTable OLAP → Configure**).
+   you run — ``%LOCALAPPDATA%\Programs\XLTable\XLTable.exe`` when installed
+   with the setup wizard, or the folder you extracted the zip to. The exact
+   path with a **Copy** button is shown on the **Connect Excel & AI** page of
+   the admin console — paste it into the file dialog's path bar. (The
+   executable was named ``main.exe`` in releases before 2.0.20; after
+   upgrading, point the extension to the new name in **Settings → Extensions
+   → XLTable OLAP → Configure**.)
 4. Ask Claude a question about your data — the XLTable tools appear
    automatically. A good first prompt: *“What cubes do I have?”*
 
