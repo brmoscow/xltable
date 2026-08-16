@@ -6,188 +6,105 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
-Version 2.1.0 — upcoming
+Version 2.1.0 — 2026-08-16
 --------------------------
 
-- **The admin console got a visual overhaul** — a calm, dense console look
-  in both editions: full-width layout, compact data tables instead of
-  cards, a monospaced face (IBM Plex Mono, embedded — no external
-  requests) for all data values, and a live status line in the header
-  written as a SQL comment — cube count, warehouse and host, serving
-  address, edition and version at a glance. Every page header now carries
-  a **Docs ↗** link straight to the matching section of this
-  documentation, and the footer links the product site. Animations are
-  reduced to a single one (the Quick start step checkmark) and the
-  ``prefers-reduced-motion`` system setting is respected. Smaller touches:
-  the cube list refreshes itself while the page is open (no Reload button),
-  a parse error on the Cubes page is followed by a plain-words hint on what
-  to do, **Save connection** checks the connection first (a failing check
-  asks for a second press instead of blocking), and the Quick start
-  checklist keeps only the current step expanded — the steps ahead collapse
-  to their titles until it is their turn (steps 3 and 4 are independent
-  exits — Excel and AI — and open together; a collapsed step expands on
-  click). The checklist now opens with a three-sentence "How it works"
-  primer, and the connection instructions moved to a new **Connect Excel &
-  AI** page of the Help section — present in both editions, so server
-  administrators finally have the Excel/MCP connection reference right in
-  the admin console.
+- **The admin console got a visual overhaul** — a calm, dense console
+  look in both editions: full-width layout, compact data tables, a
+  monospaced face for data values and a live status line in the header
+  (cubes, warehouse, serving address, edition and version at a glance).
+  Every page carries a **Docs ↗** link to the matching section of this
+  documentation. The cube list refreshes itself while the page is open,
+  a parse error on the Cubes page comes with a plain-words hint, and
+  **Save connection** checks the connection first. The connection
+  instructions moved to a new **Connect Excel & AI** page of the Help
+  section — present in both editions.
 
 - **Named user seats moved to their own Seats page** — the seat registry
   (who occupies the licensed seats, with a per-seat Release button) now
   lives on the **Seats** page of the Administration section; the
-  **License** page keeps the license details, the server ID and the upload
-  form. The page exists in both editions — in the free desktop edition it
-  explains that seats come with a server edition license. See
+  **License** page keeps the license details and the upload form. See
   :ref:`admin_panel`.
 
 - **The desktop executable is now ``XLTable.exe``** — the Windows desktop
-  binary was renamed from the anonymous ``main.exe`` and carries proper
-  Windows file properties (product name, company, version, description
-  "XLTable OLAP Server") in file Properties and security dialogs. If the old
-  path is written anywhere — a logon shortcut or scheduled task, a batch
-  file, or the Claude Desktop extension (the ``.mcpb`` file picker) — update
+  binary was renamed from ``main.exe`` and carries proper Windows file
+  properties. If the old path is written anywhere — a shortcut, a
+  scheduled task, a batch file, or the Claude Desktop extension — update
   it to ``XLTable.exe`` after upgrading. Server installations (Ubuntu,
   Windows Server/IIS) are not affected.
 
-- **Server distributions are built server-only** — the Linux and Windows
-  Server (IIS) distributions no longer start with ``"EDITION": "free"``:
-  they refuse with a clear message pointing to the desktop distribution.
-  The free edition's local-only guarantee relies on the server binding the
-  socket to ``127.0.0.1`` itself, which gunicorn and IIS deployments do not
-  go through — the free edition ships as the Windows desktop distribution
-  only. Existing server installations are not affected (they do not set
-  ``EDITION``). See :confval:`EDITION`.
-
 - **The Windows desktop distribution now ships as an installer** —
-  ``XLTable-<version>-setup.exe``: a Next-Finish wizard that installs into
-  your user profile (``%LOCALAPPDATA%\Programs\XLTable``) with **no
-  administrator rights and no UAC prompt**, creates a Start menu shortcut
-  (a desktop shortcut is an optional checkbox), creates the cubes folder
-  ``Documents\XLTable\cubes`` and points the configuration there — cube
-  files stay in plain sight and follow the Documents folder wherever it
-  lives (OneDrive folder redirection included). Updates install over the
-  existing copy without touching ``settings.json``, the cubes, the cache
-  or the logs; if the server is running, the installer asks to close the
-  console window first. Uninstall never deletes the cubes and by default
-  keeps the settings and cache too (``settings.json`` stores the warehouse
-  password) — deleting them is an explicit choice. Files laid down by the
-  installer carry no mark-of-the-web, so ``XLTable.exe`` itself never
-  triggers a SmartScreen warning. The portable zip remains available as an
-  alternative for locked-down environments. See :ref:`install_windows_desktop`.
+  ``XLTable-<version>-setup.exe`` installs into your user profile with
+  **no administrator rights and no UAC prompt**, creates a Start menu
+  shortcut and the cubes folder ``Documents\XLTable\cubes``. Updates
+  install over the existing copy without touching ``settings.json``, the
+  cubes, the cache or the logs; uninstall never deletes the cubes and by
+  default keeps the settings too. Installed files trigger no SmartScreen
+  warning. The portable zip remains available for locked-down
+  environments. See :ref:`install_windows_desktop`.
 
-- **Smoother first and repeated launch (free edition)** — a set of small
-  quality-of-life fixes for the desktop server:
+- **Smoother first and repeated launch (free edition)** — quality-of-life
+  fixes for the desktop server:
 
-  - the cubes folder is created automatically at startup when missing
-    (previously the server only logged a warning and served an empty list;
-    in the server edition the creation of a previously missing folder is
-    logged as a warning — a typo in ``CUBES_FOLDER`` no longer hides
-    silently behind an empty cube list);
-  - starting ``XLTable.exe`` when the server is already running no longer
-    fails with a port error: the second window opens the admin console in
-    your browser and quietly exits — instantly, before any heavy startup
-    work; a corporate HTTP proxy no longer confuses the detection
-    (the identification ping bypasses proxies for ``127.0.0.1``);
-  - if the port is taken by another program (5000 is a popular dev port),
-    the console prints a clear message with the port number and the path to
-    ``settings.json`` where to change ``SERVER_PORT`` — instead of a
-    traceback; the message also covers the case of an older XLTable
-    (``main.exe``) still holding the port;
-  - the server now anchors itself to its own folder at startup, so a
-    shortcut without a "Start in" folder, a Task Scheduler task or a batch
-    file started from another directory all find ``settings.json``, logs
-    and cubes correctly;
-  - if the installation folder is not writable (for example, the zip was
-    unpacked into ``Program Files`` without administrator rights), or
-    ``settings.json`` is missing or damaged, the server explains the
-    problem in plain words and waits for Enter — instead of crashing
-    silently;
-  - the ``.mcpb`` Desktop Extension for Claude Desktop now ships inside the
-    distribution archive next to ``XLTable.exe``, so the download button on
-    the Quick start page works out of the box.
+  - the cubes folder is created automatically at startup when missing;
+  - starting ``XLTable.exe`` when the server is already running opens the
+    admin console in your browser instead of failing with a port error;
+  - if the port is taken by another program, the console prints a clear
+    message with the port number and where to change ``SERVER_PORT`` —
+    instead of a traceback;
+  - the server finds its ``settings.json``, logs and cubes regardless of
+    the folder it was started from (shortcuts, Task Scheduler, batch
+    files);
+  - a non-writable installation folder or a damaged ``settings.json`` is
+    explained in plain words instead of a silent crash;
+  - the ``.mcpb`` extension for Claude Desktop ships inside the
+    distribution, so the download button on the Quick start page works
+    out of the box.
 
-- **Step 4 of Quick start offers a choice of AI clients (free edition)** —
-  the *Connect an AI agent* step of the onboarding checklist is no longer a
-  single ``.mcpb`` download button: pick the client you can use at work —
-  **Claude Desktop** (recommended, one-click ``.mcpb`` as before),
-  **Copilot in VS Code**, **Claude Code**, a **local model** in LM Studio
-  (zero egress — with a local model nothing is sent to any cloud), or any
-  other MCP client with a universal JSON config. Every option comes with
-  2–4 steps and a ready-to-copy config with the real server port already
-  substituted; the step still turns green on the first agent request,
-  whichever client it comes from. The documentation gained a matching
-  :ref:`AI clients <mcp_clients>` section, including honest notes on what
-  each client requires and why cloud platforms (ChatGPT, Gemini) cannot
-  reach a local MCP server — that scenario is served by the server edition.
+- **Quick start page and automatic first launch (free edition)** — on the
+  first interactive start the browser opens the new **Quick start** page:
+  a checklist of four steps (connect the warehouse → create the first
+  cube → connect Excel → connect an AI agent). Every step turns green
+  from real system facts — nothing is ticked manually — live, while the
+  page is open; steps 3 and 4 are independent and open together. The
+  *Connect an AI agent* step offers a choice of clients — **Claude
+  Desktop** (recommended, one-click ``.mcpb``), **Copilot in VS Code**,
+  **Claude Code**, a **local model** in LM Studio, or any other MCP
+  client — each with short steps and a ready-to-copy config. A
+  non-interactive start (service, scheduler) never opens a browser and
+  prints the addresses to the console instead. See :ref:`start_page` and
+  :ref:`AI clients <mcp_clients>`.
 
-- **Quick start page and automatic first launch (free edition)** — the free
-  desktop edition now guides the first run end to end: start ``XLTable.exe``
-  with an empty cubes folder from an interactive console, and the browser
-  opens on the new **Quick start** page of the admin console — an onboarding
-  checklist of four steps (connect the warehouse → create the first cube →
-  connect Excel → connect an AI agent). The status of every step is derived
-  from real system facts, nothing is ticked manually: the warehouse step
-  turns green after the first successful connection, the cube step when a
-  valid ``.sql`` appears in the cubes folder, the Excel and AI steps on the
-  first real request from Excel or an agent — live, while the page is open.
-  The Excel step shows the exact connection breadcrumb (including the
-  MSOLAP provider hint), the AI step offers to download ``xltable.mcpb``
-  shipped next to the exe. Quick start is the default landing page until the
-  checklist is complete (the pages involved in the steps link back to it);
-  after that the console opens on **Cubes** and Quick start stays in the
-  menu as a reference. A non-interactive start (service, scheduler) never
-  opens a browser — the console always prints the admin address, the Excel
-  breadcrumb and the Quick start link instead. See :ref:`start_page`.
-
-- **Unified admin console navigation** — the admin console switched from a
-  tab strip to a left-side menu of sections (**Quick start** — a standalone
-  item, free desktop edition only; **Connection**: Warehouse connection;
-  **Cubes**: Cubes, Create cube — free desktop edition only;
-  **Administration**: Server status, License, Cache; **Help**: Resources,
-  plus **Get the server edition** in the free desktop edition — what the
-  server edition adds and how to get it). The menu skeleton is the same in
-  both editions, so an analyst who uses the free desktop at home and the
-  server edition at work always finds things in the same place; the
-  editions differ only in which pages exist and in their mode (the
-  **Cubes** section is absent on the server edition, the Warehouse
-  connection page is read-only there). The open page is addressable via
-  the URL hash (``/admin#cache``) and survives a browser reload. See
+- **Unified admin console navigation** — the admin console switched from
+  a tab strip to a left-side menu of sections (**Quick start**,
+  **Connection**, **Cubes**, **Administration**, **Help**). The menu
+  skeleton is the same in both editions; they differ only in which pages
+  exist and in their mode (no **Cubes** section on the server edition,
+  read-only Warehouse connection there). The open page is addressable
+  via the URL hash (``/admin#cache``) and survives a browser reload. See
   :ref:`admin_panel`.
 
-- **Cubes and Create cube pages in the admin console (free edition)** — the
-  admin console of the free desktop edition became the analyst's main
-  workspace. The new **Cubes** page lists the cubes folder live: cube name,
-  description, file path, modification time and the parse status of every
-  ``.sql`` file — a broken cube now shows the exact parser error in the
-  browser instead of surfacing only as a failure in Excel. The new **Create
-  cube** page is a web wizard over the same generation engine as
-  ``XLTable.exe autogen`` and the MCP ``autogen_cube`` tool: filter the
-  warehouse tables by
-  a substring, pick one, review the proposed classification of every column
-  (role and reason), name the cube and save it into the cubes folder — the
-  server picks it up instantly. If a cube file with that name already exists,
-  the wizard asks — overwrite, save under another name or cancel; nothing is
-  overwritten silently. Service pages (**Server status**, **License**,
-  **Cache**) live in the **Administration** section of the menu, so
-  day-to-day work is not mixed with service operations. See
-  :ref:`cube_autogen` and :ref:`admin_panel`.
+- **Cubes and Create cube pages in the admin console (free edition)** —
+  the new **Cubes** page lists the cubes folder live, including the parse
+  status of every ``.sql`` file — a broken cube shows the exact parser
+  error in the browser instead of surfacing only as a failure in Excel.
+  The new **Create cube** page is a web wizard over the same engine as
+  ``XLTable.exe autogen``: filter the warehouse tables, pick one, review
+  the proposed classification of every column, name the cube and save —
+  the server picks it up instantly; an existing file is never overwritten
+  silently. See :ref:`cube_autogen` and :ref:`admin_panel`.
 
-- **Connection setup in the admin console** — the web admin console got a
-  **Connection** page. In the free desktop edition it is a full connection
-  editor: pick the warehouse type, fill in the form, press *Test connection*
-  and save — ``settings.json`` never has to be edited by hand, the saved
-  connection is applied without a restart (the query cache is cleared, so
-  metadata of the previous warehouse does not linger). Saved passwords are
-  write-only: they are never sent to the browser, and an empty password
-  field keeps the stored value. *Test connection* checks the values entered
-  in the form and answers with a clear message (host unreachable / wrong
-  credentials / database not found / "found N tables") instead of a stack
-  trace. On the first start of the free edition, while the connection is
-  empty, the server console prints a direct link to the form. In the server
-  edition the tab is read-only diagnostics behind the usual admin
-  authentication: the current connection (secrets masked) plus *Test
-  connection* against the saved configuration; editing stays in
-  ``settings.json`` on the server. See :doc:`connection`.
+- **Connection setup in the admin console** — the new **Connection**
+  page. In the free desktop edition it is a full connection editor: pick
+  the warehouse type, fill in the form, press *Test connection* and
+  save — ``settings.json`` never has to be edited by hand, and the saved
+  connection is applied without a restart. Passwords are write-only —
+  never sent to the browser; an empty password field keeps the stored
+  value. *Test connection* answers with a clear message (host
+  unreachable / wrong credentials / "found N tables") instead of a stack
+  trace. In the server edition the page is read-only diagnostics;
+  editing stays in ``settings.json`` on the server. See
+  :doc:`connection`.
 
 ------------------------------------------------------------
 

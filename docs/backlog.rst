@@ -70,7 +70,7 @@ in 2026.
      - AI assistant for cube design
      - An AI-powered assistant that helps developers design cube structure,
        suggest measure and dimension definitions, and detect common mistakes.
-     - Done (Beta)
+     - Done (2.1.0)
 
    * - 12
      - Native data types in dimension attributes
