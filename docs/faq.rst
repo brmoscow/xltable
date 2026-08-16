@@ -347,7 +347,7 @@ cache does not free the seat. A seat is released:
 - automatically, after a period of user inactivity defined by the license
   (30 days by default) — so seats of employees who left are recycled without
   administrator involvement;
-- manually, by an administrator on the **License** page of the admin panel
+- manually, by an administrator on the **Seats** page of the admin panel
   (the **Release** button, which also signs that user out).
 
 When all seats are taken, a new user receives a clear "Named user limit

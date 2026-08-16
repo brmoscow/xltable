@@ -243,8 +243,9 @@ Claude Desktop connects through a Desktop Extension package,
 ``xltable.mcpb``, shipped alongside the XLTable distribution
 (``xltable-<version>.mcpb`` in releases before 2.1.0).
 No Node.js or manual JSON editing is required. In the free desktop edition
-the file can also be downloaded right from the **Quick start** page of the admin
-console (step 4 of the onboarding checklist, see :ref:`start_page`).
+the file can also be downloaded right from the **Connect Excel & AI** page
+of the admin console (Help section; step 4 of the Quick start checklist
+leads there, see :ref:`start_page`).
 
 1. Start XLTable (``XLTable.exe``) and keep the window open — the extension
    talks to the running server.
