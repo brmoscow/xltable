@@ -493,6 +493,11 @@ Active Directory integration
 XLTable supports authentication and authorization
 using Microsoft Active Directory.
 
+.. note::
+
+   Active Directory integration requires XLTable to be installed on
+   Windows Server.
+
 Active Directory integration allows you to:
 - Authenticate users automatically
 - Map AD users and groups to XLTable roles

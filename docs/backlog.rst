@@ -104,3 +104,8 @@ in 2026.
      - A library of built-in Jinja functions available in cube SQL templates
        for common transformations, date handling, and formatting operations.
      -
+
+   * - 18
+     - Excel for Mac support
+     - Ability to work with XLTable data in Excel on macOS.
+     -
