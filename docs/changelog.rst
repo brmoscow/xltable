@@ -9,6 +9,14 @@ Stay up to date with the latest releases by following us on
 Version 2.1.0 — 2026-08-16
 --------------------------
 
+- **Cube changes now reach open workbooks on Refresh** — a new measure,
+  dimension or translation added to a cube definition appears in the
+  PivotTable field list right after **Refresh**, without closing and
+  reopening the workbook. The server now reports a live cube version
+  (``LAST_SCHEMA_UPDATE`` / ``LAST_DATA_UPDATE``) instead of a
+  once-a-day timestamp, so Excel knows to re-read the cube structure.
+  See :ref:`refreshing_data`.
+
 - **The admin console got a visual overhaul** — a calm, dense console
   look in both editions: full-width layout, compact data tables, a
   monospaced face for data values and a live status line in the header

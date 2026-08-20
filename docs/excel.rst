@@ -108,6 +108,14 @@ results obtained before the refresh are bypassed for that user and, once
 re-read from the database, updated for everyone else as well. Users who do
 not press Refresh keep being served from the cache until its TTL expires.
 
+Refresh also picks up changes to the cube definition itself — a new
+measure, dimension or translation appears in the PivotTable field list
+without closing and reopening the workbook. The server moves the cube
+version forward whenever it re-reads the definition — after **Refresh**
+and when the metadata cache expires — so Excel re-reads the cube
+structure at exactly those moments instead of relying on the copy cached
+inside the workbook.
+
 ------------------------------------------------------------
 
 .. _excel_drillthrough:
