@@ -463,6 +463,22 @@ A calculated field may combine measures from **different** measure groups: the
 per-group results are merged with a FULL JOIN before the expression is applied,
 so any measure alias defined in the cube can be referenced here.
 
+An expression may also reference the alias of **another calculated field** —
+in any order of declaration and across ``--olap_calculated_fields`` blocks:
+
+.. code-block:: sql
+
+   --olap_cube
+   --olap_calculated_fields Calculated fields
+    (sales_sum_qty/stock_avg_qty) as turnover --translation=`Turnover`
+   ,(turnover * 100) as turnover_pct --translation=`Turnover %`
+
+The server expands such references into the underlying measure expression when
+it builds the cube, so the derived field behaves exactly as if the full
+expression were written out by hand. Circular references (including a field
+referencing itself) are rejected with a clear error — the syntax check in the
+admin console reports them as well.
+
 .. note::
 
    Because the inputs come from different measure groups, a measure may be

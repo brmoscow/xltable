@@ -172,6 +172,8 @@ to share a direct reference to it.
 .. tag:: olap_calculated_fields
 
    Marks the beginning of a block containing the list of calculated fields. After the tag, you must specify the name of the folder calculated fields.
+   An expression may reference measure aliases and aliases of other calculated
+   fields (in any order of declaration); circular references are rejected.
 
    Example:
 
@@ -179,7 +181,8 @@ to share a direct reference to it.
 
       --olap_cube
       --olap_calculated_fields Calculated fields
-      (sales_sum_qty/stock_avg_qty) as turnover --translation=`Turnover`
+       (sales_sum_qty/stock_avg_qty) as turnover --translation=`Turnover`
+      ,(turnover * 100) as turnover_pct --translation=`Turnover %`
 
 .. tag:: olap_calculated_fields_visible
 

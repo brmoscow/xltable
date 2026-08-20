@@ -9,6 +9,13 @@ Stay up to date with the latest releases by following us on
 Version 2.1.0 — 2026-08-16
 --------------------------
 
+- **Calculated fields can reference each other** — a calculated field
+  expression may use the alias of another calculated field, in any order
+  of declaration: ``(turnover * 100) as turnover_pct``. References are
+  expanded into the underlying measure expression when the cube is built;
+  circular references are rejected with a clear error, and the syntax
+  check reports them too. See :ref:`cubes` — Calculated fields.
+
 - **Role access filters support** ``not in`` — a role line
   ``<alias> not in ('v1', 'v2')`` hides the listed values instead of
   enumerating everything the role is allowed to see. The exclusion is
