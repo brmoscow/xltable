@@ -604,7 +604,10 @@ The order of the directives inside the block is free, with one exception:
 of the role block, so any directive placed below it would be misread as a
 filter line.
 
-Each filter occupies its own line and has the form ``<alias> in ('value1', 'value2')``.
+Each filter occupies its own line and has one of two forms:
+``<alias> in ('value1', 'value2')`` — the role sees **only** the listed values,
+or ``<alias> not in ('value1', 'value2')`` — the role sees everything **except**
+the listed values.
 The name to the left of ``in`` is the field's **alias** from the cube's SELECT section —
 the name after ``AS`` (or, when the field has no ``AS``, the expression itself with dots
 replaced by underscores: ``t.store_name`` becomes ``t_store_name``). Applying the
@@ -619,7 +622,8 @@ only separate the values of one ``in (...)`` list, and a stray comma at the star
 of a line makes the filter invalid. Filters on different fields are combined with AND
 (a row must satisfy all of them), while the values inside one ``in (...)`` list are
 alternatives (OR). Listing the same field again — on another line, or in another role the
-user belongs to — adds its values to the allowed set. A field referenced in an access
+user belongs to — adds its values to the allowed set for ``in`` filters, and to the
+excluded set for ``not in`` filters. A field referenced in an access
 filter is always included in the cube for that role, even if it is not listed under
 ``--olap_dimensions_visible``.
 
@@ -628,8 +632,11 @@ clause of every SQL query it builds for the cube — regular pivot queries,
 filter member lists, Keep Only / Hide probes and drillthrough. When a query
 also filters the same field explicitly, the two conditions are intersected,
 so no MDX query (including a hand-crafted one) can return rows outside the
-role's allowed set. If a user belongs to several roles, their filters are
-combined (the union of the allowed values).
+role's allowed set; values excluded with ``not in`` never appear in results
+or filter dropdowns. If a user belongs to several roles, their filters are
+combined: the union of the allowed values, and the union of the excluded
+values. Combining ``in`` and ``not in`` on the same field applies both
+conditions (the allowed list minus the excluded values).
 
 Do not confuse the two visibility mechanisms: the ``--hide`` tag hides a field
 **globally**, for everyone (typically a helper measure used only inside calculated

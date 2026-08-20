@@ -9,6 +9,14 @@ Stay up to date with the latest releases by following us on
 Version 2.1.0 — 2026-08-16
 --------------------------
 
+- **Role access filters support** ``not in`` — a role line
+  ``<alias> not in ('v1', 'v2')`` hides the listed values instead of
+  enumerating everything the role is allowed to see. The exclusion is
+  enforced on every SQL query the server builds (pivots, filter member
+  lists, Keep Only / Hide probes, drillthrough, MCP), so the hidden
+  values never appear in results or dropdowns. See :ref:`cubes` — User
+  roles, and :tag:`olap_access_filters`.
+
 - **Cube changes now reach open workbooks on Refresh** — a new measure,
   dimension or translation added to a cube definition appears in the
   PivotTable field list right after **Refresh**, without closing and

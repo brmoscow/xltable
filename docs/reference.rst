@@ -132,11 +132,14 @@ to share a direct reference to it.
 
    Marks the beginning of a block defining security filters for a specific user role.
    Each filter is written on its own line (no commas between lines) as
-   ``<alias> in ('v1', 'v2')``, where ``<alias>`` is the field's alias from the cube's
+   ``<alias> in ('v1', 'v2')`` (only the listed values are visible) or
+   ``<alias> not in ('v1', 'v2')`` (the listed values are hidden), where ``<alias>``
+   is the field's alias from the cube's
    SELECT section (display names from :tag:`translation` cannot be used). Filters on
    different fields are combined with AND; the values of one list are alternatives (OR).
    The filters are enforced on every SQL query the server builds; an explicit
-   filter on the same field in a query is intersected with the allowed values.
+   filter on the same field in a query is intersected with the allowed values,
+   and ``not in`` values never appear in results or filter dropdowns.
 
    Example:
 
@@ -144,7 +147,7 @@ to share a direct reference to it.
 
       --olap_access_filters
       regions_name in (`North`, `South`)
-      stores_name in (`Downtown North`, `Downtown South`)
+      stores_name not in (`Test Store`)
 
 .. tag:: olap_ai_instructions
 
