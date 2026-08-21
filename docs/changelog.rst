@@ -9,6 +9,12 @@ Stay up to date with the latest releases by following us on
 Version 2.1.0 — 2026-08-16
 --------------------------
 
+- **Excel Slicers are now supported** — insert a slicer on any cube field
+  (**Insert** → **Slicer**) and filter the Pivot Table by clicking tiles,
+  just like with Analysis Services. Members with no data under the current
+  measures are greyed out, role access filters apply to slicer tiles, and
+  slicers on hierarchy levels work too. See :ref:`excel_slicers`.
+
 - **Calculated fields can reference each other** — a calculated field
   expression may use the alias of another calculated field, in any order
   of declaration: ``(turnover * 100) as turnover_pct``. References are

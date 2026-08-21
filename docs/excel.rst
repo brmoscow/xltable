@@ -111,10 +111,26 @@ not press Refresh keep being served from the cache until its TTL expires.
 Refresh also picks up changes to the cube definition itself — a new
 measure, dimension or translation appears in the PivotTable field list
 without closing and reopening the workbook. The server moves the cube
-version forward whenever it re-reads the definition — after **Refresh**
-and when the metadata cache expires — so Excel re-reads the cube
-structure at exactly those moments instead of relying on the copy cached
-inside the workbook.
+version forward on **Refresh**, so Excel re-reads the cube structure at
+exactly that moment instead of relying on the copy cached inside the
+workbook.
+
+------------------------------------------------------------
+
+.. _excel_slicers:
+
+Slicers
+-------
+
+Slicers work the same way as with Analysis Services: select the Pivot Table,
+choose **Insert** → **Slicer**, pick a field, and click tiles to filter.
+
+The slicer shows the field's members in cube order, with members that have no
+data under the current measures greyed out at the end of the list. Role access
+filters apply: values hidden from the user by ``--olap_access_filters``
+(including ``not in`` exclusions) never appear on slicer tiles. Slicers on
+hierarchy levels are supported too — a slicer on ``Quarter`` lists each
+quarter under its year.
 
 ------------------------------------------------------------
 
