@@ -73,20 +73,20 @@ in 2026.
      - Done (2.1.0)
 
    * - 12
+     - Slicers support
+     - Native support for Excel slicers connected to XLTable cube dimensions.
+     - Done (2.1.0)
+
+   * - 13
      - Native data types in dimension attributes
      - Currently all dimension attributes are cast to string. Planned support for integer and date types,
        allowing dimension values to be used in Excel with their native format.
      -
 
-   * - 13
+   * - 14
      - Sort by another field
      - Ability to sort a dimension attribute by the values of a different field
        (for example, sort month names by month number).
-     -
-
-   * - 14
-     - Slicers support
-     - Native support for Excel slicers connected to XLTable cube dimensions.
      -
 
    * - 15
