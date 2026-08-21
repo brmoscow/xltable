@@ -9,8 +9,8 @@ import os
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'XLTable'
-copyright = '2026, BR Systems, Astana, Kazakhstan'
-author = 'BR Systems'
+copyright = '2026, BR Systems LLP, Astana, Kazakhstan'
+author = 'BR Systems LLP'
 release = '2.1.0'
 
 # -- General configuration ---------------------------------------------------
