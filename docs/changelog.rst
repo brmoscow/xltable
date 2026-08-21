@@ -15,14 +15,6 @@ Version 2.1.0 — 2026-08-16
   measures are greyed out, role access filters apply to slicer tiles, and
   slicers on hierarchy levels work too. See :ref:`excel_slicers`.
 
-- **Fixed an Excel crash on Insert → Timeline** — clicking **Insert** →
-  **Timeline** could close Excel: the server answered a capability
-  question (``DISCOVER_SCHEMA_ROWSETS`` restricted to ``MDSCHEMA_LEVELS``)
-  with a generic list instead of the single-row description Analysis
-  Services returns, and Excel fell back to a malformed request. Excel now
-  correctly reports that the cube has no date fields — timelines
-  themselves are not supported yet.
-
 - **Calculated fields can reference each other** — a calculated field
   expression may use the alias of another calculated field, in any order
   of declaration: ``(turnover * 100) as turnover_pct``. References are
@@ -37,14 +29,6 @@ Version 2.1.0 — 2026-08-16
   lists, Keep Only / Hide probes, drillthrough, MCP), so the hidden
   values never appear in results or dropdowns. See :ref:`cubes` — User
   roles, and :tag:`olap_access_filters`.
-
-- **Cube changes now reach open workbooks on Refresh** — a new measure,
-  dimension or translation added to a cube definition appears in the
-  PivotTable field list right after **Refresh**, without closing and
-  reopening the workbook. The server now reports a live cube version
-  (``LAST_SCHEMA_UPDATE`` / ``LAST_DATA_UPDATE``) instead of a
-  once-a-day timestamp, so Excel knows to re-read the cube structure.
-  See :ref:`refreshing_data`.
 
 - **The admin console got a visual overhaul** — a calm, dense console
   look in both editions: full-width layout, compact data tables, a
