@@ -132,6 +132,12 @@ filters apply: values hidden from the user by ``--olap_access_filters``
 hierarchy levels are supported too — a slicer on ``Quarter`` lists each
 quarter under its year.
 
+.. note::
+
+   **Timelines** (**Insert** → **Timeline**) are not supported yet: cube
+   fields are served as text, so Excel reports that the PivotTable has no
+   date fields. Use a slicer on the date hierarchy instead.
+
 ------------------------------------------------------------
 
 .. _excel_drillthrough:

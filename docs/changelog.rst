@@ -15,6 +15,14 @@ Version 2.1.0 — 2026-08-16
   measures are greyed out, role access filters apply to slicer tiles, and
   slicers on hierarchy levels work too. See :ref:`excel_slicers`.
 
+- **Fixed an Excel crash on Insert → Timeline** — clicking **Insert** →
+  **Timeline** could close Excel: the server answered a capability
+  question (``DISCOVER_SCHEMA_ROWSETS`` restricted to ``MDSCHEMA_LEVELS``)
+  with a generic list instead of the single-row description Analysis
+  Services returns, and Excel fell back to a malformed request. Excel now
+  correctly reports that the cube has no date fields — timelines
+  themselves are not supported yet.
+
 - **Calculated fields can reference each other** — a calculated field
   expression may use the alias of another calculated field, in any order
   of declaration: ``(turnover * 100) as turnover_pct``. References are
