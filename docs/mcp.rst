@@ -223,6 +223,14 @@ by default). **No authorization is required or expected**: the free edition
 serves one local user and ignores ``Authorization`` headers — leave credential
 fields empty, and if a client insists on a value, enter anything.
 
+.. note::
+
+   The walkthroughs below are written for the **free desktop edition**:
+   local URL, no credentials. On the **server edition** the client steps
+   are the same, but the URL is your server's HTTPS address and every
+   request must be authorized — take the connection details from
+   `Server edition`_ below.
+
 Step 4 of the **Quick start** page in the admin console (see
 :ref:`start_page`) offers the same choice of clients with the real port
 already substituted and every config ready to copy.
@@ -290,6 +298,10 @@ itself: if XLTable is not running, the assistant gets the error
    your machine, and require a public HTTPS URL — ``127.0.0.1`` is
    unreachable that way. The ``.mcpb`` extension is the supported path.
 
+On the server edition the same extension connects remotely: fill in the
+**Server URL**, **Server user** and **Server password** fields — see
+`Server edition`_.
+
 Claude Code
 ~~~~~~~~~~~
 
@@ -304,6 +316,9 @@ Add the server with one command in any terminal::
 server is registered for the current project; add ``--scope user`` to have it
 in every project. Verify with ``claude mcp list`` — the server should show as
 connected while XLTable is running — and ask about your cubes in a session.
+
+On the server edition, use the server URL and add a Basic authorization
+header — the exact command is in `Server edition`_.
 
 Copilot in VS Code
 ~~~~~~~~~~~~~~~~~~
@@ -332,6 +347,10 @@ Note the root key: VS Code uses ``servers``, not the ``mcpServers`` most other
 clients read. Then open Copilot Chat, switch it to **Agent** mode and trust
 the server when asked — the XLTable tools appear under the tools button of
 the chat.
+
+On the server edition, point ``url`` at the server and add a ``headers``
+block with a Basic authorization header — the exact config is in
+`Server edition`_.
 
 Local models: LM Studio and compatible hosts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -370,6 +389,10 @@ MCP hosts work with the same URL — for example `Jan <https://jan.ai>`_
 (Settings → MCP Servers, HTTP transport). Ollama has no official built-in
 MCP client support as of this writing.
 
+A local model can also talk to a remote server edition: use the server URL
+and add an ``Authorization`` header in the same config — see
+`Server edition`_.
+
 Any other MCP client
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -392,7 +415,8 @@ convention most clients follow. Known deviations: VS Code uses ``servers``
 as the root key (see above), Windsurf expects ``serverUrl`` instead of
 ``url``, and some clients accept ``"type": "streamable-http"`` as an alias
 of ``"type": "http"``. Keep the URL, adjust the keys. Do not add
-``headers`` — the free edition needs none.
+``headers`` in the free edition — it needs none; the server edition does
+require one (see `Server edition`_).
 
 Clients that only speak **stdio** can use the built-in bridge instead:
 configure the command ``XLTable.exe --mcp-bridge``. Options: ``--url``
@@ -454,9 +478,33 @@ Connecting to a server:
   --user <name> --password <password>``; the password can also be supplied
   via the ``XLTABLE_MCP_PASSWORD`` environment variable instead of the
   command line.
+- **Claude Code** — the same one-line registration as in `AI clients`_,
+  with the server URL and a Basic header::
+
+     claude mcp add --transport http xltable https://your-server/mcp --header "Authorization: Basic <base64 of user:password>"
+
+- **Copilot in VS Code and other JSON-config clients** — the same config
+  as in `AI clients`_, with the server URL and a ``headers`` block (the
+  root key is ``servers`` in VS Code, ``mcpServers`` elsewhere):
+
+  .. code-block:: json
+
+     {
+       "servers": {
+         "xltable": {
+           "type": "http",
+           "url": "https://your-server/mcp",
+           "headers": { "Authorization": "Basic <base64 of user:password>" }
+         }
+       }
+     }
+
 - **HTTP clients** (server platforms, MCP Inspector, …) — send a standard
   ``Authorization: Basic`` header with each request to
-  ``https://your-server/mcp``.
+  ``https://your-server/mcp``. The ``<base64 of user:password>`` value
+  above is the standard Basic scheme: ``echo -n 'user:password' | base64``
+  on Linux/macOS, or in PowerShell
+  ``[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes('user:password'))``.
 - **Platforms whose authorization field only accepts Bearer tokens**
   (e.g. Yandex AI Studio) — pass the same credentials packed as a token:
   ``Authorization: Bearer <base64 of user:password>``. This is the same
