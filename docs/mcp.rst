@@ -315,7 +315,9 @@ Add the server with one command in any terminal::
 (replace ``5000`` with your ``SERVER_PORT`` if you changed it). By default the
 server is registered for the current project; add ``--scope user`` to have it
 in every project. Verify with ``claude mcp list`` — the server should show as
-connected while XLTable is running — and ask about your cubes in a session.
+connected while XLTable is running. A Claude Code session opened **before**
+the change does not pick the server up: exit Claude Code completely and
+start it again, then ask about your cubes.
 
 On the server edition, use the server URL and add a Basic authorization
 header — the exact command is in `Server edition`_.
@@ -324,9 +326,11 @@ Copilot in VS Code
 ~~~~~~~~~~~~~~~~~~
 
 *What you need:* VS Code 1.102 or newer, signed in to GitHub Copilot — the
-free Copilot plan works. On **Copilot Business/Enterprise** an organization
-administrator must enable the *“MCP servers in Copilot”* policy first: it is
-**off by default**, and until then MCP servers do not work for those users.
+free Copilot plan works. This is the **Copilot Chat** pane built into VS
+Code: there is no separate “GitHub Copilot” application to install. On
+**Copilot Business/Enterprise** an organization administrator must enable
+the *“MCP servers in Copilot”* policy first: it is **off by default**, and
+until then MCP servers do not work for those users.
 
 For Microsoft-centric organizations this is often the one approved AI channel.
 Save this as ``.vscode/mcp.json`` in your workspace (or run the **MCP: Add

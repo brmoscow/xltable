@@ -204,9 +204,12 @@ Installation
    .. note::
 
       Until our code signing certificate is in place, Windows SmartScreen
-      may show a *"Windows protected your PC"* warning, because the
-      publisher cannot be verified automatically. Click **More info** →
-      **Run anyway**.
+      shows a *"Windows protected your PC"* dialog ("Microsoft Defender
+      SmartScreen prevented an unrecognized app from starting"). The first
+      screen has only a **Don't run** button — the way through is the small
+      **More info** link: it reveals the publisher line ("Unknown
+      publisher") and the **Run anyway** button that starts the
+      installation.
 
 2. Walk through the wizard (Next → Install → Finish). The installer:
 

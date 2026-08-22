@@ -9,6 +9,10 @@ in the ``settings.json`` file.
 These parameters control server behavior, authentication,
 database access, caching and system limits.
 
+The **Warehouse connection** page of the admin console shows the full path
+of the loaded ``settings.json`` (with a Copy button); in the free desktop
+edition the **Open** button next to it opens the file in your editor.
+
 Every parameter below has its own anchor — hover over a name and use the
 ¶ link to share a direct reference to it.
 
