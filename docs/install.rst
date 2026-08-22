@@ -181,9 +181,9 @@ Windows 10 / 11
 ---------------
 
 On Windows 10 / 11 XLTable runs as a standalone executable — no additional
-components are required. This is the fastest way to get started
-(see also :doc:`quickstart`); for production deployments on Windows Server
-with IIS, see :ref:`install_windows`.
+components are required. This is the fastest way to get started — the
+:doc:`quickstart` guide covers this path end to end; for production
+deployments on Windows Server with IIS, see :ref:`install_windows`.
 
 The desktop distribution comes in two forms:
 
@@ -241,7 +241,8 @@ Installation
 To run the **server edition** standalone instead, set
 ``"EDITION": "server"`` in ``settings.json`` (see :confval:`EDITION`),
 configure the users, restart, then open the admin panel and activate the
-license (see :ref:`obtaining_license`).
+license (see :ref:`obtaining_license`). Coming from the free edition, your
+cube files need no changes — see :ref:`upgrade_from_free`.
 
 .. note::
 
@@ -431,6 +432,36 @@ Update
       C:\olap\xltable\.venv\Scripts\pip install -r C:\olap\xltable\requirements.txt
 
 6. Start the application pool
+
+------------------------------------------------------------
+
+.. _upgrade_from_free:
+
+Upgrading from the free edition
+-------------------------------
+
+The cube files created in the free desktop edition work on the server
+edition **unchanged**: a cube is a connection-agnostic ``.sql`` file, and
+both editions read the same definition text — there is nothing to migrate
+or rewrite. Upgrading is a normal server installation plus your existing
+files:
+
+1. Install the server edition following this page — :ref:`install_ubuntu`
+   or :ref:`install_windows`; a standalone Windows setup works too: set
+   ``"EDITION": "server"`` in ``settings.json`` and restart (see
+   :confval:`EDITION`).
+2. Request and upload a license — :ref:`obtaining_license` (the free
+   edition needs no license file; the server edition does).
+3. Bring the cubes over: keep the folder source and copy the ``.sql``
+   files into the server's :confval:`CUBES_FOLDER`, or store the
+   definitions in the ``olap_definition`` table of the warehouse
+   (:ref:`cube_definition_storage`) — the definition text is the same
+   either way.
+4. Define the users: ``USERS`` / ``USER_GROUPS`` / ``ADMIN_GROUPS`` in
+   ``settings.json``, or Active Directory — see `Authentication`_ below.
+5. In Excel, connect to the server address and sign in with the configured
+   credentials (see :doc:`excel`) — instead of the anonymous
+   ``http://127.0.0.1:5000`` of the free edition.
 
 ------------------------------------------------------------
 

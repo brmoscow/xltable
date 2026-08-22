@@ -21,8 +21,8 @@ while business users keep working in the tool they know best.
       :link: quickstart
       :link-type: doc
 
-      Deploy XLTable, connect a database and open your first
-      Pivot Table — in under an hour.
+      Install the free desktop edition and open your first Pivot
+      Table on your warehouse — no administrator rights needed.
 
    .. grid-item-card:: :octicon:`book;1em` About XLTable
       :link: overview
@@ -135,8 +135,8 @@ documentation as a single file — see :doc:`ai`.
    :caption: Getting started
    :hidden:
 
-   overview
    quickstart
+   overview
 
 .. toctree::
    :maxdepth: 1

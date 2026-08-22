@@ -20,14 +20,14 @@ Version 2.1.0 — 2026-08-16
   of declaration: ``(turnover * 100) as turnover_pct``. References are
   expanded into the underlying measure expression when the cube is built;
   circular references are rejected with a clear error, and the syntax
-  check reports them too. See :ref:`cubes` — Calculated fields.
+  check reports them too. See :doc:`cubes` — Calculated fields.
 
 - **Role access filters support** ``not in`` — a role line
   ``<alias> not in ('v1', 'v2')`` hides the listed values instead of
   enumerating everything the role is allowed to see. The exclusion is
   enforced on every SQL query the server builds (pivots, filter member
   lists, Keep Only / Hide probes, drillthrough, MCP), so the hidden
-  values never appear in results or dropdowns. See :ref:`cubes` — User
+  values never appear in results or dropdowns. See :doc:`cubes` — User
   roles, and :tag:`olap_access_filters`.
 
 - **The admin console got a visual overhaul** — a calm, dense console

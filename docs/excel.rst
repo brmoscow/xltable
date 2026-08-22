@@ -13,7 +13,9 @@ Adding an Analysis Services data source
 ----------------------------------------
 
 1. Open Excel.
-2. Go to **Data** → **Get Data** → **From Database** → **From Analysis Services**.
+2. Go to **Data** → **Get Data** → **From Database** → **From Analysis Services**
+   (not the neighbouring *…SQL Server Analysis Services Database (Import)*
+   item — that Power Query importer hangs on connect).
 
    In older Excel versions: **Data** → **From Other Sources** → **From Analysis Services**.
 
