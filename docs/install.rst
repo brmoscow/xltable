@@ -647,15 +647,15 @@ The free desktop edition guides the first launch end to end: run
 console → four steps later a PivotTable and an AI agent are looking at
 your data.
 
-**Automatic browser launch.** ``XLTable.exe`` always starts the server. When
-the cubes folder is empty (a fresh install) *and* the console is
-interactive (the exe was started by a person, not by a scheduler or a
-service), the browser opens on the Quick start page automatically after the
-server is up. A non-interactive start never opens anything — the link to
-the Quick start page is printed to the console/log in every case, together
-with the admin console address and the Excel connection breadcrumb.
-The cubes folder itself is created automatically at startup when it does
-not exist yet.
+**Automatic browser launch.** ``XLTable.exe`` always starts the server. On
+every interactive start (the exe was started by a person, not by a
+scheduler or a service) the browser opens on the admin console
+automatically after the server is up — on the Quick start page until the
+onboarding is complete, on the Cubes page afterwards. A non-interactive
+start never opens anything — the links are printed to the console/log in
+every case, together with the Excel connection breadcrumb. The cubes
+folder itself is created automatically at startup when it does not exist
+yet.
 
 **Repeated launch.** Starting ``XLTable.exe`` while the server is already
 running does not fail with a "port is busy" error: the second window
@@ -688,8 +688,9 @@ from real system facts — there is nothing to tick manually:
 3. **Connect Excel** — green after the first request from Excel reaches the
    server. The step leads to the **Connect Excel & AI** page (Help
    section), which shows the exact breadcrumb: **Data → Get Data → From
-   Database → From Analysis Services**, server name
-   ``http://127.0.0.1:<port>``, no login needed. Excel talks to the server
+   Database → From Analysis Services** (not the neighbouring *…Database
+   (Import)* item), server name ``http://127.0.0.1:<port>``, no login
+   needed. Excel talks to the server
    through the MSOLAP provider, which normally ships with Office; if Excel
    cannot find Analysis Services, see :doc:`excel`.
 4. **Connect an AI agent** — green after the first agent request reaches

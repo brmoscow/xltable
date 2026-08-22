@@ -154,7 +154,9 @@ For a ready-to-run example with sample tables, test data, and a complete cube de
 Step 6: Connect Excel
 ----------------------
 
-1. Open Excel and go to **Data → Get Data → From Database → From Analysis Services**.
+1. Open Excel and go to **Data → Get Data → From Database → From Analysis
+   Services** (not the neighbouring *…SQL Server Analysis Services Database
+   (Import)* item — that Power Query importer hangs on connect).
 2. Enter the server URL: ``http://127.0.0.1:5000``
    (prefer ``127.0.0.1`` over ``localhost`` — the latter adds ~2 s per
    request on Windows, see the note in :doc:`excel`)

@@ -51,6 +51,39 @@ Check ``CREDENTIAL_DB`` parameters (``host``, ``port``, ``secure``) using the ex
 
 If ClickHouse accepts only TLS/HTTPS, install the correct certificate chain on the XLTable server and try again.
 
+The connection fails with ``SSL: CERTIFICATE_VERIFY_FAILED`` (self-signed certificate in certificate chain).
+------------------------------------------------------------------------------------------------------------
+
+The warehouse uses TLS with a certificate signed by a private CA — typical
+for managed cloud ClickHouse (for example, Yandex Cloud). The error may be
+shown under a generic "Host is unreachable" heading, but the ``SSLError``
+text is the real cause.
+
+Fix it **without turning TLS off**:
+
+- install the provider's CA certificate on the machine running XLTable
+  (cloud providers publish it in their connection guide), or
+- as a fallback, set **Verify certificate = no** while keeping
+  **Secure (TLS) = yes** — the traffic stays encrypted, only the
+  certificate check is skipped.
+
+Do not set ``Secure = no`` to silence this error: that sends your warehouse
+password and data over the network unencrypted.
+
+The Create cube wizard fails at the classification step with a database error (``Not enough privileges`` / ``ACCESS_DENIED``).
+--------------------------------------------------------------------------------------------------------------------------------
+
+The table list of the wizard shows **all** tables and views of the
+warehouse — including those your account cannot read. Generating a cube
+requires the ``SELECT`` right on the chosen table (the wizard profiles its
+columns), so a table you have no access to fails at the classification
+step with the warehouse's own error text. Pick a table your account can
+read, or ask your administrator for a ``SELECT`` grant on it.
+
+A successfully generated cube is saved as a plain ``.sql`` file into the
+cubes folder (with the installer — ``Documents\XLTable\cubes``); the
+**Cubes** page of the admin console lists every cube the server sees.
+
 Where is the specific ClickHouse database configured?
 -----------------------------------------------------
 

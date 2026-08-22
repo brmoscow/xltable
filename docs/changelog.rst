@@ -82,8 +82,10 @@ Version 2.1.0 — 2026-08-16
     distribution, so the download button on the Quick start page works
     out of the box.
 
-- **Quick start page and automatic first launch (free edition)** — on the
-  first interactive start the browser opens the new **Quick start** page:
+- **Quick start page and automatic browser launch (free edition)** — on
+  every interactive start the browser opens the admin console (the new
+  **Quick start** page until the onboarding is complete, **Cubes**
+  afterwards):
   a checklist of four steps (connect the warehouse → create the first
   cube → connect Excel → connect an AI agent). Every step turns green
   from real system facts — nothing is ticked manually — live, while the
