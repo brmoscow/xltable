@@ -185,7 +185,7 @@ components are required. This is the fastest way to get started — the
 :doc:`quickstart` guide covers this path end to end; for production
 deployments on Windows Server with IIS, see :ref:`install_windows`.
 
-The desktop distribution comes in two forms:
+The desktop distribution — **XLTable Desktop** — comes in two forms:
 
 - **Installer** ``XLTable-<version>-setup.exe`` — the recommended path:
   a Next-Finish wizard that installs into your user profile, no
@@ -214,7 +214,7 @@ Installation
 2. Walk through the wizard (Next → Install → Finish). The installer:
 
    - installs XLTable into ``%LOCALAPPDATA%\Programs\XLTable``;
-   - creates a Start menu shortcut **XLTable** (a desktop shortcut is an
+   - creates a Start menu shortcut **XLTable Desktop** (a desktop shortcut is an
      optional checkbox, off by default);
    - creates the cubes folder ``Documents\XLTable\cubes`` and points
      :confval:`CUBES_FOLDER` there — cube files stay in plain sight,
@@ -222,7 +222,7 @@ Installation
    - on later runs, updates the program files **without touching**
      ``settings.json``, the cubes, the cache or the logs.
 
-3. Start the server from the Start menu (**XLTable**), or let the
+3. Start the server from the Start menu (**XLTable Desktop**), or let the
    installer launch it on the finish page. The console window keeps the
    server alive — closing the window stops the server.
 
@@ -259,7 +259,9 @@ Run the new ``XLTable-<version>-setup.exe`` — it installs over the
 existing copy. If the server is running, the installer asks you to close
 the console window first. ``settings.json`` (with your warehouse
 connection), the cubes in ``Documents\XLTable\cubes``, the cache and the
-logs are all preserved.
+logs are all preserved. If you upgrade from a release where the
+application was called just *XLTable*, the Start menu shortcut is renamed
+to **XLTable Desktop** automatically — the old shortcut is removed.
 
 .. note::
 
@@ -274,7 +276,7 @@ logs are all preserved.
 Uninstall
 ^^^^^^^^^
 
-Uninstall from **Settings → Apps → Installed apps → XLTable** (close the
+Uninstall from **Settings → Apps → Installed apps → XLTable Desktop** (close the
 server window first). Your cube files in ``Documents\XLTable\cubes`` are
 **never** deleted. The uninstaller asks whether to also delete the
 settings, cache and logs — by default they are kept, because
@@ -437,8 +439,8 @@ Update
 
 .. _upgrade_from_free:
 
-Upgrading from the free edition
--------------------------------
+Upgrading from XLTable Desktop
+------------------------------
 
 The cube files created in the free desktop edition work on the server
 edition **unchanged**: a cube is a connection-agnostic ``.sql`` file, and
@@ -673,8 +675,8 @@ Cache pages, is the same as described above.
 
 .. _start_page:
 
-Quick start page and first launch (free desktop edition)
---------------------------------------------------------
+Quick start page and first launch (XLTable Desktop)
+----------------------------------------------------
 
 The free desktop edition guides the first launch end to end: run
 ``XLTable.exe`` → the browser opens on the **Quick start** page of the admin

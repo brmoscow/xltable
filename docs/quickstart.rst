@@ -1,10 +1,10 @@
 Quickstart
 ==========
 
-XLTable Free turns your warehouse tables into Excel PivotTables — and lets
-an AI assistant answer questions from the same cubes. It runs entirely on
-your Windows machine: no data leaves your network, no server to deploy, and
-no administrator rights are required.
+XLTable Desktop turns your warehouse tables into Excel PivotTables — and lets
+an AI assistant answer questions from the same cubes. It is free, runs
+entirely on your Windows machine, and requires no license, no server to
+deploy and no administrator rights; no data leaves your network.
 
 This guide takes you to the first run; from there the product itself walks
 you through the rest. For a multi-user server installation on Linux or
@@ -49,7 +49,7 @@ see :ref:`install_windows_zip`.
 First run
 ---------
 
-Start XLTable from the Start menu (**XLTable**). A console window opens —
+Start XLTable from the Start menu (**XLTable Desktop**). A console window opens —
 that window *is* the server: keep it open while you work, closing it stops
 the server.
 

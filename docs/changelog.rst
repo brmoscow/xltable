@@ -47,6 +47,15 @@ Version 2.1.0 — 2026-08-16
   **License** page keeps the license details and the upload form. See
   :ref:`admin_panel`.
 
+- **The Windows desktop distribution is now called XLTable Desktop** —
+  the installer wizard, the *Apps & Features* entry and the Start menu
+  shortcut use the new name. After updating over an existing installation
+  the Start menu shortcut is called **XLTable Desktop** — the old
+  **XLTable** shortcut is removed automatically. Nothing else moves: the
+  executable stays ``XLTable.exe``, the installation folder, the cubes
+  folder and the installer file name ``XLTable-<version>-setup.exe`` are
+  unchanged.
+
 - **The desktop executable is now ``XLTable.exe``** — the Windows desktop
   binary was renamed from ``main.exe`` and carries proper Windows file
   properties. If the old path is written anywhere — a shortcut, a

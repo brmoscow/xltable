@@ -21,7 +21,7 @@ while business users keep working in the tool they know best.
       :link: quickstart
       :link-type: doc
 
-      Install the free desktop edition and open your first Pivot
+      Install XLTable Desktop and open your first Pivot
       Table on your warehouse — no administrator rights needed.
 
    .. grid-item-card:: :octicon:`book;1em` About XLTable
