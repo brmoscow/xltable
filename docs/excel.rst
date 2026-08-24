@@ -132,7 +132,9 @@ data under the current measures greyed out at the end of the list. Role access
 filters apply: values hidden from the user by ``--olap_access_filters``
 (including ``not in`` exclusions) never appear on slicer tiles. Slicers on
 hierarchy levels are supported too — a slicer on ``Quarter`` lists each
-quarter under its year.
+quarter under its year. A slicer on a field that also sits in the report
+filter area stays in sync with it: picking a tile updates the filter, as in
+Analysis Services.
 
 .. note::
 
