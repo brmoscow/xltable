@@ -69,6 +69,13 @@ Select **Use Windows Authentication** in the connection wizard.
 Excel will use the current domain session credentials automatically —
 no username or password needs to be entered manually.
 
+.. note::
+
+   Workbooks created against XLTable 1.0 may use the address
+   ``http://your_server_ip/ad``. This path is kept as an alias of the
+   root address, so existing connections keep working after an upgrade —
+   no need to reconfigure them.
+
 ------------------------------------------------------------
 
 Connection string (advanced)
