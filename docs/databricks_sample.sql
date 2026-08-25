@@ -6,9 +6,10 @@
 -- the `myOLAPcube` OLAP cube definition (see reference.html#unified-example).
 --
 -- The script uses two-level names (db.<table>) and runs in the current
--- catalog — `hive_metastore` by default, matching the default `catalog`
--- behaviour of XLTable. On Unity Catalog, run `USE CATALOG <name>;` first
--- and set the same catalog in settings.json.
+-- catalog of the session. On Unity Catalog (including Free Edition, where
+-- the catalog is `workspace`) run `USE CATALOG <name>;` first and put the
+-- same catalog into settings.json; on legacy workspaces the current catalog
+-- is `hive_metastore`.
 --
 -- Prerequisites:
 --   - A Databricks SQL warehouse (or an all-purpose cluster)
@@ -134,7 +135,9 @@ FROM seq;
 
 -- ─── 4. OLAP cube definition ─────────────────────────────────────────────────
 -- XLTable reads cube definitions from the `olap_definition` table.
--- Single quotes inside the definition string are escaped by doubling them ('').
+-- Single quotes inside the definition string are escaped with a backslash (\').
+-- Spark SQL does NOT treat '' as an escaped quote: adjacent literals are
+-- concatenated ('It''s' becomes Its), so the quotes would silently vanish.
 
 CREATE OR REPLACE TABLE db.olap_definition (
     id         STRING,
@@ -145,14 +148,14 @@ INSERT INTO db.olap_definition VALUES (
 'myOLAPcube',
 '
 with calendar as (
-    SELECT * FROM db.Times WHERE year_str IN (''2023'', ''2024'', ''2025'')
+    SELECT * FROM db.Times WHERE year_str IN (\'2023\', \'2024\', \'2025\')
 )
 
 --olap_cube
 --olap_calculated_fields Calculated fields
 (sales_sum_qty / stock_avg_qty) as calc_turnover --translation=`Turnover` --format=`#,##0.00;-#,##0.00`
 --olap_jinja
-{{ sql_text | replace("salesly.date_sale", "date_format(add_months(to_date(salesly.date_sale), 12), ''yyyy-MM-dd'')") }}
+{{ sql_text | replace("salesly.date_sale", "date_format(add_months(to_date(salesly.date_sale), 12), \'yyyy-MM-dd\')") }}
 
 --olap_source Sales
 SELECT
@@ -215,7 +218,7 @@ FROM db.Models models
 SELECT
 --olap_dimensions
  times.year_str as times_year_str --hierarchy=`Dates` --translation=`Year`
-,date_format(date_trunc(''QUARTER'', to_date(times.day_str)), ''yyyy-MM'') as times_quarter_str --hierarchy=`Dates` --translation=`Quarter`
+,date_format(date_trunc(\'QUARTER\', to_date(times.day_str)), \'yyyy-MM\') as times_quarter_str --hierarchy=`Dates` --translation=`Quarter`
 ,times.month_str as times_month_str --hierarchy=`Dates` --translation=`Month`
 ,times.day_str   as times_day_str   --hierarchy=`Dates` --translation=`Day`
 FROM calendar times

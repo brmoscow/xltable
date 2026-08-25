@@ -160,8 +160,19 @@ Example structure for Databricks connection:
 
 ``server_hostname`` and ``http_path`` can be found in the Databricks workspace
 under **SQL Warehouses → Connection details**.
-``access_token`` is a personal access token generated in **User Settings → Developer → Access tokens**.
-``catalog`` is optional; if omitted, ``hive_metastore`` is used.
+``access_token`` is a personal access token generated in **Settings → Developer → Access tokens**.
+``catalog`` is the Unity Catalog catalog that holds your schemas; XLTable opens
+the session in it, so two-level table names (``schema.table``) in cube SQL
+resolve there. It is optional: when omitted, the default catalog of the
+warehouse is used (``hive_metastore`` on legacy workspaces). On
+**Databricks Free Edition** the catalog is ``workspace``.
+
+.. note::
+
+   Single quotes inside string literals of Databricks cube SQL are escaped
+   with a backslash (``'It\'s'``). Spark SQL does not treat ``''`` as an
+   escaped quote — adjacent literals are concatenated, so ``'It''s'`` silently
+   becomes ``Its``.
 
 Greenplum
 ---------

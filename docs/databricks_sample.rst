@@ -14,10 +14,11 @@ The script file: :download:`databricks_sample.sql <databricks_sample.sql>`
 What the script creates
 -----------------------
 
-The script creates schema ``db`` in the **current catalog** —
-``hive_metastore`` by default, which matches the default ``catalog``
-behaviour of XLTable. On Unity Catalog, run ``USE CATALOG <name>;`` first
-and set the same catalog in ``settings.json``.
+The script creates schema ``db`` in the **current catalog** of the SQL
+session. On Unity Catalog — including **Databricks Free Edition**, where the
+catalog is ``workspace`` — run ``USE CATALOG <name>;`` first and put the same
+name into ``"catalog"`` in ``settings.json``. On legacy workspaces the current
+catalog is ``hive_metastore`` and ``"catalog"`` can be omitted.
 
 .. list-table::
    :header-rows: 1
@@ -94,10 +95,12 @@ Prerequisites
 -------------
 
 - A Databricks workspace with a running **SQL warehouse**
-  (or an all-purpose cluster)
+  (or an all-purpose cluster). The no-cost
+  `Databricks Free Edition <https://docs.databricks.com/aws/en/getting-started/free-edition>`_
+  is enough: its serverless ``2X-Small`` warehouse handles the sample easily
 - A user with ``CREATE SCHEMA``, ``CREATE TABLE`` privileges in the catalog
 - A personal access token for XLTable
-  (**User Settings → Developer → Access tokens**)
+  (**Settings → Developer → Access tokens**)
 - XLTable server already installed and running (see :doc:`install`)
 
 ------------------------------------------------------------
@@ -112,7 +115,9 @@ using one of the options below.
 
 1. Open your workspace and go to **SQL Editor**.
 2. Select a running SQL warehouse.
-3. Paste the script contents into a new query and click **Run all**.
+3. Paste the script contents into a new query. On Unity Catalog add
+   ``USE CATALOG <name>;`` as the first line (``USE CATALOG workspace;`` on
+   Free Edition) and click **Run all**.
 
 **Option B — Databricks SQL CLI**
 
@@ -169,6 +174,7 @@ connection block:
            "server_hostname": "adb-xxxxxxxxxxxx.azuredatabricks.net",
            "http_path": "/sql/1.0/warehouses/xxxxxxxxxxxx",
            "access_token": "dapi...",
+           "catalog": "workspace",
            "query_timeout": 60
        },
        "WRITE_LOG": false,
@@ -185,9 +191,11 @@ connection block:
    }
 
 ``server_hostname`` and ``http_path`` can be found in the Databricks workspace
-under **SQL Warehouses → Connection details**. If you created the sample in a
-Unity Catalog catalog (not ``hive_metastore``), add ``"catalog": "<name>"``
-to ``CREDENTIAL_DB``.
+under **SQL Warehouses → Connection details**. ``"catalog"`` must be the
+catalog the script ran in (``workspace`` on Free Edition); on a legacy
+``hive_metastore`` workspace the key can be omitted. The same settings can be
+entered in the **Connection** form of the admin console, which also has a
+**Test connection** button.
 
 XLTable automatically discovers all cubes stored in the ``olap_definition``
 table, so no additional cube configuration is needed.
@@ -309,6 +317,13 @@ Troubleshooting
 ``Warehouse is stopped``
     Databricks SQL warehouses auto-stop when idle. Start the warehouse in
     **SQL Warehouses** before running the script or connecting from Excel.
+    A serverless warehouse resumes on the first query — expect the first
+    refresh after a pause to take 10–15 seconds longer.
+
+Quotes disappear from the cube definition (``date_trunc(QUARTER, ...)``)
+    The definition was inserted with ``''``-style escaping. Spark SQL
+    concatenates adjacent literals instead, so the quotes vanish silently.
+    Escape single quotes with a backslash (``\'``), as the sample script does.
 
 ``No cubes visible in Excel``
     Verify the definition row exists:
