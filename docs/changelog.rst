@@ -30,6 +30,14 @@ Version 2.1.0 — 2026-08-16
   values never appear in results or dropdowns. See :doc:`cubes` — User
   roles, and :tag:`olap_access_filters`.
 
+- **Every build is identifiable** — the version in the admin console
+  header and on the status page, the ``/admin/ping`` reply and the first
+  line of the log now carry a build stamp next to the version number:
+  ``v2.1.0 (2026-08-27 6b9eeb4)`` is the build date and the source
+  commit. Quote this whole string when contacting :doc:`support` — it
+  tells exactly which build you are running even when several builds
+  share a version number. Archive and installer names are unchanged.
+
 - **The admin console got a visual overhaul** — a calm, dense console
   look in both editions: full-width layout, compact data tables, a
   monospaced face for data values and a live status line in the header

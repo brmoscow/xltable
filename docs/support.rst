@@ -9,6 +9,12 @@ If you have any questions or problems, please use these contacts:
 Prefer asking an AI assistant? Feed it the whole documentation as a single
 file — see :doc:`ai`.
 
+When reporting a problem, quote the full version string from the admin
+console header, e.g. ``v2.1.0 (2026-08-27 6b9eeb4)``. The part in
+brackets is the build stamp — the build date and source commit — and it
+identifies your build exactly, even when several builds share a version
+number. The same string is the first line of every log file.
+
 ------------------------------------------------------------
 
 Troubleshooting
