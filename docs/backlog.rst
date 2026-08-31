@@ -95,17 +95,49 @@ in 2026.
      -
 
    * - 16
-     - Power BI connection
-     - Support for connecting Power BI to XLTable as a data source.
-     -
-
-   * - 17
      - Built-in Jinja functions
      - A library of built-in Jinja functions available in cube SQL templates
        for common transformations, date handling, and formatting operations.
      -
 
-   * - 18
+   * - 17
      - Excel for Mac support
      - Ability to work with XLTable data in Excel on macOS.
+     -
+
+   * - 18
+     - SQL endpoint
+     - Expose XLTable cubes over the PostgreSQL wire protocol so that BI tools
+       (Power BI, DataLens, Apache Superset, Metabase, Tableau and others)
+       can connect to cubes as regular database tables without a dedicated connector.
+       Each cube is presented as a flat virtual table with hierarchy levels
+       and pre-aggregated measures as columns. Authentication, row-level security
+       and the shared result cache apply the same way as for Excel and MCP.
+     -
+
+   * - 19
+     - API endpoint
+     - An HTTP API for querying cubes (dimensions, measures, filters, sorting, limit)
+       and retrieving cube metadata, with results in JSON or CSV.
+       Uses the same authentication, row-level security and result cache as Excel and MCP.
+       Intended for scripts, notebooks, embedded analytics and partner integrations.
+     -
+
+   * - 20
+     - Pre-aggregation friendly SQL
+     - Generate cube SQL in a form that lets the database engine answer queries from
+       its own pre-aggregated structures, such as materialized views and projections:
+       aggregate over raw fact table columns first and join dimension attributes
+       to the aggregated result, instead of joining and casting before aggregation.
+     -
+
+   * - 21
+     - Aggregate awareness
+     - Support for pre-aggregated tables stored and refreshed by the database
+       (for example, "sales by store by month"), which answer queries orders of magnitude
+       faster than the raw fact table. Pre-aggregates are declared in the cube definition,
+       and XLTable routes each query to the smallest suitable one — the semantic layer
+       knows how hierarchy levels roll up (months into quarters, stores into regions)
+       and which measures cannot be re-aggregated (averages, distinct counts) —
+       falling back to the fact table when no pre-aggregate fits.
      -
