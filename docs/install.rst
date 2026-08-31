@@ -688,10 +688,19 @@ every interactive start (the exe was started by a person, not by a
 scheduler or a service) the browser opens on the admin console
 automatically after the server is up — on the Quick start page until the
 onboarding is complete, on the Cubes page afterwards. A non-interactive
-start never opens anything — the links are printed to the console/log in
-every case, together with the Excel connection breadcrumb. The cubes
-folder itself is created automatically at startup when it does not exist
-yet.
+start never opens anything — the addresses are still written to the server
+log. The cubes folder itself is created automatically at startup when it
+does not exist yet.
+
+**The console window.** On an interactive start the window begins with a
+short header: the product name and edition, a reminder that closing the
+window stops the server, the admin console address (with a note on whether
+the browser was opened automatically) and the cubes folder with the number
+of cubes in it. Below the header follows the server log — at startup a
+single summary line (version, edition, cache backend, threads, serving
+address, cube count), useful when reporting a problem. The files in the
+``log`` folder next to the executable always keep the full detailed log,
+regardless of what the console shows.
 
 **Repeated launch.** Starting ``XLTable.exe`` while the server is already
 running does not fail with a "port is busy" error: the second window

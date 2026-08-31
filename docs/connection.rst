@@ -31,10 +31,14 @@ server edition the page sits behind the usual admin authentication, see
 :ref:`admin_panel`.
 
 On the very first start of the free edition, while the connection is not
-configured yet, the server console prints the direct hint::
+configured yet, the server log records the direct hint::
 
    Warehouse connection is not configured yet — set it up at
    http://127.0.0.1:5000/admin (Warehouse connection page)
+
+(the console window itself stays short — its header already shows the
+admin console address, and the browser opens on the Quick start checklist
+whose first step is exactly this form).
 
 The server and the admin console work fine before the warehouse is
 configured — cube queries simply return a clear connection error until the

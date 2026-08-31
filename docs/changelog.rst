@@ -9,6 +9,15 @@ Stay up to date with the latest releases by following us on
 Version 2.1.0 — 2026-08-16
 --------------------------
 
+- **A clean console window at startup (XLTable Desktop)** — the free
+  edition console now opens with a short human header (edition and
+  version, "keep this window open", the admin console address, the cubes
+  folder) followed by a single summary log line instead of the previous
+  series of startup messages; the Excel connection breadcrumb moved to
+  the admin console for good (Quick start / Connect Excel & AI). The
+  files in the ``log`` folder still keep the full detailed log, and the
+  server edition startup output is unchanged. See :ref:`start_page`.
+
 - **Excel Slicers are now supported** — insert a slicer on any cube field
   (**Insert** → **Slicer**) and filter the Pivot Table by clicking tiles,
   just like with Analysis Services. Members with no data under the current
