@@ -6,6 +6,30 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
+Version 2.1.1
+-------------
+
+- **Single sign-on with Active Directory on Linux (Kerberos)** — the
+  Linux server now validates Kerberos tickets against a keytab issued in
+  your domain: Excel on a domain-joined workstation connects without a
+  password prompt, exactly like the Windows Server (IIS) deployment.
+  Enabled by the new ``keytab`` key in
+  :confval:`CREDENTIAL_ACTIVE_DIRECTORY`; preparation steps on the AD
+  side (service account, ``setspn``, ``ktpass``) are described in
+  :ref:`linux_sso`. Only Kerberos is accepted — the deprecated NTLM
+  protocol is rejected, and clients that cannot use Kerberos (machines
+  outside the domain, connections by IP) are offered the usual password
+  sign-in on the same endpoint.
+
+- **Domain login and password over HTTP Basic** — with
+  :confval:`CREDENTIAL_ACTIVE_DIRECTORY` configured, a user missing from
+  ``USERS`` is now verified against the domain controller (LDAP bind)
+  and authorized by AD group membership. Domain accounts thus work from
+  outside the domain too — including scripted clients and the MCP
+  endpoint.
+
+------------------------------------------------------------
+
 Version 2.1.0 — 2026-08-16
 --------------------------
 

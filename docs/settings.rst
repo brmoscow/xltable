@@ -556,8 +556,19 @@ Parameter reference
           "domain_full": "company.org",
           "username": "service_olap",
           "password": "...",
-          "access_groups": ["olap_users_all", "olap_users_sales"]
+          "access_groups": ["olap_users_all", "olap_users_sales"],
+          "keytab": "setting/xltable.keytab"
       }
+
+   ``keytab`` (Linux only, since 2.1.1) — path to the Kerberos keytab
+   file issued in your domain; its presence enables single sign-on
+   (Excel connects without a password prompt). See :ref:`linux_sso`.
+   Relative paths are resolved from the application directory.
+
+   With the section configured, users can also sign in with their domain
+   login and password over HTTP Basic: the password is verified against
+   the domain controller (LDAP bind), groups are read from AD and checked
+   against ``access_groups``.
 
    Default: not set
 

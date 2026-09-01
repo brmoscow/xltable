@@ -24,6 +24,23 @@ I get errors such as "Connection failed, target computer actively refused it," t
 - In the Excel server field, always use the full URL with protocol: ``http://...`` or ``https://...``.
 - Also verify access to XLTable over ports 80/443.
 
+Excel asks for a password although single sign-on (AD) is configured.
+----------------------------------------------------------------------
+
+Single sign-on works over Kerberos only, and Kerberos is strict about how
+the server is addressed:
+
+- Connect by the **DNS name** the SPN was issued for (e.g.
+  ``http://olap.company.local``) — for a connection by IP address Windows
+  cannot obtain a ticket and Excel falls back to the password prompt.
+- The workstation must be **joined to the domain** and able to reach a
+  domain controller; a machine outside the domain always signs in with a
+  password.
+- The clock on the workstation and the server must be within 5 minutes
+  of the domain time (a domain default).
+- On Linux, check that the ``keytab`` key is configured — see
+  :ref:`linux_sso`.
+
 Excel shows an XML parsing error, or curl returns HTTP 500 from the server.
 ----------------------------------------------------------------------------
 

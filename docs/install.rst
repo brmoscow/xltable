@@ -529,15 +529,19 @@ Active Directory integration
 XLTable supports authentication and authorization
 using Microsoft Active Directory.
 
-.. note::
-
-   Active Directory integration requires XLTable to be installed on
-   Windows Server.
-
 Active Directory integration allows you to:
-- Authenticate users automatically
+- Authenticate users automatically (single sign-on, no password prompt)
 - Map AD users and groups to XLTable roles
 - Centralize access management
+
+Single sign-on is available on both server platforms:
+
+- **Windows Server (IIS)** — IIS performs Windows integrated
+  authentication and passes the user on to XLTable; no extra
+  configuration beyond the ``CREDENTIAL_ACTIVE_DIRECTORY`` section.
+- **Linux** — XLTable validates Kerberos tickets itself against a
+  keytab file issued in your domain; see `Single sign-on on Linux
+  (Kerberos)`_ below.
 
 To enable Active Directory authentication, configure the corresponding
 section in the ``settings.json`` file.
@@ -555,6 +559,87 @@ Example structure:
         "password": "...",
         "access_groups": ["olap_users_all", "olap_users_sales", "olap_users_accounting"]
     }
+
+With this section configured, users may also sign in with their domain
+login and password (HTTP Basic): the password is verified against the
+domain controller by an LDAP bind, and groups are read from AD. This
+covers computers outside the domain, connections by IP address, and
+scripted clients; put the server behind HTTPS when passwords travel over
+the network.
+
+.. _linux_sso:
+
+Single sign-on on Linux (Kerberos)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Starting with version 2.1.1, the Linux server accepts Kerberos tickets
+directly — Excel on a domain-joined workstation connects without a
+password prompt, like with IIS. One-time preparation in your domain
+(30–60 minutes for a domain administrator):
+
+1. **DNS name.** Create an internal DNS A-record for the XLTable server,
+   e.g. ``olap.company.local`` → the Linux server's IP. Users must
+   connect by this name: Kerberos does not work for connections by IP
+   address — those fall back to the password prompt.
+
+2. **Service account.** Create a regular (non-privileged) AD user, e.g.
+   ``svc-xltable``, with a non-expiring password. It needs no
+   administrative rights and should not be used for anything else.
+
+3. **SPN.** Bind the server name to the account:
+
+   .. code-block:: bat
+
+      setspn -S HTTP/olap.company.local svc-xltable
+
+4. **Keytab.** Issue the key file:
+
+   .. code-block:: bat
+
+      ktpass -princ HTTP/olap.company.local@COMPANY.LOCAL ^
+             -mapuser COMPANY\svc-xltable -crypto AES256-SHA1 ^
+             -ptype KRB5_NT_PRINCIPAL -pass * -out xltable.keytab
+
+   ``ktpass`` resets the account's password to the one given, and each
+   re-issue invalidates the previous keytab.
+
+5. **Place the keytab on the server.** Copy the file to the XLTable
+   server over a secure channel (``scp``; the keytab is equivalent to
+   the service account's password), put it next to the settings, make it
+   readable by the service user only, and point the config at it:
+
+   .. code-block:: json
+
+      "CREDENTIAL_ACTIVE_DIRECTORY": {
+          ...,
+          "keytab": "setting/xltable.keytab"
+      }
+
+   The presence of the ``keytab`` key switches single sign-on on; no
+   restart is needed beyond the usual settings reload.
+
+6. **Network.** The XLTable server must reach the domain controllers on
+   ports 88 (Kerberos) and 389 (LDAP); workstations reach the XLTable
+   server on 80/443 as usual.
+
+Notes and limitations:
+
+- Only Kerberos is supported. The legacy NTLM protocol is deliberately
+  rejected (Microsoft has deprecated it); a client that cannot obtain a
+  Kerberos ticket — a machine outside the domain, a connection by IP —
+  is offered the password sign-in instead, on the same endpoint.
+- Workstations need no configuration: a domain-joined machine with the
+  clock in sync (a domain default) works out of the box.
+- Automated clients (ETL scripts, services) keep using login/password or
+  an API token.
+- Excel needs no client-side configuration, but **browsers** are stricter
+  about silent sign-in to the admin panel: add the server name to the
+  "Local intranet" zone (Internet Explorer/Edge policies), and for
+  Chrome set the ``AuthServerAllowlist`` policy to the server name
+  (registry key ``HKLM\SOFTWARE\Policies\Google\Chrome``, string value
+  ``AuthServerAllowlist`` = ``olap.company.local``). Without it the
+  browser shows a sign-in dialog — the domain login and password work
+  there too.
 
 ------------------------------------------------------------
 
