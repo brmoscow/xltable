@@ -565,7 +565,12 @@ login and password (HTTP Basic): the password is verified against the
 domain controller by an LDAP bind, and groups are read from AD. This
 covers computers outside the domain, connections by IP address, and
 scripted clients; put the server behind HTTPS when passwords travel over
-the network.
+the network. Enable ``use_ssl`` (or an ``ldaps://`` ``server_address``)
+so the bind to the domain controller itself uses LDAPS on port 636
+rather than cleartext LDAP on 389 — otherwise the user's password
+reaches the DC unencrypted. Repeated failed sign-ins for the same name
+are throttled server-side so a wrong password cannot lock the domain
+account.
 
 .. _linux_sso:
 
@@ -619,8 +624,8 @@ password prompt, like with IIS. One-time preparation in your domain
    restart is needed beyond the usual settings reload.
 
 6. **Network.** The XLTable server must reach the domain controllers on
-   ports 88 (Kerberos) and 389 (LDAP); workstations reach the XLTable
-   server on 80/443 as usual.
+   port 88 (Kerberos) and on 389 (LDAP) — or 636 (LDAPS) when ``use_ssl``
+   is enabled; workstations reach the XLTable server on 80/443 as usual.
 
 Notes and limitations:
 

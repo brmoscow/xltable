@@ -557,7 +557,8 @@ Parameter reference
           "username": "service_olap",
           "password": "...",
           "access_groups": ["olap_users_all", "olap_users_sales"],
-          "keytab": "setting/xltable.keytab"
+          "keytab": "setting/xltable.keytab",
+          "use_ssl": true
       }
 
    ``keytab`` (Linux only, since 2.1.1) — path to the Kerberos keytab
@@ -565,10 +566,19 @@ Parameter reference
    (Excel connects without a password prompt). See :ref:`linux_sso`.
    Relative paths are resolved from the application directory.
 
+   ``use_ssl`` (since 2.1.1) — connect to the domain controller over
+   LDAPS (port 636). Recommended whenever domain passwords are verified
+   by LDAP bind (the login-and-password path below), so credentials do
+   not cross the network in cleartext. LDAPS can also be selected by
+   giving ``server_address`` as an ``ldaps://dc.company.org`` URL. The
+   DC's certificate must be trusted by the server's system CA store.
+
    With the section configured, users can also sign in with their domain
    login and password over HTTP Basic: the password is verified against
    the domain controller (LDAP bind), groups are read from AD and checked
-   against ``access_groups``.
+   against ``access_groups``. Repeated failed attempts for a name are
+   throttled to avoid locking the domain account. Put the server behind
+   HTTPS and enable ``use_ssl`` when this path is used over the network.
 
    Default: not set
 
