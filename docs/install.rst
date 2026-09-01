@@ -529,6 +529,31 @@ Active Directory integration
 XLTable supports authentication and authorization
 using Microsoft Active Directory.
 
+.. important::
+
+   **Serve XLTable over HTTPS whenever Active Directory is used.** Install
+   a valid TLS certificate on the server (on Windows Server this is the
+   IIS site binding; on Linux, the reverse proxy — nginx — in front of
+   XLTable) and have clients connect by ``https://``. Two things travel
+   over the client connection that must not cross the network in the
+   clear:
+
+   - the **domain login and password** on the password sign-in path — sent
+     as HTTP Basic (base64, effectively plaintext);
+   - the **session token** issued after sign-in (including after Kerberos
+     single sign-on) — a bearer credential; anyone who captures it from an
+     unencrypted connection can reuse the session.
+
+   Over plain HTTP both are exposed, so an AD deployment without HTTPS
+   leaks domain credentials and is open to session hijacking. The
+   certificate should be trusted by client workstations (an internal CA
+   or AD Certificate Services covers this for domain-joined machines).
+
+   To make this hard to get wrong, the Linux server **refuses AD
+   authentication over plain HTTP by default** — see :confval:`REQUIRE_HTTPS`.
+   Under Windows Server (IIS) the transport is governed by the IIS site
+   binding as before and this enforcement does not apply.
+
 Active Directory integration allows you to:
 - Authenticate users automatically (single sign-on, no password prompt)
 - Map AD users and groups to XLTable roles

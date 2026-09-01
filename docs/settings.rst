@@ -571,7 +571,12 @@ Parameter reference
    by LDAP bind (the login-and-password path below), so credentials do
    not cross the network in cleartext. LDAPS can also be selected by
    giving ``server_address`` as an ``ldaps://dc.company.org`` URL. The
-   DC's certificate must be trusted by the server's system CA store.
+   controller's certificate is then validated against the server's
+   system CA store, so the DC certificate (or its issuing CA) must be
+   trusted there and its subject must match the host used to connect.
+   Set ``"tls_verify": false`` to skip that validation (encrypted but
+   not authenticated — only for a self-signed DC certificate you choose
+   not to install in the trust store).
 
    With the section configured, users can also sign in with their domain
    login and password over HTTP Basic: the password is verified against
@@ -581,6 +586,31 @@ Parameter reference
    HTTPS and enable ``use_ssl`` when this path is used over the network.
 
    Default: not set
+
+.. confval:: REQUIRE_HTTPS
+
+   Refuse to serve Active Directory authentication over plain HTTP. When
+   :confval:`CREDENTIAL_ACTIVE_DIRECTORY` is configured this is **on by
+   default** (since 2.1.1): a request that did not arrive over HTTPS is
+   rejected (XMLA/MCP with ``403``, a browser ``GET`` is redirected to
+   ``https://``), because the domain password and the session token must
+   not cross the network in the clear. The server detects the external
+   protocol from the ``X-Forwarded-Proto`` header set by the reverse
+   proxy (the installer's nginx config sets it).
+
+   Set ``false`` only when TLS is terminated by an upstream load balancer
+   that cannot pass ``X-Forwarded-Proto``. The Windows Server (IIS)
+   deployment is not affected — there TLS is governed by the IIS site
+   binding, and this setting is ignored. The free edition (local only) is
+   never affected.
+
+   Example:
+
+   .. code-block:: json
+
+      "REQUIRE_HTTPS": true
+
+   Default: on when :confval:`CREDENTIAL_ACTIVE_DIRECTORY` is set, off otherwise
 
 .. confval:: EXPORT
 
