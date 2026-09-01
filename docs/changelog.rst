@@ -6,8 +6,8 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
-Version 2.1.1
--------------
+Version 2.1.1 — 2026-09-01
+--------------------------
 
 - **Single sign-on with Active Directory on Linux (Kerberos)** — the
   Linux server now validates Kerberos tickets against a keytab issued in
