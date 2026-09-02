@@ -550,7 +550,8 @@ using Microsoft Active Directory.
    or AD Certificate Services covers this for domain-joined machines).
 
    To make this hard to get wrong, the Linux server **refuses AD
-   authentication over plain HTTP by default** — see :confval:`REQUIRE_HTTPS`.
+   authentication over plain HTTP by default** — see :confval:`REQUIRE_HTTPS`
+   (the front's ``X-Forwarded-Proto`` header satisfies it).
    Under Windows Server (IIS) the transport is governed by the IIS site
    binding as before and this enforcement does not apply.
 
@@ -564,9 +565,10 @@ Single sign-on is available on both server platforms:
 - **Windows Server (IIS)** — IIS performs Windows integrated
   authentication and passes the user on to XLTable; no extra
   configuration beyond the ``CREDENTIAL_ACTIVE_DIRECTORY`` section.
-- **Linux** — XLTable validates Kerberos tickets itself against a
-  keytab file issued in your domain; see `Single sign-on on Linux
-  (Kerberos)`_ below.
+- **Linux** — an authenticating front (Apache ``mod_auth_gssapi`` or a
+  Kerberos-capable load balancer) validates the ticket and passes the user
+  name to XLTable; see `Single sign-on on Linux: an authenticating front`_
+  below.
 
 To enable Active Directory authentication, configure the corresponding
 section in the ``settings.json`` file.
@@ -599,30 +601,43 @@ account.
 
 .. _linux_sso:
 
-Single sign-on on Linux (Kerberos)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Single sign-on on Linux: an authenticating front
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Starting with version 2.1.1, the Linux server accepts Kerberos tickets
-directly — Excel on a domain-joined workstation connects without a
-password prompt, like with IIS. One-time preparation in your domain
-(30–60 minutes for a domain administrator):
+On Linux the Kerberos handshake is performed by an **authenticating front**
+in front of XLTable — the same division of labour as with IIS on Windows.
+The front validates the user's Kerberos ticket (and, optionally, a domain
+login and password) and passes the resulting user name to XLTable in a
+request header; XLTable itself never sees domain credentials. Two fronts
+are supported:
 
-1. **DNS name.** Create an internal DNS A-record for the XLTable server,
-   e.g. ``olap.company.local`` → the Linux server's IP. Users must
-   connect by this name: Kerberos does not work for connections by IP
-   address — those fall back to the password prompt.
+- **Apache httpd with** ``mod_auth_gssapi`` — the reference configuration
+  below;
+- **a Kerberos-capable load balancer** you already operate (F5 BIG-IP,
+  Citrix ADC/NetScaler): terminate Kerberos there and forward the user name
+  in the same header.
 
-2. **Service account.** Create a regular (non-privileged) AD user, e.g.
-   ``svc-xltable``, with a non-expiring password. It needs no
-   administrative rights and should not be used for anything else.
+XLTable trusts the header **only** when the request comes from an address
+listed in :confval:`TRUSTED_PROXY` (loopback by default), so a client can
+never forge it; XLTable should then listen on ``127.0.0.1`` only.
 
-3. **SPN.** Bind the server name to the account:
+Preparation in your domain (a domain administrator, 30–60 minutes):
+
+1. **DNS name.** Create an internal A-record for the XLTable server, e.g.
+   ``olap.company.local`` → the Linux server's IP. Users connect by this
+   name — Kerberos does not work for connections by IP address.
+
+2. **Service account.** A regular AD user, e.g. ``svc-xltable``, with a
+   non-expiring password; no administrative rights, not used for anything
+   else.
+
+3. **SPN.**
 
    .. code-block:: bat
 
       setspn -S HTTP/olap.company.local svc-xltable
 
-4. **Keytab.** Issue the key file:
+4. **Keytab.**
 
    .. code-block:: bat
 
@@ -631,45 +646,84 @@ password prompt, like with IIS. One-time preparation in your domain
              -ptype KRB5_NT_PRINCIPAL -pass * -out xltable.keytab
 
    ``ktpass`` resets the account's password to the one given, and each
-   re-issue invalidates the previous keytab.
+   re-issue invalidates the previous keytab. Copy the file to the Linux
+   server over a secure channel — it is equivalent to the account's
+   password — and give it to the **front**, not to XLTable.
 
-5. **Place the keytab on the server.** Copy the file to the XLTable
-   server over a secure channel (``scp``; the keytab is equivalent to
-   the service account's password), put it next to the settings, make it
-   readable by the service user only, and point the config at it:
+5. **Apache front** (``apt install apache2 libapache2-mod-auth-gssapi``,
+   ``a2enmod ssl proxy proxy_http proxy_balancer lbmethod_byrequests headers
+   auth_gssapi``). Reference virtual host:
+
+   .. code-block:: apache
+
+      <VirtualHost *:443>
+          ServerName olap.company.local
+          SSLEngine on
+          SSLCertificateFile    /etc/xltable/olap.crt
+          SSLCertificateKeyFile /etc/xltable/olap.key
+
+          <Location />
+              AuthType GSSAPI
+              AuthName "XLTable"
+              GssapiCredStore keytab:/etc/xltable/xltable.keytab
+              GssapiAllowedMech krb5
+              GssapiLocalName On
+              GssapiBasicAuth On
+              Require valid-user
+              # XLTable must see only the identity, never the credentials
+              RequestHeader unset Authorization
+              RequestHeader unset X-Remote-User
+              RequestHeader set   X-Remote-User "%{REMOTE_USER}s"
+              RequestHeader set   X-Forwarded-Proto https
+          </Location>
+
+          ProxyPreserveHost On
+          ProxyPass        / balancer://xltable/
+          ProxyPassReverse / balancer://xltable/
+          <Proxy balancer://xltable>
+              BalancerMember http://127.0.0.1:5000 timeout=300
+              BalancerMember http://127.0.0.1:5001 timeout=300
+          </Proxy>
+      </VirtualHost>
+
+   ``GssapiBasicAuth On`` also accepts a domain login and password (HTTP
+   Basic, checked against the KDC) for machines outside the domain and for
+   scripted clients — so XLTable performs no authentication of its own in
+   this deployment, and local ``USERS`` are not available (as with IIS).
+
+6. **XLTable settings.**
 
    .. code-block:: json
 
-      "CREDENTIAL_ACTIVE_DIRECTORY": {
-          ...,
-          "keytab": "setting/xltable.keytab"
-      }
+      "TRUSTED_PROXY": {"header": "X-Remote-User", "addresses": ["127.0.0.1"]}
 
-   The presence of the ``keytab`` key switches single sign-on on; no
-   restart is needed beyond the usual settings reload.
+   together with the usual :confval:`CREDENTIAL_ACTIVE_DIRECTORY` (service
+   account for group lookup, ``access_groups``). The front handles TLS, so
+   the :confval:`REQUIRE_HTTPS` guard is satisfied by its
+   ``X-Forwarded-Proto`` header.
 
-6. **Network.** The XLTable server must reach the domain controllers on
-   port 88 (Kerberos) and on 389 (LDAP) — or 636 (LDAPS) when ``use_ssl``
-   is enabled; workstations reach the XLTable server on 80/443 as usual.
+7. **Network.** The XLTable server reaches the domain controllers on port
+   88 (Kerberos, used by the front) and 389/636 (LDAP/LDAPS, group lookup);
+   workstations reach the front on 443.
 
 Notes and limitations:
 
 - Only Kerberos is supported. The legacy NTLM protocol is deliberately
   rejected (Microsoft has deprecated it); a client that cannot obtain a
-  Kerberos ticket — a machine outside the domain, a connection by IP —
-  is offered the password sign-in instead, on the same endpoint.
+  Kerberos ticket — a machine outside the domain, a connection by IP — signs
+  in with a domain login and password through the front instead.
 - Workstations need no configuration: a domain-joined machine with the
-  clock in sync (a domain default) works out of the box.
-- Automated clients (ETL scripts, services) keep using login/password or
-  an API token.
-- Excel needs no client-side configuration, but **browsers** are stricter
-  about silent sign-in to the admin panel: add the server name to the
-  "Local intranet" zone (Internet Explorer/Edge policies), and for
-  Chrome set the ``AuthServerAllowlist`` policy to the server name
-  (registry key ``HKLM\SOFTWARE\Policies\Google\Chrome``, string value
-  ``AuthServerAllowlist`` = ``olap.company.local``). Without it the
-  browser shows a sign-in dialog — the domain login and password work
-  there too.
+  clock in sync (a domain default) works out of the box. Excel connects
+  to ``https://olap.company.local/`` with "Use Windows authentication".
+- Browsers are stricter about silent sign-in to the admin console: add the
+  server name to the "Local intranet" zone (Internet Explorer/Edge
+  policies), and for Chrome set the ``AuthServerAllowlist`` policy to the
+  server name (registry key ``HKLM\SOFTWARE\Policies\Google\Chrome``).
+  Without it the browser shows a sign-in dialog — the domain login and
+  password work there too.
+- An installer that sets up the Apache front automatically ships in the
+  next update; until then configure the virtual host from the reference
+  above.
 
 ------------------------------------------------------------
 

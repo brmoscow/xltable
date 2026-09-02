@@ -9,24 +9,35 @@ Stay up to date with the latest releases by following us on
 Version 2.1.1 — 2026-09-01
 --------------------------
 
-- **Single sign-on with Active Directory on Linux (Kerberos)** — the
-  Linux server now validates Kerberos tickets against a keytab issued in
-  your domain: Excel on a domain-joined workstation connects without a
-  password prompt, exactly like the Windows Server (IIS) deployment.
-  Enabled by the new ``keytab`` key in
-  :confval:`CREDENTIAL_ACTIVE_DIRECTORY`; preparation steps on the AD
-  side (service account, ``setspn``, ``ktpass``) are described in
-  :ref:`linux_sso`. Only Kerberos is accepted — the deprecated NTLM
-  protocol is rejected, and clients that cannot use Kerberos (machines
-  outside the domain, connections by IP) are offered the usual password
-  sign-in on the same endpoint.
+- **Single sign-on with Active Directory on Linux** — Kerberos is
+  terminated by an authenticating front (Apache ``mod_auth_gssapi`` or a
+  Kerberos-capable load balancer) that passes the user name to XLTable;
+  Excel on a domain-joined workstation connects without a password prompt,
+  exactly like the Windows Server (IIS) deployment. Enabled by the new
+  :confval:`TRUSTED_PROXY` key; the reference Apache configuration and the
+  AD-side steps (service account, ``setspn``, ``ktpass``) are in
+  :ref:`linux_sso`. XLTable never sees domain credentials in this
+  deployment.
 
 - **Domain login and password over HTTP Basic** — with
   :confval:`CREDENTIAL_ACTIVE_DIRECTORY` configured, a user missing from
-  ``USERS`` is now verified against the domain controller (LDAP bind)
-  and authorized by AD group membership. Domain accounts thus work from
-  outside the domain too — including scripted clients and the MCP
-  endpoint.
+  ``USERS`` is verified against the domain controller (LDAP bind, LDAPS
+  with certificate validation when ``use_ssl`` is set) and authorized by AD
+  group membership; repeated failures are throttled so a wrong password
+  cannot lock the domain account. Group membership is resolved through
+  nested groups (``nested_groups``). A name listed in ``USERS`` is always
+  checked locally and never forwarded to AD.
+
+- **Sessions are random tokens with a lifetime** — a user name is never
+  accepted as a session id, and a session expires after
+  :confval:`AUTH_CACHE_TIMEOUT`, after which the client re-authenticates
+  transparently. After upgrading, open Excel workbooks re-authenticate on
+  their next request without a prompt.
+
+- **HTTPS is required for Active Directory sign-in** on Linux
+  (:confval:`REQUIRE_HTTPS`, on by default when AD is configured), and the
+  admin console rejects cross-site requests. Windows Server (IIS)
+  deployments are unaffected.
 
 ------------------------------------------------------------
 

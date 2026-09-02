@@ -557,14 +557,8 @@ Parameter reference
           "username": "service_olap",
           "password": "...",
           "access_groups": ["olap_users_all", "olap_users_sales"],
-          "keytab": "setting/xltable.keytab",
           "use_ssl": true
       }
-
-   ``keytab`` (Linux only, since 2.1.1) — path to the Kerberos keytab
-   file issued in your domain; its presence enables single sign-on
-   (Excel connects without a password prompt). See :ref:`linux_sso`.
-   Relative paths are resolved from the application directory.
 
    ``use_ssl`` (since 2.1.1) — connect to the domain controller over
    LDAPS (port 636). Recommended whenever domain passwords are verified
@@ -578,6 +572,11 @@ Parameter reference
    not authenticated — only for a self-signed DC certificate you choose
    not to install in the trust store).
 
+   ``nested_groups`` (since 2.1.1, default ``true``) — group membership is
+   resolved transitively (a user in a group nested inside an access group
+   qualifies), as Active Directory administrators expect. Set ``false`` to
+   require direct membership only.
+
    With the section configured, users can also sign in with their domain
    login and password over HTTP Basic: the password is verified against
    the domain controller (LDAP bind), groups are read from AD and checked
@@ -587,6 +586,20 @@ Parameter reference
 
    Default: not set
 
+.. confval:: TRUSTED_PROXY
+
+   Accept the user identity from an authenticating front (Apache
+   ``mod_auth_gssapi``, a Kerberos-capable load balancer) passed in a request
+   header. The header is honoured **only** when the request's TCP peer is in
+   ``addresses`` (default: loopback), so a client cannot forge it; XLTable
+   should then listen on ``127.0.0.1`` only. See :ref:`linux_sso`.
+
+   .. code-block:: json
+
+      "TRUSTED_PROXY": {"header": "X-Remote-User", "addresses": ["127.0.0.1"]}
+
+   Default: not set (the header is ignored)
+
 .. confval:: REQUIRE_HTTPS
 
    Refuse to serve Active Directory authentication over plain HTTP. When
@@ -594,9 +607,9 @@ Parameter reference
    default** (since 2.1.1): a request that did not arrive over HTTPS is
    rejected (XMLA/MCP with ``403``, a browser ``GET`` is redirected to
    ``https://``), because the domain password and the session token must
-   not cross the network in the clear. The server detects the external
-   protocol from the ``X-Forwarded-Proto`` header set by the reverse
-   proxy (the installer's nginx config sets it).
+   not cross the network in the clear. HTTPS is detected from the WSGI
+   scheme, which the reverse proxy's ``X-Forwarded-Proto`` sets only when it
+   arrives from loopback, and from the IIS server variables.
 
    Set ``false`` only when TLS is terminated by an upstream load balancer
    that cannot pass ``X-Forwarded-Proto``. The Windows Server (IIS)

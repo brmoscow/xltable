@@ -38,8 +38,9 @@ the server is addressed:
   password.
 - The clock on the workstation and the server must be within 5 minutes
   of the domain time (a domain default).
-- On Linux, check that the ``keytab`` key is configured — see
-  :ref:`linux_sso`.
+- On Linux, single sign-on is performed by the front (Apache or a load
+  balancer): check its configuration and the :confval:`TRUSTED_PROXY` key —
+  see :ref:`linux_sso`.
 
 Excel shows an XML parsing error, or curl returns HTTP 500 from the server.
 ----------------------------------------------------------------------------
