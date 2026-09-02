@@ -19,6 +19,17 @@ Version 2.1.1 — 2026-09-01
   :ref:`linux_sso`. XLTable never sees domain credentials in this
   deployment.
 
+- **Ubuntu installer on Apache** — ``install_xltable.sh`` now sets up an
+  Apache front (TLS on 443, load balancing across the worker processes)
+  instead of nginx, with modes: ``--auth ad`` (single sign-on: keytab,
+  ``mod_auth_gssapi``, :confval:`TRUSTED_PROXY` and the new
+  :confval:`BIND_HOST` written automatically), ``--front none`` (your own
+  load balancer), ``--front-only`` (change the timeout, certificate or
+  mode without reinstalling). Existing installations keep their nginx
+  front through ``update_xltable.sh``; ``--migrate-from-nginx`` moves them
+  to Apache with a backup and ``--rollback`` returns. See
+  :ref:`install_ubuntu`.
+
 - **Domain login and password over HTTP Basic** — with
   :confval:`CREDENTIAL_ACTIVE_DIRECTORY` configured, a user missing from
   ``USERS`` is verified against the domain controller (LDAP bind, LDAPS

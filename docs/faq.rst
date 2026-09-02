@@ -443,7 +443,9 @@ Excel cannot connect to the server.
 ------------------------------------
 
 - Verify the server address is reachable from the client machine (port 80 or 443).
-- Check that Nginx is running: ``sudo service nginx status``.
+- Check that the front is running: ``sudo systemctl status apache2``
+  (``nginx`` on installations made before 2.1.1); its log is
+  ``/var/log/apache2/olap_error.log``.
 - Check that XLTable is running: ``sudo supervisorctl status``.
 
 I get an authentication error in Excel.

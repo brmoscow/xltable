@@ -56,13 +56,17 @@ Unpack the installer scripts and run the install script:
 
 The script will:
 
-- Install ``supervisor``, ``nginx``, ``unzip``
+- Install ``supervisor``, ``unzip`` and ``apache2``
 - Extract xltable to ``/usr/olap/xltable/``
 - Create ``/usr/olap/xltable/setting/settings.json`` from the example (if missing)
 - Configure supervisor to autostart several xltable worker processes
   (one per CPU core, up to 4 by default)
-- Configure nginx on port 80 as a load balancer across the worker
-  processes (ports 5000, 5001, ...)
+- Configure an Apache front on ports 80 and 443: TLS termination and a
+  load balancer across the worker processes (``127.0.0.1:5000``,
+  ``5001``, ...). Without ``--cert``/``--key`` a self-signed certificate
+  is generated in ``/etc/xltable/`` — Excel and browsers warn until it is
+  trusted, so for production pass a certificate issued for the server
+  name.
 
 .. note::
 
@@ -76,6 +80,68 @@ The script will:
    .. code-block:: bash
 
       XLTABLE_INSTANCES=6 bash install_xltable.sh
+
+Installer modes
+^^^^^^^^^^^^^^^
+
+The same script covers every Linux deployment; the mode is chosen by its
+options (``bash install_xltable.sh --help`` lists them all). Re-running the
+script is safe: ``settings.json``, the service user and the instance count
+are kept.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Command
+     - Result
+   * - ``bash install_xltable.sh``
+     - XLTable authenticates users itself — ``USERS`` from ``settings.json``
+       or a domain login and password (:confval:`CREDENTIAL_ACTIVE_DIRECTORY`).
+       Port 80 keeps serving plain ``http://`` alongside 443; add
+       ``--https-only`` to redirect it.
+   * - ``bash install_xltable.sh --auth ad --server-name olap.company.local --keytab /root/xltable.keytab --cert ... --key ...``
+     - Single sign-on with Active Directory: Apache (``mod_auth_gssapi``)
+       validates the Kerberos ticket (or a domain password) and passes the
+       user name to XLTable; the installer sets :confval:`TRUSTED_PROXY`
+       and :confval:`BIND_HOST` in ``settings.json``. HTTPS only, local
+       ``USERS`` are not available. Preparation in the domain (SPN,
+       keytab) — :ref:`linux_sso`.
+   * - ``bash install_xltable.sh --front none``
+     - No Apache: your own load balancer talks to the workers on
+       ``0.0.0.0:5000..``. With ``--auth ad`` the balancer must perform
+       Kerberos itself and its address goes to ``--trusted-proxy``.
+   * - ``bash install_xltable.sh --front-only --timeout 600``
+     - Reconfigure the front only (proxy timeout for long reports, a new
+       certificate, a switch between ``--auth ad`` and ``--auth app``):
+       packages, the distribution and supervisor are left untouched.
+   * - ``bash install_xltable.sh --migrate-from-nginx``
+     - Replace the nginx front of an installation made before 2.1.1 by
+       Apache (see below).
+
+Migrating an installation from nginx
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Installations made with versions before 2.1.1 run behind nginx. They keep
+working after ``update_xltable.sh`` — the update never touches the front —
+so migrate only when you need the Apache front (single sign-on):
+
+.. code-block:: bash
+
+   cd /usr/olap
+   unzip -o install_ubuntu.zip
+   bash install_xltable.sh --migrate-from-nginx              # same authentication as before
+   bash install_xltable.sh --migrate-from-nginx --auth ad --keytab ... --server-name ...
+
+The nginx configuration and ``settings.json`` are backed up to
+``/usr/olap/backup_front_<timestamp>/``, the certificate of an HTTPS nginx
+front is reused, nginx is stopped and disabled but not removed. In the
+default mode Apache serves plain ``http://`` on port 80 as well, so existing
+Excel connections keep working. To return to nginx at any time:
+
+.. code-block:: bash
+
+   bash install_xltable.sh --rollback
 
 Set up connections with database (configuration examples in the folder ``/usr/olap/xltable/setting``):
 
@@ -650,9 +716,22 @@ Preparation in your domain (a domain administrator, 30–60 minutes):
    server over a secure channel — it is equivalent to the account's
    password — and give it to the **front**, not to XLTable.
 
-5. **Apache front** (``apt install apache2 libapache2-mod-auth-gssapi``,
-   ``a2enmod ssl proxy proxy_http proxy_balancer lbmethod_byrequests headers
-   auth_gssapi``). Reference virtual host:
+5. **Apache front.** Run the Ubuntu installer in the ``ad`` mode
+   (:ref:`install_ubuntu`):
+
+   .. code-block:: bash
+
+      bash install_xltable.sh --auth ad --server-name olap.company.local \
+           --keytab /root/xltable.keytab \
+           --cert /etc/ssl/olap.crt --key /etc/ssl/olap.key
+
+   It installs ``libapache2-mod-auth-gssapi``, moves the keytab to
+   ``/etc/apache2/xltable.keytab`` (readable by Apache only), creates
+   ``/etc/krb5.conf`` when the server has none (the realm is derived from
+   the server name; ``--realm`` overrides it) and generates the virtual
+   host below. If you configure Apache yourself, or run an existing
+   installation behind nginx (``--migrate-from-nginx``), the reference
+   configuration is:
 
    .. code-block:: apache
 
@@ -691,15 +770,18 @@ Preparation in your domain (a domain administrator, 30–60 minutes):
    scripted clients — so XLTable performs no authentication of its own in
    this deployment, and local ``USERS`` are not available (as with IIS).
 
-6. **XLTable settings.**
+6. **XLTable settings.** The installer writes
 
    .. code-block:: json
 
-      "TRUSTED_PROXY": {"header": "X-Remote-User", "addresses": ["127.0.0.1"]}
+      "TRUSTED_PROXY": {"header": "X-Remote-User", "addresses": ["127.0.0.1", "::1"]},
+      "BIND_HOST": "127.0.0.1"
 
-   together with the usual :confval:`CREDENTIAL_ACTIVE_DIRECTORY` (service
-   account for group lookup, ``access_groups``). The front handles TLS, so
-   the :confval:`REQUIRE_HTTPS` guard is satisfied by its
+   (with your own load balancer instead of the local Apache, put its
+   address in ``TRUSTED_PROXY`` and leave :confval:`BIND_HOST` unset).
+   Add the usual :confval:`CREDENTIAL_ACTIVE_DIRECTORY` (service account
+   for group lookup, ``access_groups``). The front handles TLS, so the
+   :confval:`REQUIRE_HTTPS` guard is satisfied by its
    ``X-Forwarded-Proto`` header.
 
 7. **Network.** The XLTable server reaches the domain controllers on port
@@ -721,9 +803,10 @@ Notes and limitations:
   server name (registry key ``HKLM\SOFTWARE\Policies\Google\Chrome``).
   Without it the browser shows a sign-in dialog — the domain login and
   password work there too.
-- An installer that sets up the Apache front automatically ships in the
-  next update; until then configure the virtual host from the reference
-  above.
+- Diagnostics on the server: ``/var/log/apache2/olap_error.log`` shows the
+  exact GSSAPI error when a ticket is rejected; ``klist -k
+  /etc/apache2/xltable.keytab`` (package ``krb5-user``) lists the
+  principals in the keytab — ``HTTP/<server name>`` must be among them.
 
 ------------------------------------------------------------
 
@@ -940,8 +1023,9 @@ supported database are collected on the :doc:`databases` page.
 Scaling to multiple servers (Redis cache)
 -----------------------------------------
 
-A single XLTable machine already runs several worker processes behind nginx
-(see :ref:`install_ubuntu`). When one machine is not enough, run XLTable on
+A single XLTable machine already runs several worker processes behind the
+Apache front (nginx on installations made before 2.1.1; see
+:ref:`install_ubuntu`). When one machine is not enough, run XLTable on
 several servers and let them share one cache through Redis: set
 ``CACHE_BACKEND`` to ``redis`` in ``settings.json`` on every server.
 

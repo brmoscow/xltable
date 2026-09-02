@@ -586,17 +586,37 @@ Parameter reference
 
    Default: not set
 
+.. confval:: BIND_HOST
+
+   Address the server listens on (server edition, standalone deployment —
+   Ubuntu / ``python main.py``; under IIS the binding is managed by IIS).
+   Behind a local front the Ubuntu installer sets ``127.0.0.1`` in the
+   ``--auth ad`` mode, so the workers are reachable only through Apache and
+   nobody can bypass the authenticating front. Leave unset when your own
+   load balancer on another machine talks to the workers. The free edition
+   always listens on ``127.0.0.1`` and ignores this key. Requires a service
+   restart.
+
+   Example:
+
+   .. code-block:: json
+
+      "BIND_HOST": "127.0.0.1"
+
+   Default: ``0.0.0.0`` (all interfaces)
+
 .. confval:: TRUSTED_PROXY
 
    Accept the user identity from an authenticating front (Apache
    ``mod_auth_gssapi``, a Kerberos-capable load balancer) passed in a request
    header. The header is honoured **only** when the request's TCP peer is in
    ``addresses`` (default: loopback), so a client cannot forge it; XLTable
-   should then listen on ``127.0.0.1`` only. See :ref:`linux_sso`.
+   should then listen on ``127.0.0.1`` only (:confval:`BIND_HOST`). The Ubuntu
+   installer writes both keys in the ``--auth ad`` mode. See :ref:`linux_sso`.
 
    .. code-block:: json
 
-      "TRUSTED_PROXY": {"header": "X-Remote-User", "addresses": ["127.0.0.1"]}
+      "TRUSTED_PROXY": {"header": "X-Remote-User", "addresses": ["127.0.0.1", "::1"]}
 
    Default: not set (the header is ignored)
 
