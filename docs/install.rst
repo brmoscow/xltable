@@ -794,6 +794,11 @@ Notes and limitations:
   rejected (Microsoft has deprecated it); a client that cannot obtain a
   Kerberos ticket — a machine outside the domain, a connection by IP — signs
   in with a domain login and password through the front instead.
+- Login and password are checked by the front against the Kerberos KDC, so
+  the name is typed **without the domain prefix**: ``user1`` or
+  ``user1@COMPANY.LOCAL``. The Windows form ``COMPANY\user1`` is not a
+  Kerberos principal and is rejected with "access denied" (unlike IIS,
+  which accepts it).
 - Workstations need no configuration: a domain-joined machine with the
   clock in sync (a domain default) works out of the box. Excel connects
   to ``https://olap.company.local/`` with "Use Windows authentication".

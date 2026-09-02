@@ -41,6 +41,10 @@ the server is addressed:
 - On Linux, single sign-on is performed by the front (Apache or a load
   balancer): check its configuration and the :confval:`TRUSTED_PROXY` key —
   see :ref:`linux_sso`.
+- When you fall back to a login and password behind the Linux front, type
+  the name without the domain: ``user1`` or ``user1@COMPANY.LOCAL``, not
+  ``COMPANY\user1`` — the front checks it against Kerberos, which does not
+  know the ``DOMAIN\user`` form.
 
 Excel shows an XML parsing error, or curl returns HTTP 500 from the server.
 ----------------------------------------------------------------------------
