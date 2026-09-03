@@ -19,6 +19,17 @@ Version 2.1.1 — 2026-09-01
   :ref:`linux_sso`. XLTable never sees domain credentials in this
   deployment.
 
+- **OAuth 2.1 for MCP clients** — the server edition is now its own
+  authorization server: an AI application signs the user in through the
+  browser (single sign-on behind IIS or the Apache front, otherwise the
+  XLTable sign-in page), gets a Bearer token and refreshes it silently — no
+  stored passwords. Standard MCP authorization: resource and server
+  metadata, dynamic client registration, PKCE, refresh rotation,
+  revocation; tokens are bound to the server and stored as hashes. Access
+  rights and cube roles stay the user's own; the new **MCP access** admin
+  page lists and revokes tokens. Basic and packed-Bearer credentials keep
+  working. See :ref:`mcp_oauth` and :confval:`OAUTH`.
+
 - **Ubuntu installer on Apache** — ``install_xltable.sh`` now sets up an
   Apache front (TLS on 443, load balancing across the worker processes)
   instead of nginx, with modes: ``--auth ad`` (single sign-on: keytab,

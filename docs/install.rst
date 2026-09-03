@@ -464,6 +464,14 @@ Edit the configuration file ``C:\olap\xltable\setting\settings.json`` and fill i
 Use the file ``C:\olap\xltable\web.config``. It configures FastCGI to run the application via the virtual environment Python interpreter.
 
 Authentication is set to **Windows Authentication** and **Basic Authentication** (anonymous access disabled).
+The ``<location>`` blocks at the end of the file open ``mcp``,
+``oauth/authorize``, ``oauth/continue``, ``oauth/token``, ``oauth/register``,
+``oauth/revoke`` and ``.well-known`` for anonymous access: MCP clients
+authenticate there with OAuth 2.1 Bearer tokens that XLTable validates itself
+(:ref:`mcp_oauth`), while ``oauth/sso`` — the silent single sign-on probe of
+the sign-in page — keeps Windows Authentication with Basic switched off. Keep
+these blocks when you edit the file; Excel and the admin console are not
+affected.
 
 **8. Register the FastCGI application in IIS**
 
@@ -729,7 +737,13 @@ Preparation in your domain (a domain administrator, 30–60 minutes):
    ``/etc/apache2/xltable.keytab`` (readable by Apache only), creates
    ``/etc/krb5.conf`` when the server has none (the realm is derived from
    the server name; ``--realm`` overrides it) and generates the virtual
-   host below. If you configure Apache yourself, or run an existing
+   host below plus a ``<LocationMatch>`` block that lets the OAuth 2.1
+   paths of MCP clients (``/mcp``, ``/oauth/authorize``, ``/oauth/continue``,
+   ``/oauth/token``, ``/oauth/register``, ``/oauth/revoke``,
+   ``/.well-known``) reach XLTable without Kerberos — the application
+   validates the Bearer token itself — while ``/oauth/sso``, the silent
+   single sign-on probe of the sign-in page, keeps Kerberos only
+   (``GssapiBasicAuth Off``; see :ref:`mcp_oauth`). If you configure Apache yourself, or run an existing
    installation behind nginx (``--migrate-from-nginx``), the reference
    configuration is:
 

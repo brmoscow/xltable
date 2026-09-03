@@ -442,11 +442,15 @@ the admin console, or :doc:`install` for the server edition setup.
 Server edition
 --------------
 
-In the server edition the ``/mcp`` endpoint requires HTTP Basic
-authentication with a user from ``USERS`` in ``settings.json`` — the same
-accounts, session cache and ``AUTH_CACHE_TIMEOUT`` as the Excel (XMLA)
-endpoint. A request without valid credentials is answered with
-``401 Unauthorized``.
+In the server edition the ``/mcp`` endpoint requires authentication: either
+**OAuth 2.1** (the client signs the user in through the built-in
+authorization server and sends a Bearer token — see `OAuth 2.1 for MCP
+clients`_ below) or **HTTP Basic** with a user from ``USERS`` or a domain
+login and password — the same accounts, session cache and
+``AUTH_CACHE_TIMEOUT`` as the Excel (XMLA) endpoint. A request without valid
+credentials is answered with ``401 Unauthorized`` and both challenges in
+``WWW-Authenticate`` (``Bearer`` with the resource metadata URL first,
+``Basic`` second).
 
 Everything else is enforced by the engine, exactly as on the Excel path:
 
@@ -513,6 +517,88 @@ Connecting to a server:
   (e.g. Yandex AI Studio) — pass the same credentials packed as a token:
   ``Authorization: Bearer <base64 of user:password>``. This is the same
   account checked by the same code — only the header format differs.
+
+.. _mcp_oauth:
+
+OAuth 2.1 for MCP clients
+-------------------------
+
+Since 2.1.1 the server edition is its own OAuth 2.1 authorization server, so
+an AI application that speaks standard MCP authorization (FastMCP-based
+clients, Claude, Cursor and other hosts that support "connect with sign-in")
+needs no stored password at all: the user signs in once in the browser, the
+application receives a token and refreshes it silently.
+
+**What the application sees** is plain OAuth 2.1 as required by the MCP
+specification: protected-resource metadata at
+``/.well-known/oauth-protected-resource/mcp``, authorization-server metadata
+at ``/.well-known/oauth-authorization-server``, dynamic client registration
+(``/oauth/register``), the authorization-code grant with PKCE (S256 only) at
+``/oauth/authorize`` and ``/oauth/token``, refresh tokens with rotation, and
+``/oauth/revoke``. Access tokens live one hour, refresh tokens 30 days
+(:confval:`OAUTH`); every request to ``/mcp`` carries
+``Authorization: Bearer <access token>``. Tokens are bound to this server
+(RFC 8707 ``resource``) and stored only as hashes.
+
+**What the user sees.** The application opens ``/oauth/authorize`` in the
+browser — the XLTable sign-in page:
+
+- behind an authenticating front — IIS with Windows Authentication, or the
+  Apache front in the ``--auth ad`` mode (:ref:`linux_sso`) — the page
+  signs the user in silently by Kerberos: a domain user on a domain-joined
+  machine lands straight on the consent screen (Chrome/Edge need the
+  ``AuthServerAllowlist`` policy, as for the admin console). There is no
+  password form in this mode: all domain passwords are checked by the front,
+  never by XLTable, so **signing in to MCP requires a domain-joined
+  computer** — on any other machine the page says so. No browser sign-in
+  dialogs and no NTLM are involved. Excel is not affected by this rule: it
+  can still connect from outside the domain with a domain login and
+  password;
+- without such a front (``--auth app``, no domain) the page asks for a login
+  and password: a user from ``USERS`` or, with
+  :confval:`CREDENTIAL_ACTIVE_DIRECTORY`, a domain account checked by LDAP.
+
+Then a one-click consent screen names the application; the answer is
+remembered for 90 days per user and application. Access rights and cube
+roles are the user's own (groups from AD or ``USER_GROUPS``), re-checked at
+least every :confval:`AUTH_CACHE_TIMEOUT` — removing a user from the access
+group cuts the token off within that time; an administrator can revoke
+tokens immediately on the **MCP access** page of the admin console.
+
+**Fronts.** The OAuth paths must reach the application without the front's
+own authentication — MCP clients even probe ``/oauth/authorize`` without
+credentials before opening the browser, so a ``401`` from the front breaks
+them. The Ubuntu installer configures this itself (re-run
+``install_xltable.sh --front-only`` on an existing Apache front), and the
+``web.config`` shipped with the Windows distribution opens ``/mcp``,
+``/oauth/authorize``, ``/oauth/continue``, ``/oauth/token``,
+``/oauth/register``, ``/oauth/revoke`` and ``/.well-known`` for anonymous
+access. The one OAuth path that stays under Kerberos / Windows
+Authentication is ``/oauth/sso``, which the sign-in page probes silently
+(Kerberos only, no Basic — so a browser without a ticket gets a plain
+``401`` and no dialog). See :ref:`install_windows` and :ref:`linux_sso`.
+The legacy nginx front needs no change.
+
+.. warning::
+
+   OAuth 2.1 requires HTTPS: the token endpoints refuse plain ``http://``
+   (except from ``localhost``). ``"allow_insecure_http": true`` in
+   :confval:`OAUTH` lifts this for a pilot — the sign-in password and the
+   tokens then travel in the clear. With Active Directory configured
+   :confval:`REQUIRE_HTTPS` applies and the flag is ignored.
+
+Checklist for an integrator (e.g. a web application on FastMCP):
+
+1. Point the client at ``https://your-server/mcp`` — nothing else to
+   configure; discovery, registration and PKCE are standard.
+2. The client registers with its own ``redirect_uri`` (``https://…`` or
+   ``http://localhost…``); a confidential client may request
+   ``token_endpoint_auth_method: client_secret_post``.
+3. One application user = one XLTable (domain) user: the token carries the
+   person who signed in, and the data is filtered by that person's roles.
+4. Handle ``401`` with ``WWW-Authenticate: Bearer error="invalid_token"`` by
+   refreshing or re-signing in; the old ``Basic`` and packed-Bearer methods
+   keep working for scripts.
 
 MCP licensing
 -------------

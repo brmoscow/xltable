@@ -645,6 +645,35 @@ Parameter reference
 
    Default: on when :confval:`CREDENTIAL_ACTIVE_DIRECTORY` is set, off otherwise
 
+.. confval:: OAUTH
+
+   Built-in OAuth 2.1 authorization server for MCP clients (server edition;
+   see :ref:`mcp_oauth`). A block of sub-keys, all optional:
+
+   - ``enabled`` — publish the OAuth endpoints and accept Bearer access
+     tokens on ``/mcp`` (default ``true``);
+   - ``issuer`` — the external base URL of the server as clients see it
+     (``https://olap.company.local``); needed when the server sits behind
+     a proxy that rewrites the host. Default: derived from the request;
+   - ``access_token_ttl`` — seconds an access token lives (default
+     ``3600``); ``refresh_token_ttl`` — seconds a refresh token lives
+     (default ``2592000``, 30 days; rotated on every use);
+   - ``consent_ttl_days`` — how long a user's consent for an application
+     is remembered (default ``90``);
+   - ``allow_insecure_http`` — serve the OAuth endpoints over plain HTTP
+     from non-local addresses (default ``false``; pilots only — passwords
+     and tokens travel in the clear; ignored when :confval:`REQUIRE_HTTPS`
+     is in force).
+
+   Example:
+
+   .. code-block:: json
+
+      "OAUTH": {"issuer": "https://olap.company.local", "consent_ttl_days": 30}
+
+   Default: enabled with the defaults above; the free edition has no OAuth
+   endpoints (MCP is anonymous on the local machine there)
+
 .. confval:: EXPORT
 
    Enables exporting large pivot results to CSV files and the preview
