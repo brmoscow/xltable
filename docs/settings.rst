@@ -645,6 +645,23 @@ Parameter reference
 
    Default: on when :confval:`CREDENTIAL_ACTIVE_DIRECTORY` is set, off otherwise
 
+.. confval:: MCP
+
+   Options of the built-in MCP server (see :doc:`mcp`). A block of sub-keys:
+
+   - ``sample_values_max`` — how many values of a dimension level
+     ``describe_cube`` returns as ``sample_values``; a level with more
+     distinct values returns the first ``sample_values_max`` of them and is
+     listed in ``sample_values_truncated``. Default ``30``.
+
+   Example:
+
+   .. code-block:: json
+
+      "MCP": {"sample_values_max": 50}
+
+   Default: not set (defaults above)
+
 .. confval:: OAUTH
 
    Built-in OAuth 2.1 authorization server for MCP clients (server edition;

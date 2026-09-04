@@ -122,8 +122,10 @@ list of its values, fetched live with the same query that fills a filter
 drop-down in Excel — so the assistant knows to filter by ``North`` rather than
 guessing ``North Region``. Values are never stored in the cube file: they
 cannot go stale, and they honor row-level security — a user sees only the
-values their access filters allow. Levels with more than 30 distinct values
-are skipped: enumerating them for an assistant is neither useful nor cheap.
+values their access filters allow. Levels with more distinct values than the
+threshold (30 by default, :confval:`MCP` ``sample_values_max``) return the
+first values in a stable order and are listed in ``sample_values_truncated``,
+so the assistant knows the list is a sample, not the full set.
 
 .. _mcp_pivot_context:
 

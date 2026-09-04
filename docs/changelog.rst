@@ -30,6 +30,17 @@ Version 2.1.1 — 2026-09-01
   page lists and revokes tokens. Basic and packed-Bearer credentials keep
   working. See :ref:`mcp_oauth` and :confval:`OAUTH`.
 
+- **MCP: sample values for large dimension levels** — ``describe_cube`` no
+  longer skips levels with many distinct values: it returns the first values
+  and marks the level in ``sample_values_truncated``; the threshold is the
+  new :confval:`MCP` ``sample_values_max`` setting (default 30).
+
+- **The server address in a browser** now shows a short page — what this
+  endpoint is, how Excel and AI assistants connect, links to the admin
+  console and the documentation — instead of an empty XML response behind a
+  password prompt. The server also serves a favicon and advertises its
+  logo to MCP clients.
+
 - **Ubuntu installer on Apache** — ``install_xltable.sh`` now sets up an
   Apache front (TLS on 443, load balancing across the worker processes)
   instead of nginx, with modes: ``--auth ad`` (single sign-on: keytab,

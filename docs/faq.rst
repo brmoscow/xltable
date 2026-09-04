@@ -443,6 +443,16 @@ Can XLTable be connected from LibreOffice or OpenOffice?
 
 Currently, the service works only with Excel. Support for other clients is planned for the future.
 
+I opened the server address in a browser and see a page, not data.
+-------------------------------------------------------------------
+
+That is expected: the server address (``https://server/``) is the data
+endpoint for Excel and AI assistants, not a web application. Since 2.1.1 a
+browser gets a short page that says so and points to the admin console
+(``/admin``, administrators only), the MCP endpoint (``/mcp``) and the
+documentation. Excel connects to the same address through the Data
+Connection Wizard.
+
 Excel cannot connect to the server.
 ------------------------------------
 
