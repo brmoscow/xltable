@@ -114,7 +114,9 @@ are kept.
    * - ``bash install_xltable.sh --front-only --timeout 600``
      - Reconfigure the front only (proxy timeout for long reports, a new
        certificate, a switch between ``--auth ad`` and ``--auth app``):
-       packages, the distribution and supervisor are left untouched.
+       packages, the distribution and supervisor are left untouched; the
+       auth mode, server name and certificate not passed again are kept
+       from the current vhost (``--https-only`` must be repeated).
    * - ``bash install_xltable.sh --migrate-from-nginx``
      - Replace the nginx front of an installation made before 2.1.1 by
        Apache (see below).
