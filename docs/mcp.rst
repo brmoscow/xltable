@@ -574,8 +574,9 @@ them. The Ubuntu installer configures this itself (re-run
 ``install_xltable.sh --front-only`` on an existing Apache front), and the
 ``web.config`` shipped with the Windows distribution opens ``/mcp``,
 ``/oauth/authorize``, ``/oauth/continue``, ``/oauth/token``,
-``/oauth/register``, ``/oauth/revoke`` and ``/.well-known`` for anonymous
-access. The one OAuth path that stays under Kerberos / Windows
+``/oauth/register``, ``/oauth/revoke``, ``/.well-known`` and — for the
+styles and logo of the sign-in pages — ``/static`` and ``/favicon.ico`` for
+anonymous access. The one OAuth path that stays under Kerberos / Windows
 Authentication is ``/oauth/sso``, which the sign-in page probes silently
 (Kerberos only, no Basic — so a browser without a ticket gets a plain
 ``401`` and no dialog). See :ref:`install_windows` and :ref:`linux_sso`.

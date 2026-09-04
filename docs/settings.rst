@@ -590,10 +590,11 @@ Parameter reference
 
    Address the server listens on (server edition, standalone deployment —
    Ubuntu / ``python main.py``; under IIS the binding is managed by IIS).
-   Behind a local front the Ubuntu installer sets ``127.0.0.1`` in the
-   ``--auth ad`` mode, so the workers are reachable only through Apache and
-   nobody can bypass the authenticating front. Leave unset when your own
-   load balancer on another machine talks to the workers. The free edition
+   Behind the local Apache front the Ubuntu installer sets ``127.0.0.1``
+   (both ``--auth ad`` and ``--auth app``), so the workers are reachable
+   only through the front and nobody can bypass its authentication or TLS.
+   With ``--front none`` the key is removed: your own load balancer on
+   another machine talks to the workers directly. The free edition
    always listens on ``127.0.0.1`` and ignores this key. Requires a service
    restart.
 
@@ -618,7 +619,20 @@ Parameter reference
 
       "TRUSTED_PROXY": {"header": "X-Remote-User", "addresses": ["127.0.0.1", "::1"]}
 
-   Default: not set (the header is ignored)
+   Without ``header`` the key only declares which peers' ``X-Forwarded-Proto``
+   is trusted — for a load balancer on another machine that terminates TLS
+   while XLTable authenticates users itself (``--auth app``): it satisfies
+   :confval:`REQUIRE_HTTPS` without switching it off, and no identity header
+   is accepted. ``X-Forwarded-Proto`` is trusted from one address — with
+   several listed, the first non-loopback one. The installer writes this form for
+   ``--front none --trusted-proxy <address>``.
+
+   .. code-block:: json
+
+      "TRUSTED_PROXY": {"addresses": ["10.0.0.5"]}
+
+   Default: not set (the header is ignored; ``X-Forwarded-Proto`` is trusted
+   from loopback only)
 
 .. confval:: REQUIRE_HTTPS
 

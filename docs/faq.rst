@@ -31,7 +31,7 @@ Single sign-on works over Kerberos only, and Kerberos is strict about how
 the server is addressed:
 
 - Connect by the **DNS name** the SPN was issued for (e.g.
-  ``http://olap.company.local``) — for a connection by IP address Windows
+  ``https://olap.company.local``) — for a connection by IP address Windows
   cannot obtain a ticket and Excel falls back to the password prompt.
 - The workstation must be **joined to the domain** and able to reach a
   domain controller; a machine outside the domain always signs in with a

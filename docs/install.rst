@@ -470,10 +470,11 @@ The ``<location>`` blocks at the end of the file open ``mcp``,
 ``oauth/authorize``, ``oauth/continue``, ``oauth/token``, ``oauth/register``,
 ``oauth/revoke`` and ``.well-known`` for anonymous access: MCP clients
 authenticate there with OAuth 2.1 Bearer tokens that XLTable validates itself
-(:ref:`mcp_oauth`), while ``oauth/sso`` — the silent single sign-on probe of
-the sign-in page — keeps Windows Authentication with Basic switched off. Keep
-these blocks when you edit the file; Excel and the admin console are not
-affected.
+(:ref:`mcp_oauth`). ``static`` and ``favicon.ico`` are anonymous as well —
+the sign-in and consent pages load their styles and logo from there.
+``oauth/sso`` — the silent single sign-on probe of the sign-in page — keeps
+Windows Authentication with Basic switched off. Keep these blocks when you
+edit the file; Excel and the admin console are not affected.
 
 **8. Register the FastCGI application in IIS**
 
@@ -609,8 +610,9 @@ using Microsoft Active Directory.
 
    **Serve XLTable over HTTPS whenever Active Directory is used.** Install
    a valid TLS certificate on the server (on Windows Server this is the
-   IIS site binding; on Linux, the reverse proxy — nginx — in front of
-   XLTable) and have clients connect by ``https://``. Two things travel
+   IIS site binding; on Linux, the Apache front set up by the installer —
+   or nginx on installations made before 2.1.1) and have clients connect
+   by ``https://``. Two things travel
    over the client connection that must not cross the network in the
    clear:
 
@@ -745,9 +747,11 @@ Preparation in your domain (a domain administrator, 30–60 minutes):
    ``/.well-known``) reach XLTable without Kerberos — the application
    validates the Bearer token itself — while ``/oauth/sso``, the silent
    single sign-on probe of the sign-in page, keeps Kerberos only
-   (``GssapiBasicAuth Off``; see :ref:`mcp_oauth`). If you configure Apache yourself, or run an existing
-   installation behind nginx (``--migrate-from-nginx``), the reference
-   configuration is:
+   (``GssapiBasicAuth Off``; see :ref:`mcp_oauth`). The complete virtual
+   host the installer generates — including those two blocks — is the
+   template ``templates/olap-apache.conf.tmpl`` in ``install_ubuntu.zip``;
+   if you configure Apache yourself, start from it. The authentication part
+   of it, for reference:
 
    .. code-block:: apache
 
@@ -760,7 +764,7 @@ Preparation in your domain (a domain administrator, 30–60 minutes):
           <Location />
               AuthType GSSAPI
               AuthName "XLTable"
-              GssapiCredStore keytab:/etc/xltable/xltable.keytab
+              GssapiCredStore keytab:/etc/apache2/xltable.keytab
               GssapiAllowedMech krb5
               GssapiLocalName On
               GssapiBasicAuth On
@@ -795,8 +799,10 @@ Preparation in your domain (a domain administrator, 30–60 minutes):
 
    (with your own load balancer instead of the local Apache, put its
    address in ``TRUSTED_PROXY`` and leave :confval:`BIND_HOST` unset).
-   Add the usual :confval:`CREDENTIAL_ACTIVE_DIRECTORY` (service account
-   for group lookup, ``access_groups``). The front handles TLS, so the
+   Add the usual :confval:`CREDENTIAL_ACTIVE_DIRECTORY` — here it serves
+   only the group lookup (the service account's own credentials and
+   ``access_groups``); user passwords still never reach XLTable. The front
+   handles TLS, so the
    :confval:`REQUIRE_HTTPS` guard is satisfied by its
    ``X-Forwarded-Proto`` header.
 
