@@ -276,14 +276,15 @@ Installation
       your PC"* dialog ("Microsoft Defender SmartScreen prevented an
       unrecognized app from starting") on the first run of a freshly
       downloaded installer while a new release builds up its download
-      reputation — this is not a virus alert. The first screen has only a
-      **Don't run** button; click the small **More info** link: it reveals
-      the publisher line — check that it names BR Systems LLP (Windows
-      prints the full certificate name, e.g. *"KZ, Astana, Astana,
-      BR Systems LLP, BR Systems LLP"*) — and the **Run anyway** button
-      that starts the installation. A dialog with *"Unknown publisher"*
-      means the file was altered after download; download it again from
-      the official page.
+      reputation — this is not a virus alert (the dialog is blue or red
+      depending on the Windows build; the wording is what matters). Check
+      the **Publisher** line — it must name BR Systems LLP (Windows prints
+      the full certificate name, e.g. *"KZ, Astana, Astana, BR Systems
+      LLP, BR Systems LLP"*); if the publisher line or the **Run anyway**
+      button is not shown, click the small **More info** link first. Then
+      **Run anyway** starts the installation. A dialog with *"Unknown
+      publisher"* means the file was altered after download; download it
+      again from the official page.
 
 2. Walk through the wizard (Next → Install → Finish). The installer:
 

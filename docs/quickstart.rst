@@ -34,11 +34,12 @@ required and no UAC elevation prompt appears.
 .. note::
 
    The installer is digitally signed by **BR Systems LLP**. Windows may
-   still show a blue *"Windows protected your PC"* (SmartScreen) dialog on
+   still show a *"Windows protected your PC"* (SmartScreen) dialog on
    the first run of a freshly downloaded installer while a new release
-   builds up its download reputation — this is not a virus alert. Click
-   the small **More info** link, check that **Publisher** names BR Systems
-   LLP, then **Run anyway**. Details: :ref:`install_windows_desktop`.
+   builds up its download reputation — this is not a virus alert. Check
+   that **Publisher** names BR Systems LLP (click the small **More info**
+   link if the line is not shown), then **Run anyway**. Details:
+   :ref:`install_windows_desktop`.
 
 Prefer a portable copy without an installer? Use the zip archive instead —
 see :ref:`install_windows_zip`.
