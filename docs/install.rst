@@ -271,13 +271,19 @@ Installation
 
    .. note::
 
-      Until our code signing certificate is in place, Windows SmartScreen
-      shows a *"Windows protected your PC"* dialog ("Microsoft Defender
-      SmartScreen prevented an unrecognized app from starting"). The first
-      screen has only a **Don't run** button — the way through is the small
-      **More info** link: it reveals the publisher line ("Unknown
-      publisher") and the **Run anyway** button that starts the
-      installation.
+      The installer and ``XLTable.exe`` are digitally signed by
+      **BR Systems LLP**. Windows may still show a blue *"Windows protected
+      your PC"* dialog ("Microsoft Defender SmartScreen prevented an
+      unrecognized app from starting") on the first run of a freshly
+      downloaded installer while a new release builds up its download
+      reputation — this is not a virus alert. The first screen has only a
+      **Don't run** button; click the small **More info** link: it reveals
+      the publisher line — check that it names BR Systems LLP (Windows
+      prints the full certificate name, e.g. *"KZ, Astana, Astana,
+      BR Systems LLP, BR Systems LLP"*) — and the **Run anyway** button
+      that starts the installation. A dialog with *"Unknown publisher"*
+      means the file was altered after download; download it again from
+      the official page.
 
 2. Walk through the wizard (Next → Install → Finish). The installer:
 

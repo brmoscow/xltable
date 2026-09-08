@@ -9,6 +9,14 @@ Stay up to date with the latest releases by following us on
 Version 2.1.1 — 2026-09-01
 --------------------------
 
+- **Signed desktop distribution** — ``XLTable-<version>-setup.exe`` and
+  ``XLTable.exe`` carry a code signing signature of **BR Systems LLP**
+  (RFC 3161 timestamp), so Windows names the publisher instead of
+  "Unknown publisher" and antivirus products can trust the files by
+  signer. SmartScreen may still warn on the first runs of a fresh release
+  while it builds up download reputation — the dialog now shows the
+  publisher; see the note in :ref:`install_windows_desktop`.
+
 - **Single sign-on with Active Directory on Linux** — Kerberos is
   terminated by an authenticating front (Apache ``mod_auth_gssapi`` or a
   Kerberos-capable load balancer) that passes the user name to XLTable;
