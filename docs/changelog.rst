@@ -36,7 +36,9 @@ Version 2.1.1 — 2026-09-01
   revocation; tokens are bound to the server and stored as hashes. Access
   rights and cube roles stay the user's own; the new **MCP access** admin
   page lists and revokes tokens. Basic and packed-Bearer credentials keep
-  working. See :ref:`mcp_oauth` and :confval:`OAUTH`.
+  working. See :ref:`mcp_oauth` and :confval:`OAUTH`. The pilot flag
+  ``allow_insecure_http`` also lets an application on a plain-HTTP address
+  (LibreChat in a LAN) register its callback.
 
 - **MCP: sample values for large dimension levels** — ``describe_cube`` no
   longer skips levels with many distinct values: it returns the first values

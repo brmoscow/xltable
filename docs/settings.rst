@@ -691,10 +691,13 @@ Parameter reference
      (default ``2592000``, 30 days; rotated on every use);
    - ``consent_ttl_days`` — how long a user's consent for an application
      is remembered (default ``90``);
-   - ``allow_insecure_http`` — serve the OAuth endpoints over plain HTTP
-     from non-local addresses (default ``false``; pilots only — passwords
-     and tokens travel in the clear; ignored when :confval:`REQUIRE_HTTPS`
-     is in force).
+   - ``allow_insecure_http`` — pilot mode without TLS: serve the OAuth
+     endpoints over plain HTTP from non-local addresses and accept plain
+     ``http://`` redirect URIs at client registration (an AI application
+     on a plain-HTTP address in the LAN). Default ``false``; pilots only —
+     passwords and tokens travel in the clear. Ignored when
+     :confval:`REQUIRE_HTTPS` is in force — with Active Directory
+     configured, set ``"REQUIRE_HTTPS": false`` explicitly as well.
 
    Example:
 

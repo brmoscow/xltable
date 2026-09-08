@@ -585,10 +585,15 @@ The legacy nginx front needs no change.
 .. warning::
 
    OAuth 2.1 requires HTTPS: the token endpoints refuse plain ``http://``
-   (except from ``localhost``). ``"allow_insecure_http": true`` in
-   :confval:`OAUTH` lifts this for a pilot — the sign-in password and the
-   tokens then travel in the clear. With Active Directory configured
-   :confval:`REQUIRE_HTTPS` applies and the flag is ignored.
+   (except from ``localhost``), and client registration accepts only
+   ``https://`` redirect URIs (or ``http://localhost``).
+   ``"allow_insecure_http": true`` in :confval:`OAUTH` lifts both for a
+   pilot — the endpoints are served over plain HTTP and an application on a
+   plain-HTTP address in the LAN (for example LibreChat at
+   ``http://chat.company.local``) can register its callback — the sign-in
+   password and the tokens then travel in the clear. With Active Directory
+   configured :confval:`REQUIRE_HTTPS` applies (it is on by default) and the
+   flag is ignored unless ``REQUIRE_HTTPS`` is explicitly ``false``.
 
 Checklist for an integrator (e.g. a web application on FastMCP):
 
