@@ -146,6 +146,11 @@ generation engine. Another front is an AI assistant: with the
 the same engine from the chat — see
 :ref:`Creating cubes from the chat <mcp_create>`.
 
+Autogen works from one table. When a coding agent should write a whole cube
+from the DDL of several tables and a requirements document — measure groups,
+joins, hierarchies, roles — give it the :ref:`cube definition skill
+<cube_skill>` instead.
+
 Autogen makes one light profiling pass over the table (row count, distinct
 counts, min/max) and assigns a role to every column by rules:
 
@@ -809,6 +814,10 @@ fact table just to populate a filter dropdown.
 
    The dimension field used for matching (``store`` in this example) must exist in both tables —
    in the dimension table for the filter lookup, and in the fact table for applying the filter to the main query.
+   Write it **without a table alias** (``store``, not ``stores.store``): the expression is pasted
+   unchanged into the query against the fact table, where the alias ``stores`` does not exist
+   because a ``one-table`` join is never emitted. For the same reason a dimension that reads the
+   fact table itself must use the **same alias as the fact block** (``sales`` in the previous example).
 
 .. code-block:: sql
 
