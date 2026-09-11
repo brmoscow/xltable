@@ -27,8 +27,8 @@ What you need first
 Install
 -------
 
-Download ``XLTable-<version>-setup.exe`` and run it — a Next-Finish wizard
-installs XLTable into your user profile. Administrator rights are **not**
+Download ``XLTable-<version>-setup.exe`` from https://xltable.com/download
+and run it — a Next-Finish wizard installs XLTable into your user profile. Administrator rights are **not**
 required and no UAC elevation prompt appears.
 
 .. note::

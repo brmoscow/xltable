@@ -265,9 +265,10 @@ The desktop distribution — **XLTable Desktop** — comes in two forms:
 Installation
 ^^^^^^^^^^^^
 
-1. Download ``XLTable-<version>-setup.exe`` and run it. Administrator
-   rights are **not** required — the installer works entirely inside your
-   user profile and never shows a UAC elevation prompt.
+1. Download ``XLTable-<version>-setup.exe`` from https://xltable.com/download
+   and run it. Administrator rights are **not** required — the installer
+   works entirely inside your user profile and never shows a UAC elevation
+   prompt.
 
    .. note::
 
@@ -378,10 +379,10 @@ The zip archive contains the same distribution without an installer —
 nothing is written outside the folder you extract it to, and the cubes
 folder defaults to ``cubes`` next to the executable.
 
-1. Download ``xltable-<version>-win64.zip``. Before extracting,
-   right-click the file → **Properties** → **Unblock** — otherwise Windows
-   marks every extracted file as downloaded from the internet and warns on
-   the first start.
+1. Download ``xltable-<version>-win64.zip`` from https://xltable.com/download.
+   Before extracting, right-click the file → **Properties** → **Unblock** —
+   otherwise Windows marks every extracted file as downloaded from the
+   internet and warns on the first start.
 
 2. Extract the archive to a folder of your choice, e.g. ``C:\xltable\``
 
