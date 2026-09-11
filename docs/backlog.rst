@@ -78,34 +78,42 @@ in 2026.
      - Done (2.1.0)
 
    * - 13
+     - Pre-aggregation friendly SQL
+     - Generate cube SQL in a form that lets the database engine answer queries from
+       its own pre-aggregated structures, such as materialized views and projections:
+       aggregate over raw fact table columns first and join dimension attributes
+       to the aggregated result, instead of joining and casting before aggregation.
+     - Done (2.1.2)
+
+   * - 14
      - Native data types in dimension attributes
      - Currently all dimension attributes are cast to string. Planned support for integer and date types,
        allowing dimension values to be used in Excel with their native format.
      -
 
-   * - 14
+   * - 15
      - Sort by another field
      - Ability to sort a dimension attribute by the values of a different field
        (for example, sort month names by month number).
      -
 
-   * - 15
+   * - 16
      - DAX support
      - Support for DAX query language alongside MDX for cube interaction.
      -
 
-   * - 16
+   * - 17
      - Built-in Jinja functions
      - A library of built-in Jinja functions available in cube SQL templates
        for common transformations, date handling, and formatting operations.
      -
 
-   * - 17
+   * - 18
      - Excel for Mac support
      - Ability to work with XLTable data in Excel on macOS.
      -
 
-   * - 18
+   * - 19
      - SQL endpoint
      - Expose XLTable cubes over the PostgreSQL wire protocol so that BI tools
        (Power BI, DataLens, Apache Superset, Metabase, Tableau and others)
@@ -115,20 +123,12 @@ in 2026.
        and the shared result cache apply the same way as for Excel and MCP.
      -
 
-   * - 19
+   * - 20
      - API endpoint
      - An HTTP API for querying cubes (dimensions, measures, filters, sorting, limit)
        and retrieving cube metadata, with results in JSON or CSV.
        Uses the same authentication, row-level security and result cache as Excel and MCP.
        Intended for scripts, notebooks, embedded analytics and partner integrations.
-     -
-
-   * - 20
-     - Pre-aggregation friendly SQL
-     - Generate cube SQL in a form that lets the database engine answer queries from
-       its own pre-aggregated structures, such as materialized views and projections:
-       aggregate over raw fact table columns first and join dimension attributes
-       to the aggregated result, instead of joining and casting before aggregation.
      -
 
    * - 21

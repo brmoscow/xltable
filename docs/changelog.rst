@@ -6,6 +6,24 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
+Version 2.1.2 — 2026-09-11
+--------------------------
+
+- **Two-stage SQL form** — a new shape of the generated SQL, enabled with
+  :confval:`SQL_FORM` ``"two_stage"``: the fact table is filtered and
+  aggregated on its own first, dimension names are joined to the small
+  aggregated result afterwards. The database reads the fact table once
+  without joins, and its own pre-aggregates (ClickHouse projections,
+  StarRocks materialized views built by fact keys) can answer the query;
+  on a one-billion-row ClickHouse table typical PivotTable queries went
+  from seconds to well under a second. Results are identical to the
+  legacy form. Measures that cannot be re-aggregated (``avg``, distinct
+  counts) and measure groups that cannot be split fall back to the legacy
+  form per query, automatically. Default stays ``legacy``. See
+  :ref:`sql_form_two_stage`.
+
+------------------------------------------------------------
+
 Version 2.1.1 — 2026-09-01
 --------------------------
 

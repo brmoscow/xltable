@@ -734,6 +734,75 @@ If multiple measure groups exist:
 Put simply, SQL generation follows a basic principle: the queries executed are exactly what is defined in the cube metadata.
 Enable logging in settings.json → WRITE_LOG to inspect generated SQL.
 
+.. _sql_form_two_stage:
+
+Two-stage SQL form (pre-aggregation friendly)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+With ``"SQL_FORM": "two_stage"`` in ``settings.json`` (see
+:confval:`SQL_FORM`) the query for a measure group is built in two stages:
+
+1. **Fact table only.** The fact table is filtered by its own columns and
+   aggregated by the dimension keys it holds (``sales.store_id``,
+   ``sales.date``), plus the flags of measure conditions (``FILTER
+   (WHERE …)`` / ``sumIf``). No dimension table is joined here. A filter on
+   a dimension attribute ("Region = EU") becomes a list of dimension keys
+   in the fact query: ``sales.store_id IN (12, 17, 43, …)``. XLTable gets
+   the keys with a small separate query on the dimension table; that query
+   goes through the shared SQL cache. Lists longer than
+   :confval:`FILTER_KEY_LIST_MAX` are written as a subquery instead.
+2. **Names.** The dimension tables of the fields placed on the PivotTable
+   axes are joined to the aggregated result to add their names, and the
+   usual grouping (subtotals, grand total) is computed over the partial
+   aggregates.
+
+The PivotTable shows the same numbers as with the legacy form. The
+difference is where the work happens: the database reads the fact table
+once, without joins and without casting keys to strings, and its own
+pre-aggregates can serve stage 1.
+
+**Which measures work in this form.** Stage 2 re-aggregates the partial
+results of stage 1, so a measure must be re-aggregatable:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 40 60
+
+   * - Measure
+     - Two-stage form
+   * - ``sum(x)``, ``count(*)``, ``count(x)``, ``min(x)``, ``max(x)``
+     - yes
+   * - the same with a condition — ``sum(x) FILTER (WHERE c)``, ``sumIf(x, c)``,
+       ``sum(case when c then x end)``
+     - yes; the condition becomes a flag column of stage 1
+   * - ``avg(x)``
+     - no — define it as a calculated field ``sum(x) / count(x)`` instead
+   * - ``count(distinct x)``, ``uniq(x)``, approximate distinct counts
+     - no
+   * - window functions, expressions over several aggregates (``sum(a) / sum(b)``)
+     - no — use a calculated field
+   * - a measure that refers to a dimension table column
+     - no
+
+When a query touches a measure that is not re-aggregatable, or a measure
+group that cannot be split (a dimension joined through another dimension,
+a join without an equality on keys, a dimension attribute placed on an
+axis whose expression refers to two tables), that measure group is
+generated in the legacy form for that query — automatically, nothing to
+configure. The reason is written to the log when ``WRITE_LOG`` is on.
+
+**Pre-aggregates that stage 1 can use.** Stage 1 groups the fact table
+by its *keys* and filters it by key lists. A ClickHouse projection or a
+StarRocks materialized view is used when it is built **over the fact
+table alone** and contains every fact column that stage 1 groups or
+filters by: the dimension keys of the fields that are placed on axes or
+in filters, the fact columns used directly as levels (day, week, flags)
+and the aggregated measure columns. A pre-aggregate that joins dimension
+tables and stores their names instead of the keys is not matched by this
+form (StarRocks requires the query to join exactly the same tables;
+ClickHouse projections cannot join at all). In short: build
+pre-aggregates by fact keys, and let XLTable add the names.
+
 .. _validation_debugging:
 
 Validation and debugging

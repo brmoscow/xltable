@@ -513,6 +513,52 @@ Parameter reference
 
    Default: ``true``
 
+.. confval:: SQL_FORM
+
+   Shape of the SQL that XLTable generates for a PivotTable query.
+
+   ``legacy`` (default) — one query per measure group: the fact table is
+   joined to the dimension tables first, then grouped and aggregated. This
+   is the form XLTable has always produced.
+
+   ``two_stage`` — pre-aggregation friendly form: the fact table is
+   filtered and aggregated **on its own** first (by the dimension keys it
+   holds), and dimension names are joined to that small aggregated result
+   afterwards. The database reads the fact table once without joins, and
+   its own pre-aggregates — ClickHouse projections, StarRocks materialized
+   views — can answer the first stage. The PivotTable result is the same in
+   both forms. Filters on dimension attributes are applied to the fact
+   table as a list of dimension keys, which XLTable obtains with a small
+   separate query (cached like any other SQL result).
+
+   A measure group falls back to ``legacy`` for the query when it cannot be
+   computed this way — see :ref:`sql_form_two_stage` for the rules. Set
+   ``WRITE_LOG`` to see which form each query used.
+
+   Example:
+
+   .. code-block:: json
+
+      "SQL_FORM": "two_stage"
+
+   Default: ``legacy``
+
+.. confval:: FILTER_KEY_LIST_MAX
+
+   Only with ``"SQL_FORM": "two_stage"``. The largest list of dimension
+   keys that is written into the fact query as constants (``store_id IN
+   (12, 17, …)``). Above this size the filter is written as a subquery on
+   the dimension table instead; the result is the same, the query text is
+   shorter. Rarely needs changing.
+
+   Example:
+
+   .. code-block:: json
+
+      "FILTER_KEY_LIST_MAX": 50000
+
+   Default: ``10000``
+
 .. confval:: ADMIN_GROUPS
 
    Defines user groups for accessing the admin panel (``/admin``).
