@@ -141,3 +141,66 @@ in 2026.
        and which measures cannot be re-aggregated (averages, distinct counts) —
        falling back to the fact table when no pre-aggregate fits.
      -
+
+   * - 22
+     - Cube definition tests
+     - Correctness tests inside the cube definition (``--olap_test`` blocks): a pivot
+       query plus the expected result or a reference SQL, run by a CLI command and an MCP tool,
+       with exit codes for CI. A ``check`` command validates a definition before deployment.
+     -
+
+   * - 23
+     - Web pivot table
+     - A pivot table in the browser over the same cubes, with export to Excel — for macOS
+       users and for anyone without Excel at hand.
+     -
+
+   * - 24
+     - Git-friendly cube definitions
+     - Export and import of cube definitions as files for version control and code review,
+       in both folder and database cube sources.
+     -
+
+   * - 25
+     - More connectors
+     - Amazon Redshift, Apache Doris, MotherDuck, Vertica.
+     -
+
+   * - 26
+     - SSAS importer
+     - Convert an SSAS cube definition (XMLA) into a draft XLTable cube definition.
+     -
+
+   * - 27
+     - Open Semantic Interchange
+     - Import and export of semantic models in the OSI format.
+     -
+
+   * - 28
+     - Language pack
+     - Localized admin panel, service pages and messages shown in Excel (Russian, English;
+       other languages on request).
+     -
+
+   * - 29
+     - One-command update
+     - Update the server with a single command; a notice in the admin panel when a new
+       version is available.
+     -
+
+   * - 30
+     - Dashboards from chat
+     - An MCP tool that turns a dashboard specification produced by an AI assistant into
+       a live dashboard rendered from the cubes.
+     -
+
+   * - 31
+     - ``compile_query`` MCP tool
+     - Returns the SQL the engine would run for a pivot query, without executing it.
+     -
+
+   * - 32
+     - Database visibility per user group
+     - Restrict which databases (catalogs) each user group can see and query when cubes
+       are stored in the database.
+     -
