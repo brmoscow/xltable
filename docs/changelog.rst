@@ -19,7 +19,10 @@ Version 2.1.2 — 2026-09-11
   from seconds to well under a second. Results are identical to the
   legacy form. Measures that cannot be re-aggregated (``avg``, distinct
   counts) and measure groups that cannot be split fall back to the legacy
-  form per query, automatically. Default stays ``legacy``. See
+  form per query, automatically. Filters on dimension attributes reach the
+  fact table as key lists by default, or as joins inside the fact query
+  (:confval:`FILTER_MODE` ``join_name``) for StarRocks materialized views
+  built over fact and dimensions. Default stays ``legacy``. See
   :ref:`sql_form_two_stage`.
 
 ------------------------------------------------------------

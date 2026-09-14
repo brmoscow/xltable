@@ -792,16 +792,25 @@ generated in the legacy form for that query — automatically, nothing to
 configure. The reason is written to the log when ``WRITE_LOG`` is on.
 
 **Pre-aggregates that stage 1 can use.** Stage 1 groups the fact table
-by its *keys* and filters it by key lists. A ClickHouse projection or a
-StarRocks materialized view is used when it is built **over the fact
+by its *keys* and, by default, filters it by key lists
+(:confval:`FILTER_MODE` ``key_list``). A ClickHouse projection or a
+StarRocks materialized view is then used when it is built **over the fact
 table alone** and contains every fact column that stage 1 groups or
 filters by: the dimension keys of the fields that are placed on axes or
 in filters, the fact columns used directly as levels (day, week, flags)
 and the aggregated measure columns. A pre-aggregate that joins dimension
-tables and stores their names instead of the keys is not matched by this
-form (StarRocks requires the query to join exactly the same tables;
+tables and stores their names instead of the keys is not matched in this
+mode (StarRocks requires the query to join exactly the same tables;
 ClickHouse projections cannot join at all). In short: build
 pre-aggregates by fact keys, and let XLTable add the names.
+
+If your StarRocks materialized views are built as "fact joined with
+dimensions" and filter by attribute names, switch to :confval:`FILTER_MODE`
+``join_name``: the dimension tables used in the PivotTable filters are
+joined inside stage 1 exactly as in the cube, and the view is matched when
+the PivotTable filters cover every dimension the view joins. A dimension
+placed on an axis still needs its fact key in the view, because stage 1
+groups by keys.
 
 .. _validation_debugging:
 

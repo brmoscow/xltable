@@ -543,6 +543,34 @@ Parameter reference
 
    Default: ``legacy``
 
+.. confval:: FILTER_MODE
+
+   Only with ``"SQL_FORM": "two_stage"``. How a filter on a dimension
+   attribute ("Region = EU") reaches the fact table in stage 1.
+
+   ``key_list`` (default) — XLTable reads the matching dimension keys with a
+   small separate query and writes them into the fact query as constants:
+   ``sales.store_id IN (12, 17, …)``. The fact query has no joins, so a
+   ClickHouse projection or a StarRocks materialized view built over the
+   fact table alone can answer it.
+
+   ``join_name`` — the dimension tables used in filters are joined to the
+   fact table inside stage 1 exactly as written in the cube, and the
+   condition stays on the attribute (``stores.region = 'EU'``); grouping is
+   still by fact keys. Use it when your StarRocks materialized views are
+   built as "fact joined with dimensions": StarRocks rewrites a query to
+   such a view only when the query joins exactly the same tables, so a
+   PivotTable is served by the view when its filters cover every dimension
+   the view joins. Not useful on ClickHouse (projections cannot join).
+
+   Example:
+
+   .. code-block:: json
+
+      "FILTER_MODE": "join_name"
+
+   Default: ``key_list``
+
 .. confval:: FILTER_KEY_LIST_MAX
 
    Only with ``"SQL_FORM": "two_stage"``. The largest list of dimension
