@@ -25,6 +25,15 @@ Version 2.1.2 — 2026-09-11
   built over fact and dimensions. Default stays ``legacy``. See
   :ref:`sql_form_two_stage`.
 
+- **Slicers on Excel 2016 (MSI) after the September 2026 update** —
+  Excel 2016 build 16.0.5569 asks for the slicer member count as
+  ``<level>.members.count`` instead of ``.allmembers.count`` (Microsoft 365
+  Click-to-Run builds keep the latter); XLTable rejected that form, and
+  Excel silently cancelled the slicer after three retries. Both forms are
+  accepted now. Also fixed: clearing a slicer selection ("Clear Filter")
+  sent an empty query to the warehouse (on DuckDB this surfaced as
+  ``'NoneType' object has no attribute 'df'``).
+
 ------------------------------------------------------------
 
 Version 2.1.1 — 2026-09-01
