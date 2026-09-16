@@ -805,12 +805,12 @@ ClickHouse projections cannot join at all). In short: build
 pre-aggregates by fact keys, and let XLTable add the names.
 
 If your StarRocks materialized views are built as "fact joined with
-dimensions" and filter by attribute names, switch to :confval:`FILTER_MODE`
-``join_name``: the dimension tables used in the PivotTable filters are
-joined inside stage 1 exactly as in the cube, and the view is matched when
-the PivotTable filters cover every dimension the view joins. A dimension
-placed on an axis still needs its fact key in the view, because stage 1
-groups by keys.
+dimensions" and store attribute names, switch to :confval:`FILTER_MODE`
+``join_name``: the dimension tables used in the PivotTable filters and on
+its axes are joined inside stage 1 exactly as in the cube, stage 1 groups
+by the attributes themselves, and the view is matched when the filters and
+axes together cover every dimension the view joins. No fact keys are
+needed in such a view.
 
 .. _validation_debugging:
 

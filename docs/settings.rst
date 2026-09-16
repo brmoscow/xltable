@@ -554,14 +554,16 @@ Parameter reference
    ClickHouse projection or a StarRocks materialized view built over the
    fact table alone can answer it.
 
-   ``join_name`` — the dimension tables used in filters are joined to the
-   fact table inside stage 1 exactly as written in the cube, and the
-   condition stays on the attribute (``stores.region = 'EU'``); grouping is
-   still by fact keys. Use it when your StarRocks materialized views are
-   built as "fact joined with dimensions": StarRocks rewrites a query to
-   such a view only when the query joins exactly the same tables, so a
-   PivotTable is served by the view when its filters cover every dimension
-   the view joins. Not useful on ClickHouse (projections cannot join).
+   ``join_name`` — the dimension tables used in filters and on the
+   PivotTable axes are joined to the fact table inside stage 1 exactly as
+   written in the cube: the condition stays on the attribute
+   (``stores.region = 'EU'``) and grouping is by the attribute itself
+   (``stores.name``), not by the fact key. Use it when your StarRocks
+   materialized views are built as "fact joined with dimensions" and store
+   the attribute names: StarRocks rewrites a query to such a view only when
+   the query joins exactly the same tables, so a PivotTable is served by the
+   view when its filters and axes together cover every dimension the view
+   joins. Not useful on ClickHouse (projections cannot join).
 
    Example:
 

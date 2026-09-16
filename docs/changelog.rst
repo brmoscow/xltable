@@ -25,6 +25,19 @@ Version 2.1.2 — 2026-09-11
   built over fact and dimensions. Default stays ``legacy``. See
   :ref:`sql_form_two_stage`.
 
+- **Database errors reach Excel as text** — when a query fails in the
+  warehouse (a timeout, a memory limit, a type error), the PivotTable now
+  shows the database's own message. Before, special characters in the
+  message broke the XML response ("XML parse error" in Excel), and on
+  StarRocks and Trino the failure was silently turned into an empty
+  result that then stayed in the shared SQL cache until it expired.
+
+- **"Expand to level" with subtotals off** — with subtotals and the grand
+  total switched off, Excel asks for "Expand to <level>" in a different
+  form of MDX; XLTable expanded only the first level of the hierarchy and
+  the PivotTable stayed collapsed. Now every level down to the requested
+  one is expanded, the same as step-by-step expansion.
+
 - **Slicers on Excel 2016 (MSI) after the September 2026 update** —
   Excel 2016 build 16.0.5569 asks for the slicer member count as
   ``<level>.members.count`` instead of ``.allmembers.count`` (Microsoft 365
