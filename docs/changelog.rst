@@ -32,11 +32,19 @@ Version 2.1.2 — 2026-09-11
   StarRocks and Trino the failure was silently turned into an empty
   result that then stayed in the shared SQL cache until it expired.
 
-- **"Expand to level" with subtotals off** — with subtotals and the grand
-  total switched off, Excel asks for "Expand to <level>" in a different
-  form of MDX; XLTable expanded only the first level of the hierarchy and
-  the PivotTable stayed collapsed. Now every level down to the requested
-  one is expanded, the same as step-by-step expansion.
+- **Expanding hierarchies with subtotals off** — with subtotals and the
+  grand total switched off, Excel sends "Expand to <level>" and the
+  expansion of individual members in a different form of MDX; XLTable
+  expanded only the first level of the hierarchy, so the PivotTable stayed
+  collapsed or lost its expanded rows after a refresh or a filter change.
+  Now every requested level and member is expanded, the same as with
+  subtotals on. In the same situations collapsing one member could collapse
+  its neighbour instead: the response did not mark expanded members as
+  drilled, so Excel took the click for an expansion. Expanded members are
+  now flagged, and collapse works on the member you click. "Expand to
+  <level>" on a single member is fixed the same way: XLTable now answers
+  Excel's request for a member's children with the real children, as
+  Analysis Services does, instead of the member itself.
 
 - **Slicers on Excel 2016 (MSI) after the September 2026 update** —
   Excel 2016 build 16.0.5569 asks for the slicer member count as
