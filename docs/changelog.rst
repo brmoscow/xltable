@@ -19,7 +19,8 @@ Version 2.1.2 — 2026-09-11
   from seconds to well under a second. Results are identical to the
   legacy form. Measures that cannot be re-aggregated (``avg``, distinct
   counts) and measure groups that cannot be split fall back to the legacy
-  form per query, automatically. Filters on dimension attributes reach the
+  form per query, automatically. Slicer queries that check which tiles
+  have data use the two-stage form too. Filters on dimension attributes reach the
   fact table as key lists by default, or as joins inside the fact query
   (:confval:`FILTER_MODE` ``join_name``) for StarRocks materialized views
   built over fact and dimensions. Default stays ``legacy``. See

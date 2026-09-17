@@ -791,6 +791,10 @@ axis whose expression refers to two tables), that measure group is
 generated in the legacy form for that query — automatically, nothing to
 configure. The reason is written to the log when ``WRITE_LOG`` is on.
 
+Slicer queries that check which tiles have data (member list plus a
+measure) follow the same rules and use the two-stage form. Lists of filter
+values without a measure read the dimension table only and are not affected.
+
 **Pre-aggregates that stage 1 can use.** Stage 1 groups the fact table
 by its *keys* and, by default, filters it by key lists
 (:confval:`FILTER_MODE` ``key_list``). A ClickHouse projection or a
