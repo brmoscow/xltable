@@ -38,6 +38,11 @@ Tools
    * - ``get_pivot_context``
      - Returns the layout of the last Pivot Table the user queried from
        Excel — see `Working alongside Excel`_.
+   * - ``compare_periods``, ``top_n``, ``trend``, ``variance_from_norm``,
+       ``explain_change``
+     - Analytical operators: the engine computes the comparison, ranking,
+       time series, deviation or the drivers of a change, the assistant only
+       interprets — see `Analytical operators`_.
    * - ``list_warehouse_tables``
      - Folder cube source only: lists the tables and views of the connected
        warehouse — names only, optionally filtered by a substring. The chat
@@ -126,6 +131,82 @@ values their access filters allow. Levels with more distinct values than the
 threshold (30 by default, :confval:`MCP` ``sample_values_max``) return the
 first values in a stable order and are listed in ``sample_values_truncated``,
 so the assistant knows the list is a sample, not the full set.
+
+.. _mcp_operators:
+
+Analytical operators
+--------------------
+
+An analyst asks thousands of different questions, but they come down to a
+handful of *types* of analysis. A language model that is handed raw rows and
+asked *"why did margin fall?"* answers by guesswork — and differently each
+time. XLTable takes the opposite approach: **the model understands the
+question, the engine does the arithmetic.** Each type of question has its own
+tool; the assistant picks the tool and the fields, XLTable runs the pivot
+queries through the same cube, security roles and cache as ``query_cube``
+and returns the computed figures.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 20 58
+
+   * - Question
+     - Tool
+     - What comes back
+   * - *How much?*
+     - ``query_cube``
+     - An aggregated slice: measures by dimension levels, with filters.
+   * - *How did it change?*
+     - ``compare_periods``
+     - Measures in two periods side by side, broken down by dimensions:
+       the value in each period, the absolute change and the change in
+       percent, sorted by the size of the change, plus the same comparison
+       for the grand total. The change is always *later period minus
+       earlier period*, whichever argument holds the later one — a positive
+       delta is growth, a negative one is decline. A period is one value
+       (``"2025"``), a list of values, or a ``[from, to]`` pair for a range
+       of dates or months.
+   * - *Who matters most?*
+     - ``top_n``
+     - The values of a dimension level ranked by a measure: share of the
+       total, cumulative share and ABC class (A — up to 80% of the total,
+       B — up to 95%, C — the rest), the grand total, the number of groups
+       and how many of them make up class A (*"which stores give 80% of
+       profit"*). ``ascending=true`` ranks from the bottom.
+   * - *What is the dynamic?*
+     - ``trend``
+     - A time series of a measure: points in chronological order, growth
+       from the first point to the last, the average period-over-period
+       change, a moving average and outliers (points farther from the mean
+       than 1.5 mean absolute deviations by default). With a dimension —
+       one series per value.
+   * - *Where is the deviation?*
+     - ``variance_from_norm``
+     - Each value of a dimension level compared with its norm: another
+       measure of the cube (a plan, a target) or, without one, the average
+       across the groups. Every row carries the absolute and percentage
+       deviation; rows beyond the threshold (15% by default) are listed
+       separately as anomalies, largest first.
+   * - *Why did it change?*
+     - ``explain_change``
+     - A drill-down decomposition of a change between two periods. The
+       assistant names the candidate dimensions (category, region, store,
+       product — up to six); at each step the engine finds the dimension in
+       which a single value explains the largest share of the change, fixes
+       that value and drills into the remaining dimensions, two levels deep
+       by default. The answer is the total change and the chain of drivers —
+       *"sales fell by 9 203; 92% of the drop is the Clothing category, and
+       inside it the Men Shirt model went from 6 020 to zero"* — with the top
+       contributors in both directions at every step. When no single value
+       explains at least 25% of the change, the tool says so explicitly and
+       the assistant reports the change as broad-based instead of inventing
+       a cause.
+
+Every operator accepts the same ``filters`` as ``query_cube`` (a region, a
+category) and the same ``limit``; all names come from ``describe_cube``.
+Nothing is computed by the model: every figure in the answer comes from
+pivot queries the engine ran — the same SQL, the same cache and the same
+security roles as a Pivot Table in Excel.
 
 .. _mcp_pivot_context:
 

@@ -26,6 +26,18 @@ Version 2.1.2 — 2026-09-11
   built over fact and dimensions. Default stays ``legacy``. See
   :ref:`sql_form_two_stage`.
 
+- **Analytical operators for AI assistants** — five new MCP tools next to
+  ``query_cube``: ``compare_periods`` (two periods side by side, absolute and
+  percentage change), ``top_n`` (ranking with shares and ABC classes),
+  ``trend`` (time series with growth, moving average and outliers),
+  ``variance_from_norm`` (deviation from a plan measure or from the peer
+  average) and ``explain_change`` (why a measure changed: a drill-down
+  through candidate dimensions to the values that drive the change, with an
+  explicit "broad-based" verdict when no single driver exists). The
+  assistant picks the tool and the fields, the engine computes
+  the figures through the same cubes, security roles and cache as
+  ``query_cube`` — no arithmetic left to the model. See :ref:`mcp_operators`.
+
 - **Database errors reach Excel as text** — when a query fails in the
   warehouse (a timeout, a memory limit, a type error), the PivotTable now
   shows the database's own message. Before, special characters in the
