@@ -385,6 +385,58 @@ Documentation:
 - :ref:`jinja_scripts`
 - :ref:`jinja_var`
 
+Does XLTable work with Excel for Mac?
+--------------------------------------
+
+Not for PivotTables. Excel for Mac cannot open Analysis Services (XMLA)
+connections — a Microsoft limitation that applies to SSAS and to every XMLA
+server, not only XLTable.
+
+Options for Mac users:
+
+- ask the same cubes questions in an AI chat — Claude Desktop and other MCP
+  clients run on macOS and connect to the XLTable server (see
+  :ref:`mcp_clients`);
+- run Excel for Windows in a virtual machine (Parallels) or on a remote
+  desktop;
+- use a Windows PC.
+
+A browser-based PivotTable that needs no Excel is on the roadmap.
+
+How does XLTable perform on large cubes (billions of rows)?
+------------------------------------------------------------
+
+XLTable stores no data and pre-aggregates nothing itself: every PivotTable
+action becomes one SQL query pushed down to the warehouse, so the speed is
+that of ClickHouse, Snowflake or BigQuery on your data. Three things keep it
+fast:
+
+- the **shared SQL result cache** — an identical query from several users
+  (or several sessions) runs in the database once per ``SQL_CACHE_TTL`` and
+  the others are served within milliseconds (see :ref:`cache_layers`);
+- the **two-stage SQL form** — the fact table is aggregated by its keys
+  before dimension names are joined, so ClickHouse projections and StarRocks
+  materialized views can serve the query; on a one-billion-row ClickHouse
+  table typical PivotTable queries went from seconds to well under a second
+  (see :ref:`sql_form_two_stage`);
+- the warehouse's own **partition pruning** — filters reach the fact table
+  directly, without a copy of the data in between.
+
+Size the warehouse for your PivotTable workload as you would for any BI
+tool; XLTable itself needs the resources listed in :ref:`system_requirements`.
+
+Which Excel and Office versions are supported?
+-----------------------------------------------
+
+Excel for Windows 2016 or later, including Microsoft 365, with the Analysis
+Services OLE DB provider (MSOLAP) — it ships with Office in most
+installations. Excel connects through the standard *From Analysis Services*
+dialog; no add-in is installed (see :doc:`excel`).
+
+Excel for Mac and Excel for the web cannot open XMLA connections (see the
+previous question). The XLTable server runs on Linux or Windows — see
+:ref:`system_requirements`.
+
 What is the license cost and trial period length?
 --------------------------------------------------
 
