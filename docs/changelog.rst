@@ -38,6 +38,22 @@ Version 2.1.2 — 2026-09-11
   the figures through the same cubes, security roles and cache as
   ``query_cube`` — no arithmetic left to the model. See :ref:`mcp_operators`.
 
+- **OAuth: ``resource`` without the ``/mcp`` path is accepted** — some MCP
+  clients send the RFC 8707 ``resource`` as the server's base URL
+  (``https://server``) instead of the advertised ``https://server/mcp``; the
+  sign-in window flashed and closed with ``invalid_target``. The server's
+  base URL (its OAuth issuer, with or without a trailing slash) is now
+  accepted on ``/oauth/authorize`` and ``/oauth/token`` and normalized to the
+  canonical ``/mcp`` resource the token is bound to. Any other host or path
+  is still rejected.
+
+- **Calculated fields: a measure whose name starts another measure's name** —
+  with measures on the column axis, a calculated field that used both
+  ``REASON_SHARE`` and ``REASON_SHARE_ALL`` failed in the warehouse with an
+  unknown column ``F001_F000_REASON_SHARE_ALL``: the shorter name was
+  substituted inside the longer one. Measure names are now matched as whole
+  words; generated SQL for all other cubes is unchanged.
+
 - **Database errors reach Excel as text** — when a query fails in the
   warehouse (a timeout, a memory limit, a type error), the PivotTable now
   shows the database's own message. Before, special characters in the

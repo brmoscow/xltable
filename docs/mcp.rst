@@ -621,7 +621,11 @@ at ``/.well-known/oauth-authorization-server``, dynamic client registration
 ``/oauth/revoke``. Access tokens live one hour, refresh tokens 30 days
 (:confval:`OAUTH`); every request to ``/mcp`` carries
 ``Authorization: Bearer <access token>``. Tokens are bound to this server
-(RFC 8707 ``resource``) and stored only as hashes.
+(RFC 8707 ``resource``) and stored only as hashes. The ``resource`` an
+application sends may be the advertised ``https://<server>/mcp`` or just the
+server's base URL ``https://<server>`` (its OAuth issuer — some clients send
+that); both are bound to the ``/mcp`` endpoint, any other host or path is
+rejected.
 
 **What the user sees.** The application opens ``/oauth/authorize`` in the
 browser — the XLTable sign-in page:
