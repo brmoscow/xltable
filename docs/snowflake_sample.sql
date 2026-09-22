@@ -145,7 +145,7 @@ with calendar as (
 
 --olap_cube
 --olap_calculated_fields Calculated fields
-(sales_sum_qty / stock_avg_qty) as calc_turnover --translation=`Turnover` --format=`#,##0.00;-#,##0.00`
+(sales_sum_sum / nullif(sales_sum_qty, 0)) as calc_avg_price --translation=`Average Price` --format=`#,##0.00;-#,##0.00`
 --olap_jinja
 {{ sql_text | replace("salesly.date_sale", "TO_VARCHAR(DATEADD(YEAR, 1, TO_DATE(salesly.date_sale)), 'YYYY-MM-DD')") }}
 
@@ -174,7 +174,7 @@ LEFT JOIN calendar times ON salesly.date_sale = times.day_str
 --olap_source Stock
 SELECT
 --olap_measures
- avg(stock.qty) as stock_avg_qty --translation=`Average Stock Quantity`
+ sum(stock.qty) as stock_sum_qty --translation=`Stock Quantity` --description=`Current stock on hand, pcs: a single snapshot, not tied to dates`
 FROM olap.public.Stock stock
 LEFT JOIN olap.public.Stores stores ON stock.store = stores.id
 LEFT JOIN olap.public.Models models ON stock.model = models.id

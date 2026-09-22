@@ -181,8 +181,8 @@ to share a direct reference to it.
 
       --olap_cube
       --olap_calculated_fields Calculated fields
-       (sales_sum_qty/stock_avg_qty) as turnover --translation=`Turnover`
-      ,(turnover * 100) as turnover_pct --translation=`Turnover %`
+       (sales_sum_sum / nullif(sales_sum_qty, 0)) as avg_price --translation=`Average Price`
+      ,(avg_price * 1.2) as avg_price_vat --translation=`Average Price incl. VAT`
 
 .. tag:: olap_calculated_fields_visible
 
@@ -208,7 +208,7 @@ to share a direct reference to it.
 
       --olap_cube
       --olap_calculated_fields Calculated fields
-      (sales_sum_qty/stock_avg_qty) as turnover --translation=`Turnover`
+      (sales_sum_sum / nullif(sales_sum_qty, 0)) as avg_price --translation=`Average Price`
 
 .. tag:: olap_description
 
@@ -314,7 +314,7 @@ to share a direct reference to it.
    .. code-block:: sql
 
       --olap_measures_visible
-      sales_sum_qty, stock_avg_qty
+      sales_sum_qty, stock_sum_qty
 
 .. tag:: olap_source
 
@@ -356,7 +356,7 @@ to share a direct reference to it.
       --olap_calculated_fields_visible
       all
       --olap_measures_visible
-      sales_sum_qty, stock_avg_qty
+      sales_sum_qty, stock_sum_qty
       --olap_dimensions_visible
       all
       --olap_access_filters
@@ -506,7 +506,7 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
 
     --olap_cube
     --olap_calculated_fields Calculated fields
-    (sales_sum_qty/stock_avg_qty) as calc_turnover --translation=`Turnover` --format=`#,##0;-#,##0`
+    (sales_sum_sum / nullif(sales_sum_qty, 0)) as calc_avg_price --translation=`Average Price` --format=`#,##0.00;-#,##0.00`
     --olap_jinja
     {{ sql_text | replace("salesly.date_sale", "addYears(salesly.date_sale, 1)") }}
 
@@ -536,7 +536,7 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     --olap_source Stock
     SELECT
     --olap_measures
-     avg(stock.qty) as stock_avg_qty --translation=`Average Stock Quantity`
+     sum(stock.qty) as stock_sum_qty --translation=`Stock Quantity` --description=`Current stock on hand, pcs: a single snapshot, not tied to dates`
     FROM db.Stock stock
     LEFT JOIN db.Stores stores on stock.store = stores.id
     LEFT JOIN db.Models models on stock.model = models.id
@@ -583,7 +583,7 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     --olap_calculated_fields_visible
     all
     --olap_measures_visible
-    sales_sum_qty, stock_avg_qty
+    sales_sum_qty, stock_sum_qty
     --olap_dimensions_visible
     all
     --olap_access_filters

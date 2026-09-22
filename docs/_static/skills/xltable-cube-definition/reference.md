@@ -60,7 +60,7 @@ role needs all five directives (even `all` or empty).
 
 - Measure alias: `<source_alias>_<aggregate>_<column>` where aggregate is one
   of `sum avg count min max countif sumif avgif minif maxif uniq uniqexact`
-  (e.g. `sales_sum_qty`, `orders_uniq_order_id`, `stock_avg_qty`).
+  (e.g. `sales_sum_qty`, `orders_uniq_order_id`, `stock_sum_qty`).
 - Dimension alias: `<source_alias>_<column>` (`stores_name`, `times_year`).
 - Calculated alias: any identifier; `calc_<name>` keeps them recognizable.
 - A field without `AS` gets its expression with dots replaced by `_` as

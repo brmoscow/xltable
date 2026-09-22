@@ -38,6 +38,22 @@ Version 2.1.2 — 2026-09-11
   the figures through the same cubes, security roles and cache as
   ``query_cube`` — no arithmetic left to the model. See :ref:`mcp_operators`.
 
+- **Sample cubes: a meaningful calculated field** — the ``Turnover`` example
+  in the sample cubes of all eight databases divided period sales by the
+  average of a dateless stock snapshot and produced nonsense figures. The
+  examples now show ``Average Price`` (Sales Amount ÷ Sales Quantity, guarded
+  with ``nullif``) and a ``Stock Quantity`` measure described as a snapshot
+  not tied to dates.
+
+- **Cube definition errors: the real cause instead of an empty "syntax
+  problems" list** — when the server failed while building the field list of
+  a cube whose definition had no errors, Excel showed "There are syntax
+  problems in the cube definition" with no lines under it, and nothing
+  reached the log. The original error is now logged and reported as is; the
+  syntax-problem list is shown only when the definition really has errors.
+  On the MCP path an AI assistant now also receives the ``Line N: …`` list
+  instead of the bare heading.
+
 - **OAuth: ``resource`` without the ``/mcp`` path is accepted** — some MCP
   clients send the RFC 8707 ``resource`` as the server's base URL
   (``https://server``) instead of the advertised ``https://server/mcp``; the

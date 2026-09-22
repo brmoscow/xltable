@@ -49,7 +49,7 @@ What the script creates
 The cube ``myOLAPcube`` exposes:
 
 - **Measures:** Sales Quantity, Sales Amount, Sales last year (Qty & Amount),
-  Average Stock Quantity, calculated Turnover ratio
+  Stock Quantity (current snapshot), calculated Average Price
 - **Dimensions:** Store ID, Store, Region, Manager, Model,
   Date hierarchy (Year → Quarter → Month → Day)
 
@@ -241,12 +241,12 @@ Available fields in the Pivot Table:
    * - Sales last year Amount
      - Measure
      - Same query, dates shifted +1 year via Jinja
-   * - Average Stock Quantity
+   * - Stock Quantity
      - Measure
-     - ``avg(stock.qty)``
-   * - Turnover
+     - ``sum(stock.qty)`` — current snapshot, not tied to dates
+   * - Average Price
      - Calculated
-     - Sales Quantity ÷ Average Stock Quantity
+     - Sales Amount ÷ Sales Quantity (``nullif`` guards zero quantity)
    * - Store ID / Store
      - Dimension
      -

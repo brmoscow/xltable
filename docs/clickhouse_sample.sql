@@ -183,7 +183,7 @@ with calendar as (
 
 --olap_cube
 --olap_calculated_fields Calculated fields
-(sales_sum_qty / stock_avg_qty) as calc_turnover --translation=`Turnover` --format=`#,##0.00;-#,##0.00`
+(sales_sum_sum / nullif(sales_sum_qty, 0)) as calc_avg_price --translation=`Average Price` --format=`#,##0.00;-#,##0.00`
 --olap_jinja
 {{ sql_text | replace("salesly.date_sale", "toString(toDate(salesly.date_sale) + INTERVAL 1 YEAR)") }}
 
@@ -212,7 +212,7 @@ LEFT JOIN calendar times ON salesly.date_sale = times.day_str
 --olap_source Stock
 SELECT
 --olap_measures
- avg(stock.qty) as stock_avg_qty --translation=`Average Stock Quantity`
+ sum(stock.qty) as stock_sum_qty --translation=`Stock Quantity` --description=`Current stock on hand, pcs: a single snapshot, not tied to dates`
 FROM db.Stock stock
 LEFT JOIN db.Stores stores ON stock.store = stores.id
 LEFT JOIN db.Models models ON stock.model = models.id
@@ -271,6 +271,8 @@ Answers questions about sales quantity and amount, and average stock, by
 store, region, manager, model and date (2023-2025).
 --olap_ai_instructions
 Compare years only over completed months.
-Turnover is Sales Quantity divided by Average Stock Quantity - use the
+Average Price is Sales Amount divided by Sales Quantity - use the
 calculated field instead of dividing the two measures yourself.
+Stock Quantity is a current snapshot with no dates: do not filter it by
+period and do not divide period sales by it.
 ' AS definition;

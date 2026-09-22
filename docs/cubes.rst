@@ -462,7 +462,7 @@ Example:
 
    --olap_cube
    --olap_calculated_fields Calculated fields
-   (sales_sum_qty/stock_avg_qty) as turnover --translation=`Turnover`
+   (sales_sum_sum / nullif(sales_sum_qty, 0)) as avg_price --translation=`Average Price`
 
 A calculated field may combine measures from **different** measure groups: the
 per-group results are merged with a FULL JOIN before the expression is applied,
@@ -475,8 +475,8 @@ in any order of declaration and across ``--olap_calculated_fields`` blocks:
 
    --olap_cube
    --olap_calculated_fields Calculated fields
-    (sales_sum_qty/stock_avg_qty) as turnover --translation=`Turnover`
-   ,(turnover * 100) as turnover_pct --translation=`Turnover %`
+    (sales_sum_sum / nullif(sales_sum_qty, 0)) as avg_price --translation=`Average Price`
+   ,(avg_price * 1.2) as avg_price_vat --translation=`Average Price incl. VAT`
 
 The server expands such references into the underlying measure expression when
 it builds the cube, so the derived field behaves exactly as if the full
@@ -486,10 +486,11 @@ admin console reports them as well.
 
 .. note::
 
-   Because the inputs come from different measure groups, a measure may be
-   ``NULL`` (no matching rows) or zero for a given cell. Always guard division
-   against ``NULL`` and zero, for example
-   ``(sales_sum_qty / nullIf(stock_avg_qty, 0)) as turnover``.
+   A measure may be ``NULL`` (no matching rows — especially when the inputs
+   come from different measure groups) or zero for a given cell. Always guard
+   division against ``NULL`` and zero with ``nullif``, as in the examples
+   above: ``sales_sum_sum / nullif(sales_sum_qty, 0)`` returns ``NULL``
+   instead of failing where nothing was sold.
 
 .. _drillthrough:
 
@@ -529,8 +530,8 @@ columns appear in the detail table in the order listed.
 How it works:
 
 - **Per measure group.** Each measure group has its own list, because each has its
-  own granularity. Drilling a ``Sales`` cell returns Sales detail; drilling an
-  ``Average Stock Quantity`` cell returns Stock detail.
+  own granularity. Drilling a ``Sales`` cell returns Sales detail; drilling a
+  ``Stock Quantity`` cell returns Stock detail.
 - **The clicked measure picks the group.** The measure in the drilled cell selects
   which ``olap_source`` (fact table) the detail rows come from.
 - **Measures are returned raw.** A measure listed here is emitted as its underlying
