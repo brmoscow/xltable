@@ -38,13 +38,6 @@ Version 2.1.2 — 2026-09-11
   the figures through the same cubes, security roles and cache as
   ``query_cube`` — no arithmetic left to the model. See :ref:`mcp_operators`.
 
-- **Sample cubes: a meaningful calculated field** — the ``Turnover`` example
-  in the sample cubes of all eight databases divided period sales by the
-  average of a dateless stock snapshot and produced nonsense figures. The
-  examples now show ``Average Price`` (Sales Amount ÷ Sales Quantity, guarded
-  with ``nullif``) and a ``Stock Quantity`` measure described as a snapshot
-  not tied to dates.
-
 - **Cube definition errors: the real cause instead of an empty "syntax
   problems" list** — when the server failed while building the field list of
   a cube whose definition had no errors, Excel showed "There are syntax
@@ -62,13 +55,6 @@ Version 2.1.2 — 2026-09-11
   accepted on ``/oauth/authorize`` and ``/oauth/token`` and normalized to the
   canonical ``/mcp`` resource the token is bound to. Any other host or path
   is still rejected.
-
-- **Calculated fields: a measure whose name starts another measure's name** —
-  with measures on the column axis, a calculated field that used both
-  ``REASON_SHARE`` and ``REASON_SHARE_ALL`` failed in the warehouse with an
-  unknown column ``F001_F000_REASON_SHARE_ALL``: the shorter name was
-  substituted inside the longer one. Measure names are now matched as whole
-  words; generated SQL for all other cubes is unchanged.
 
 - **Database errors reach Excel as text** — when a query fails in the
   warehouse (a timeout, a memory limit, a type error), the PivotTable now
