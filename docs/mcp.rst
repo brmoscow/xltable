@@ -35,6 +35,9 @@ Tools
    * - ``query_cube``
      - Runs an aggregated pivot query: group by dimension levels, aggregate
        measures, filter rows before aggregation, limit the result size.
+       Returns the rows, a ``columns`` list with the type of each column
+       (``number`` / ``string`` / ``date`` / ``bool``) and a ``truncated``
+       flag.
    * - ``get_pivot_context``
      - Returns the layout of the last Pivot Table the user queried from
        Excel — see `Working alongside Excel`_.
@@ -611,6 +614,69 @@ Connecting to a server:
   ``Authorization: Bearer <base64 of user:password>``. This is the same
   account checked by the same code — only the header format differs.
 
+The same cubes are also available over plain HTTP without an MCP client —
+see :doc:`api`.
+
+.. _mcp_effective_user:
+
+One service account, many users: ``X-Effective-User``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Server-side agent platforms (LibreChat, Numira and similar) usually keep
+**one MCP configuration per workspace**: every user of the chat reaches
+XLTable with the same credentials, so cube roles and row-level security
+would apply to that one account, not to the person asking. Since 2.1.3
+XLTable supports the pattern Analysis Services calls ``EffectiveUserName``:
+the platform connects with a **service account** and names the actual user
+in the ``X-Effective-User`` header of every request. XLTable then applies
+the roles, access filters and pivot context of that user, and the user —
+not the service account — occupies the named seat.
+
+Setup:
+
+1. Create the service account: a user in :confval:`USERS` (no groups
+   needed) or a domain account.
+2. Allow it to impersonate: list its name in
+   :confval:`IMPERSONATION_USERS`::
+
+      "IMPERSONATION_USERS": ["svc_chat"]
+
+3. In the platform, authenticate the MCP server with the service account's
+   login and password (Basic or the packed Bearer form) and add the header
+   with the platform's user placeholder. LibreChat::
+
+      headers:
+        X-Effective-User: "{{LIBRECHAT_USER_USERNAME}}"
+
+   Numira supports the same header. Yandex AI Studio has no per-user
+   placeholders (one static Bearer per workspace), so per-user access is
+   not available there.
+
+The effective user is a regular XLTable user: a name from :confval:`USERS`
+(groups from :confval:`USER_GROUPS`) or a domain user, whose groups are
+read from Active Directory with the server's service credentials
+(:confval:`CREDENTIAL_ACTIVE_DIRECTORY`) and checked against
+``access_groups`` — no password is involved, the trust comes from the
+service account. ``DOMAIN\user`` and ``user@domain`` are accepted.
+
+The header is strict by design. A request that carries it from an account
+**not** listed in :confval:`IMPERSONATION_USERS` is rejected with ``403``
+rather than silently served as the service account — otherwise a
+misconfigured platform would quietly show every user the service
+account's data. An empty header (an unresolved placeholder), an unknown
+user or a user without access are ``403`` as well. Without the header the
+service account works as itself. An OAuth access token never grants the
+right, even when it belongs to a listed service account: a token is held by
+a third-party application that was approved to access cubes *as that
+account*, not as everyone — so platforms that sign each user in through
+OAuth (:ref:`mcp_oauth`) do not need the header at all, the token already
+carries the person.
+
+The header applies to ``/mcp`` and to the :doc:`REST API <api>` data
+endpoints; it is not read on the Excel (XMLA) path. The free desktop
+edition has a single anonymous user and no accounts, so the header is
+ignored there.
+
 .. _mcp_oauth:
 
 OAuth 2.1 for MCP clients
@@ -702,6 +768,9 @@ Checklist for an integrator (e.g. a web application on FastMCP):
 4. Handle ``401`` with ``WWW-Authenticate: Bearer error="invalid_token"`` by
    refreshing or re-signing in; the old ``Basic`` and packed-Bearer methods
    keep working for scripts.
+5. The same access token is accepted by the :doc:`REST API <api>` data
+   endpoints (``/api/cubes``, ``/api/query``) — a web application can sign
+   the user in once and use both.
 
 MCP licensing
 -------------
@@ -725,6 +794,8 @@ field of the license — a feature flag, not a separate seat count:
 
 The free edition has no license at all, and MCP works there without any of
 the above — this section applies to the server edition only.
+
+.. _mcp_logging:
 
 Logging and cache
 -----------------

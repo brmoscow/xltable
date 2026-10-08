@@ -643,7 +643,10 @@ Parameter reference
    Bearer tokens (a string or a list of strings) accepted by the cache
    management API (see :ref:`cache_api`) — intended for external systems
    such as ETL pipelines, so they do not need an admin password. When not
-   set, the API accepts only admin credentials.
+   set, the API accepts only admin credentials. The tokens carry no user
+   identity and are **not** accepted by the :doc:`REST API <api>` data
+   endpoints — give a pipeline that reads cubes its own user in
+   :confval:`USERS`.
 
    Example:
 
@@ -652,6 +655,23 @@ Parameter reference
       "API_TOKENS": ["etl-3f7c9a1b", "backup-51d2e8c4"]
 
    Default: not set
+
+.. confval:: IMPERSONATION_USERS
+
+   Service accounts (a name or a list of names from :confval:`USERS` or
+   the domain) allowed to act on behalf of other users with the
+   ``X-Effective-User`` header on ``/mcp`` and the :doc:`REST API <api>`
+   — for agent platforms that keep one MCP configuration per workspace
+   (LibreChat, Numira). The header from any other account is rejected
+   with ``403``. See :ref:`mcp_effective_user`.
+
+   Example:
+
+   .. code-block:: json
+
+      "IMPERSONATION_USERS": ["svc_chat"]
+
+   Default: not set — impersonation is disabled
 
 .. confval:: CREDENTIAL_ACTIVE_DIRECTORY
 

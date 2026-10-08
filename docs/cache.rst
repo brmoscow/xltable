@@ -139,6 +139,9 @@ Authorization — either of:
   (recommended for pipelines — no admin password in scripts);
 - admin credentials via HTTP Basic auth (a user from an admin group).
 
+(Reading cubes over HTTP is a separate API with its own, per-user
+authorization — see :doc:`api`.)
+
 The ``scope`` parameter (query string, form field or JSON body) selects what
 is cleared:
 

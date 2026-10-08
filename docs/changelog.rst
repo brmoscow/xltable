@@ -9,6 +9,32 @@ Stay up to date with the latest releases by following us on
 Version 2.1.3 — unreleased
 --------------------------
 
+- **REST API for cubes** — ``GET /api/cubes``, ``GET /api/cubes/<cube>``
+  and ``POST /api/query`` return the cube list, a cube schema and an
+  aggregated pivot query as JSON, through the same engine, roles,
+  row-level security and cache as Excel and MCP: for ETL, scripts, portals
+  and BI tools without XMLA or an MCP client. Authorization is per user —
+  an OAuth 2.1 token (the same one MCP clients get), HTTP Basic or the
+  identity from an authenticating front; the API is a license feature flag
+  (``api``) of its own. The query response carries ``columns`` with the
+  type of each column — the ``query_cube`` MCP tool returns them as well.
+  See :doc:`api`.
+
+- **Per-user access on agent platforms: ``X-Effective-User``** — a service
+  account listed in :confval:`IMPERSONATION_USERS` may name the actual user
+  in the ``X-Effective-User`` header of ``/mcp`` and REST API requests (the
+  ``EffectiveUserName`` pattern of Analysis Services). XLTable applies that
+  user's cube roles, access filters and pivot context, and the user — not
+  the service account — takes the named seat. Built for LibreChat, Numira
+  and other platforms with one MCP configuration per workspace. See
+  :ref:`mcp_effective_user`.
+
+- **Bearer requests are exempt from the CSRF guard** — ``/admin`` and
+  ``/api`` requests that carry an ``Authorization: Bearer`` header (an
+  OAuth token, an API token, packed credentials) are no longer subject to
+  the cross-site check: a browser never attaches such a header by itself.
+  Basic and SSO credentials remain guarded.
+
 - **MCP operators: totals from the engine** — ``top_n`` and
   ``compare_periods`` now ask the engine for the grand total with a separate
   query over the whole slice instead of summing the rows they received, so

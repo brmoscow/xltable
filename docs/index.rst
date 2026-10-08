@@ -57,7 +57,8 @@ while business users keep working in the tool they know best.
       :link-type: doc
 
       Ask questions in plain language — Claude and other MCP
-      clients answer from the same cubes as Excel.
+      clients answer from the same cubes as Excel; the same cubes
+      over :doc:`REST <api>` for scripts and portals.
 
 Supported data sources
 ----------------------
@@ -148,10 +149,11 @@ documentation as a single file — see :doc:`ai`.
 
 .. toctree::
    :maxdepth: 1
-   :caption: AI assistants
+   :caption: AI assistants and API
    :hidden:
 
    mcp
+   api
 
 .. toctree::
    :maxdepth: 1
