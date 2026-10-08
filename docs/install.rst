@@ -476,7 +476,10 @@ The application folder will be at ``C:\olap\xltable\``.
 
 .. code-block:: bash
 
-   C:\olap\xltable\.venv\Scripts\pip install -r requirements.txt
+   C:\olap\xltable\.venv\Scripts\pip install -r requirements.lock
+
+``requirements.lock`` pins the exact library versions the release was built
+and tested with, so every installation gets the same environment.
 
 **6. Configure settings**
 
@@ -530,11 +533,11 @@ Update
 2. Back up ``settings.json`` and the license file ``.lic``
 3. Extract the new distribution archive into ``C:\olap\xltable\``, overwriting existing files
 4. Restore the backed-up ``settings.json`` and ``.lic``
-5. Update dependencies (skip if ``requirements.txt`` did not change):
+5. Update dependencies (skip if ``requirements.lock`` did not change):
 
    .. code-block:: bash
 
-      C:\olap\xltable\.venv\Scripts\pip install -r C:\olap\xltable\requirements.txt
+      C:\olap\xltable\.venv\Scripts\pip install -r C:\olap\xltable\requirements.lock
 
 6. Start the application pool
 

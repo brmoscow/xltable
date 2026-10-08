@@ -6,7 +6,7 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
-Version 2.1.3 — unreleased
+Version 2.1.3 — 2026-10-08
 --------------------------
 
 - **Removed: the legacy ``OWNERS`` setting** — admin accounts bypassing
@@ -16,43 +16,6 @@ Version 2.1.3 — unreleased
   Active Directory groups). A configuration that still contains ``OWNERS``
   starts normally and logs a warning; the listed accounts no longer have
   admin access. See :confval:`ADMIN_GROUPS`.
-
-- License verification is faster on busy servers: the license file is
-  re-read and its RSA signature re-checked only when the file changes,
-  instead of on every MCP and REST API request (expiry and clock checks
-  still run on every request).
-
-- **Third-party license notices in every distribution** — the root of the
-  desktop and server packages (and of the offline dependency bundle) now
-  contains ``THIRD-PARTY-NOTICES.txt`` with the names, versions and license
-  texts of the bundled open-source libraries.
-
-- **CSV export available from header cells too** — the **Additional
-  Actions** → **Export full table to CSV** menu item now appears when
-  right-clicking a row or column header of the pivot, not only a value
-  cell. See :ref:`excel_export`.
-
-- **Database visibility per user group** — in the server edition with
-  ``CUBE_SOURCE=database`` two new settings limit which warehouse databases
-  (cube catalogs) a user sees: :confval:`DATABASES` for the server as a
-  whole and :confval:`GROUP_DATABASES` per user group (local groups from
-  ``USER_GROUPS`` or Active Directory groups). The filter applies to the
-  catalog list in Excel, ``list_databases`` in MCP and the REST API, and a
-  hidden database named directly is rejected, not only left out. Without
-  the settings every database with an ``olap_definition`` table is visible,
-  as before. The **Cache** page of the admin console shows the resulting
-  list per user. See :confval:`GROUP_DATABASES`.
-
-- **Warehouse errors on the cube list are shown, not hidden** — when the
-  server cannot read the ``olap_definition`` table of a database (no
-  ``SELECT`` right, a lost connection, a wrong database name), Excel, MCP
-  clients and the REST API now receive the warehouse's own error text
-  (``Cannot read the list of cubes in database '…': …``) instead of an
-  empty cube list, and the failed result is not kept in the metadata cache.
-  A database that simply has no ``olap_definition`` table is still listed
-  with no cubes, as before. On StarRocks the **Test connection** button of
-  the admin console reports a lost connection as an error instead of
-  "no databases are visible". See :doc:`faq`.
 
 - **REST API for cubes** — ``GET /api/cubes``, ``GET /api/cubes/<cube>``
   and ``POST /api/query`` return the cube list, a cube schema and an
@@ -74,42 +37,21 @@ Version 2.1.3 — unreleased
   and other platforms with one MCP configuration per workspace. See
   :ref:`mcp_effective_user`.
 
-- **Bearer requests are exempt from the CSRF guard** — ``/admin`` and
-  ``/api`` requests that carry an ``Authorization: Bearer`` header (an
-  OAuth token, an API token, packed credentials) are no longer subject to
-  the cross-site check: a browser never attaches such a header by itself.
-  Basic and SSO credentials remain guarded.
+- **Database visibility per user group** — in the server edition with
+  ``CUBE_SOURCE=database`` two new settings limit which warehouse databases
+  (cube catalogs) a user sees: :confval:`DATABASES` for the server as a
+  whole and :confval:`GROUP_DATABASES` per user group (local groups from
+  ``USER_GROUPS`` or Active Directory groups). The filter applies to the
+  catalog list in Excel, ``list_databases`` in MCP and the REST API, and a
+  hidden database named directly is rejected, not only left out. Without
+  the settings every database with an ``olap_definition`` table is visible,
+  as before. The **Cache** page of the admin console shows the resulting
+  list per user. See :confval:`GROUP_DATABASES`.
 
-- **MCP operators: totals from the engine** — ``top_n`` and
-  ``compare_periods`` now ask the engine for the grand total with a separate
-  query over the whole slice instead of summing the rows they received, so
-  the total and the shares stay correct when ``limit`` cuts the breakdown.
-  For a non-additive measure (an average, a distinct count, a ratio)
-  ``top_n`` no longer reports shares and ABC classes — they have no meaning
-  for such a measure — and returns ``additive: false`` with a note for the
-  assistant. See :doc:`mcp`.
-
-- **Drillthrough sees the full Jinja context** — cube and measure-group Jinja
-  templates are now rendered for ``DRILLTHROUGH`` queries (a double-click on a
-  PivotTable cell) with the same ``context`` object as regular queries: the
-  user, their groups and the clicked cell's filters. Previously the context was
-  empty, so cubes whose templates read ``context`` (for example row-level
-  security by user group) failed to open detail rows. See :ref:`jinja_var`.
-
-- **Native-typed levels no longer break the PivotTable** — when
-  :confval:`CONVERT_FIELDS_TO_STRING` is ``false`` and a dimension level is a
-  numeric column, databases that return the ``[All]`` totals as a mixed-type
-  column (recent ClickHouse, StarRocks) caused a server-side sorting error.
-  Level values are now converted to text by the server after the query, in one
-  place, so inside the engine levels are always strings.
-
-- **DMV queries answered** — ``SELECT ... FROM $system.<rowset>`` statements
-  sent by ADOMD/ADODB clients, Power BI and third-party OLAP browsers (Excel
-  never sends them) are now recognized: ``DBSCHEMA_CATALOGS``,
-  ``MDSCHEMA_CUBES``, ``MDSCHEMA_DIMENSIONS`` and ``MDSCHEMA_MEASURES`` return
-  a tabular result built from the same data as the corresponding Discover
-  responses, other rowsets get a clear "not supported" message instead of an
-  internal error.
+- **CSV export available from header cells too** — the **Additional
+  Actions** → **Export full table to CSV** menu item now appears when
+  right-clicking a row or column header of the pivot, not only a value
+  cell. See :ref:`excel_export`.
 
 - **SQL form per cube** — the :tag:`sql_form` and :tag:`filter_mode` tags in
   a cube definition override the server-wide :confval:`SQL_FORM` and
@@ -135,14 +77,27 @@ Version 2.1.3 — unreleased
   could not sum it. Small integers without a name signal (``grade``,
   ``status_code``) remain categories. See :ref:`cube_autogen`.
 
+- **DMV queries answered** — ``SELECT ... FROM $system.<rowset>`` statements
+  sent by ADOMD/ADODB clients, Power BI and third-party OLAP browsers (Excel
+  never sends them) are now recognized: ``DBSCHEMA_CATALOGS``,
+  ``MDSCHEMA_CUBES``, ``MDSCHEMA_DIMENSIONS`` and ``MDSCHEMA_MEASURES`` return
+  a tabular result built from the same data as the corresponding Discover
+  responses, other rowsets get a clear "not supported" message instead of an
+  internal error.
+
 - **Ubuntu installer: dedicated service user** — ``bash install_xltable.sh
   --service-user olap`` runs the workers as a system user without a login
   shell instead of the account that ran the installer; the user is created
-  when missing, written to the supervisor config and owns the application
-  folder, and later re-runs of the installer and ``update_xltable.sh`` keep
-  it. Both scripts now perform file operations through ``sudo``, so an
-  installation owned by the service user can be updated by any
-  administrator. See :ref:`install_ubuntu`.
+  when missing and owns the application folder, and later re-runs of the
+  installer and ``update_xltable.sh`` keep it. Both scripts now perform file
+  operations through ``sudo``, so an installation owned by the service user
+  can be updated by any administrator. See :ref:`install_ubuntu`.
+
+- **Windows installation: pinned dependency versions** — the server
+  distribution now ships ``requirements.lock`` with the exact library
+  versions the release was built and tested with; the manual Windows
+  (IIS) install and update steps use it instead of ``requirements.txt``.
+  See :ref:`install_windows`.
 
 - **Managed ClickHouse and corporate CAs are trusted** — the first query to
   a cloud ClickHouse (Yandex Cloud and others) from the distribution failed
@@ -153,11 +108,41 @@ Version 2.1.3 — unreleased
   and ``REQUESTS_CA_BUNDLE`` for the workers, so a CA installed with
   ``update-ca-certificates`` works without it. See :ref:`db_ca_cert`.
 
-- **First start with several workers no longer logs a crash** — when the
-  worker processes started simultaneously on a server without ``cache.db``,
-  the second one could fail with ``sqlite3.OperationalError: database is
-  locked`` while creating the cache and was restarted by supervisor; the
-  cache now waits for the other process instead.
+- **Third-party license notices in every distribution** — the root of the
+  desktop and server packages (and of the offline dependency bundle) now
+  contains ``THIRD-PARTY-NOTICES.txt`` with the names, versions and license
+  texts of the bundled open-source libraries.
+
+- **Warehouse errors on the cube list are shown, not hidden** — when the
+  server cannot read the ``olap_definition`` table of a database (no
+  ``SELECT`` right, a lost connection, a wrong database name), Excel, MCP
+  clients and the REST API now receive the warehouse's own error text
+  (``Cannot read the list of cubes in database '…': …``) instead of an
+  empty cube list. A database that simply has no ``olap_definition`` table
+  is still listed with no cubes, as before. On StarRocks the **Test
+  connection** button of the admin console reports a lost connection as an
+  error instead of "no databases are visible". See :doc:`faq`.
+
+- **MCP operators: totals from the engine** — ``top_n`` and
+  ``compare_periods`` now take the grand total from the engine over the
+  whole slice, so the total and the shares stay correct when ``limit`` cuts
+  the breakdown. For a non-additive measure (an average, a distinct count,
+  a ratio) ``top_n`` no longer reports shares and ABC classes — they have no
+  meaning for such a measure — and returns ``additive: false`` with a note
+  for the assistant. See :doc:`mcp`.
+
+- **Drillthrough sees the full Jinja context** — cube and measure-group Jinja
+  templates are now rendered for ``DRILLTHROUGH`` queries (a double-click on a
+  PivotTable cell) with the same ``context`` object as regular queries: the
+  user, their groups and the clicked cell's filters. Previously the context was
+  empty, so cubes whose templates read ``context`` (for example row-level
+  security by user group) failed to open detail rows. See :ref:`jinja_var`.
+
+- **Native-typed levels no longer break the PivotTable** — when
+  :confval:`CONVERT_FIELDS_TO_STRING` is ``false`` and a dimension level is a
+  numeric column, databases that return the ``[All]`` totals as a mixed-type
+  column (recent ClickHouse, StarRocks) caused a server-side sorting error.
+  Fixed.
 
 - **Search in the Excel filter dropdown is safe for any text** — the search
   string typed in the PivotTable filter is now escaped before it reaches the
@@ -177,6 +162,12 @@ Version 2.1.3 — unreleased
   crash cube processing, a malformed filter line now refuses to load the cube
   with a clear error instead of failing obscurely, and comment lines starting
   with ``--`` inside the filter block are skipped. See :ref:`cube_user_roles`.
+
+- **Bearer requests are exempt from the CSRF guard** — ``/admin`` and
+  ``/api`` requests that carry an ``Authorization: Bearer`` header (an
+  OAuth token, an API token, packed credentials) are no longer subject to
+  the cross-site check introduced in 2.1.0: a browser never attaches such a
+  header by itself. Basic and SSO credentials remain guarded.
 
 ------------------------------------------------------------
 
