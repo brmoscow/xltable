@@ -9,6 +9,15 @@ Stay up to date with the latest releases by following us on
 Version 2.1.3 — unreleased
 --------------------------
 
+- **MCP operators: totals from the engine** — ``top_n`` and
+  ``compare_periods`` now ask the engine for the grand total with a separate
+  query over the whole slice instead of summing the rows they received, so
+  the total and the shares stay correct when ``limit`` cuts the breakdown.
+  For a non-additive measure (an average, a distinct count, a ratio)
+  ``top_n`` no longer reports shares and ABC classes — they have no meaning
+  for such a measure — and returns ``additive: false`` with a note for the
+  assistant. See :doc:`mcp`.
+
 - **Drillthrough sees the full Jinja context** — cube and measure-group Jinja
   templates are now rendered for ``DRILLTHROUGH`` queries (a double-click on a
   PivotTable cell) with the same ``context`` object as regular queries: the

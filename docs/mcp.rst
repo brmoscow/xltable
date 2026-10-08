@@ -165,14 +165,24 @@ and returns the computed figures.
        earlier period*, whichever argument holds the later one — a positive
        delta is growth, a negative one is decline. A period is one value
        (``"2025"``), a list of values, or a ``[from, to]`` pair for a range
-       of dates or months.
+       of dates or months. The grand total is a separate engine query over
+       the whole slice, not a sum of the returned rows, so it stays right
+       when ``limit`` cuts the breakdown or the measure is an average.
    * - *Who matters most?*
      - ``top_n``
      - The values of a dimension level ranked by a measure: share of the
        total, cumulative share and ABC class (A — up to 80% of the total,
        B — up to 95%, C — the rest), the grand total, the number of groups
        and how many of them make up class A (*"which stores give 80% of
-       profit"*). ``ascending=true`` ranks from the bottom.
+       profit"*). ``ascending=true`` ranks from the bottom. The grand total
+       is a separate engine query over the whole slice and the shares are
+       taken from it, so when ``limit`` cuts the ranking (``truncated``) the
+       shares of the returned groups are still right and their cumulative
+       share stops short of 100%. For a non-additive measure — an average,
+       a distinct count, a ratio — shares and ABC classes have no meaning:
+       the result carries ``additive: false``, omits them and says so in
+       ``note``; the total is then the measure over the whole slice as the
+       engine computed it.
    * - *What is the dynamic?*
      - ``trend``
      - A time series of a measure: points in chronological order, growth
