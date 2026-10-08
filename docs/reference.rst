@@ -39,6 +39,14 @@ Tags are embedded directly into SQL scripts using comments.
 During processing, XLTable reads these tags and builds
 the OLAP cube structure based on them.
 
+Before parsing, every backtick in the definition is replaced with a single
+quote, so `` ` `` and ``'`` are equivalent everywhere — in tag values and in
+the SQL itself. Write string literals with backticks (`` `2024` `` instead of
+``'2024'``): a definition without single quotes can be inserted into the
+``olap_definition`` table without doubling every quote. See
+:ref:`cube_backtick_literals`. The same substitution means identifiers can
+only be quoted with double quotes, never with backticks.
+
 Tag reference
 ^^^^^^^^^^^^^
 
@@ -75,6 +83,27 @@ to share a direct reference to it.
 
       sum(sales.sum) as sales_sum_sum --translation=`Sales Amount`
           --description=`Revenue including VAT, in KZT`
+
+.. tag:: filter_mode
+
+   Cube-level override of the server-wide :confval:`FILTER_MODE` setting:
+   how a filter on a dimension attribute reaches the fact table in the
+   two-stage SQL form (see :ref:`sql_form_two_stage`). Canonical place —
+   the ``--olap_cube`` block. Takes effect only when the two-stage form is
+   active for the cube (via :confval:`SQL_FORM` or :tag:`sql_form`).
+
+   Values: ``key_list`` | ``join_name``. An unknown value is reported by the
+   syntax check as a warning and ignored — the server setting applies. If the
+   tag appears more than once, the first one wins.
+
+   Syntax: ``--filter_mode=`join_name```
+
+   Example:
+
+   .. code-block:: sql
+
+      --olap_cube
+      --sql_form=`two_stage` --filter_mode=`join_name`
 
 .. tag:: filter_no_parents
 
@@ -135,7 +164,11 @@ to share a direct reference to it.
    ``<alias> in ('v1', 'v2')`` (only the listed values are visible) or
    ``<alias> not in ('v1', 'v2')`` (the listed values are hidden), where ``<alias>``
    is the field's alias from the cube's
-   SELECT section (display names from :tag:`translation` cannot be used). Filters on
+   SELECT section (display names from :tag:`translation` cannot be used).
+   The operator is case-insensitive; values are quoted string constants taken
+   exactly as written (an apostrophe inside a value is doubled: ``'O''Brien'``);
+   a line that does not match these forms stops the cube from loading with an
+   error naming the line. Filters on
    different fields are combined with AND; the values of one list are alternatives (OR).
    The filters are enforced on every SQL query the server builds; an explicit
    filter on the same field in a query is intersected with the allowed values,
@@ -382,6 +415,28 @@ to share a direct reference to it.
       LEFT JOIN db.Sales sales --relationship=`one-table`
       LEFT JOIN db.Currencies curr ON sales.currency = curr.id --relationship=`part-source`
 
+.. tag:: sql_form
+
+   Cube-level override of the server-wide :confval:`SQL_FORM` setting: which
+   shape of SQL is generated for this cube — ``legacy`` or the pre-aggregation
+   friendly two-stage form (see :ref:`sql_form_two_stage`). Canonical place —
+   the ``--olap_cube`` block. Lets cubes tuned for different pre-aggregate
+   strategies share one server.
+
+   Values: ``legacy`` | ``two_stage``. An unknown value is reported by the
+   syntax check as a warning and ignored — the server setting applies. If the
+   tag appears more than once, the first one wins.
+
+   Syntax: ``--sql_form=`two_stage```
+
+   Example — this cube uses the two-stage form even when the server default
+   is ``legacy``:
+
+   .. code-block:: sql
+
+      --olap_cube
+      --sql_form=`two_stage`
+
 .. tag:: synonyms
 
    Alternative names of a field for AI agents — the words a person may use
@@ -501,7 +556,7 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     SELECT 'myOLAPcube' AS id,
     '	
     with calendar as (
-        SELECT * FROM db.Times where year_str in (''2023'', ''2024'', ''2025'')
+        SELECT * FROM db.Times where year_str in (`2023`, `2024`, `2025`)
     )
 
     --olap_cube

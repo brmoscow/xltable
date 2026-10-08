@@ -50,6 +50,71 @@ Example structure for ClickHouse connection:
         "query_timeout": 60
     },
 
+``secure`` enables TLS (port 8443 on a managed ClickHouse, 8123 is plain
+HTTP), ``verify`` validates the server certificate. A server whose
+certificate is issued by a cloud provider's or corporate CA also needs
+``ca_cert`` — see :ref:`db_ca_cert`.
+
+.. _db_ca_cert:
+
+Cloud ClickHouse: CA certificate
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A managed ClickHouse (Yandex Cloud, other clouds) presents a certificate
+signed by the provider's own CA, which is not among the public roots XLTable
+trusts out of the box; the first query then fails with
+``CERTIFICATE_VERIFY_FAILED: self-signed certificate in certificate chain``.
+Download the provider's CA chain to a PEM file and point ``ca_cert`` at it.
+For Yandex Cloud:
+
+.. code-block:: bash
+
+   sudo mkdir -p /etc/xltable
+   curl -fsS https://storage.yandexcloud.net/cloud-certs/RootCA.pem \
+        https://storage.yandexcloud.net/cloud-certs/IntermediateCA.pem \
+        | sudo tee /etc/xltable/yandex-ca.pem > /dev/null
+
+.. code-block:: json
+
+   "SERVER_DB": "ClickHouse",
+    "CREDENTIAL_DB": {
+        "user": "...",
+        "password": "...",
+        "host": "rc1b-xxxxxxxxxxxxxxxx.mdb.yandexcloud.net",
+        "port": "8443",
+        "secure": true,
+        "verify": true,
+        "ca_cert": "/etc/xltable/yandex-ca.pem",
+        "query_timeout": 60
+    },
+
+The same key is available on the **Connection** page of the admin console
+(*CA certificate file*).
+
+Without ``ca_cert`` the ClickHouse connection trusts the roots of the
+operating system's certificate store (on Windows — *Trusted Root
+Certification Authorities*, where the provider's CA can be imported
+instead). On Ubuntu the installer points ``SSL_CERT_FILE`` and
+``REQUESTS_CA_BUNDLE`` of the workers to the system bundle, so a CA
+installed with ``update-ca-certificates`` is trusted without ``ca_cert``:
+
+.. code-block:: bash
+
+   sudo mkdir -p /usr/local/share/ca-certificates/Yandex
+   sudo curl -fsS -o /usr/local/share/ca-certificates/Yandex/RootCA.crt \
+        https://storage.yandexcloud.net/cloud-certs/RootCA.pem
+   sudo curl -fsS -o /usr/local/share/ca-certificates/Yandex/IntermediateCA.crt \
+        https://storage.yandexcloud.net/cloud-certs/IntermediateCA.pem
+   sudo update-ca-certificates
+   sudo supervisorctl restart 'olap:*'
+
+``ca_cert`` works the same way for Trino, and is ignored when its
+``verify`` is ``false``. Note that the Trino connection does not consult the
+operating system's certificate store: without ``ca_cert`` only public roots
+are trusted (on Ubuntu — the system bundle through ``REQUESTS_CA_BUNDLE``
+set by the installer), so a corporate CA on Windows must be given as
+``ca_cert``.
+
 BigQuery
 --------
 
@@ -123,6 +188,10 @@ Example structure for Trino connection:
         "verify": false,
         "query_timeout": 60
     },
+
+``verify`` validates the server certificate. For a Trino server with a
+certificate from a corporate CA keep ``verify`` enabled and add
+``"ca_cert": "/path/to/corp-ca.pem"`` (see :ref:`db_ca_cert`).
 
 StarRocks
 ---------

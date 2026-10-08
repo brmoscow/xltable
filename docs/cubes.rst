@@ -160,8 +160,14 @@ counts, min/max) and assigns a role to every column by rules:
   ``year`` …) become dimensions, even when numeric;
 - numeric columns named like prices or rates (``price``, ``rate``,
   ``percent`` …) become **AVG** measures — summing them would be meaningless;
+- numeric columns named like quantities or amounts (``qty``, ``quantity``,
+  ``cnt``, ``count``, ``amount``, ``sum``, ``total``, ``units``, ``pieces``,
+  ``weight``, ``volume``; matched as whole parts of the name, so
+  ``qty_ordered`` and ``total_amount`` count too) become **SUM** measures
+  even when they hold only a handful of small values;
 - other numeric columns become **SUM** measures with number formats;
-- booleans and small low-cardinality integers become category dimensions;
+- booleans and small low-cardinality integers without such name signals
+  (``grade``, ``status_code``) become category dimensions;
 - text columns become dimensions; near-unique text on large tables
   (comments, URLs) is excluded from the cube;
 - a ``count(*)`` measure is always added;
@@ -225,6 +231,34 @@ contain spaces (``Sales Quantity``) or punctuation (``#,##0;-#,##0``). Backticks
 used deliberately instead of single or double quotes so the value never clashes with
 ``'...'`` and ``"..."`` string literals that may appear in the field expression
 itself. Multiple inline tags can be placed on the same line, each separated by a space.
+
+.. _cube_backtick_literals:
+
+String literals — write them with backticks
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Before parsing a definition, the server replaces every backtick with a single
+quote, so a backtick is a legal stand-in for ``'`` **anywhere** in the cube —
+not only in tag values:
+
+.. code-block:: sql
+
+   SELECT * FROM db.Times WHERE year_str IN (`2023`, `2024`)
+   -- runs as: ... WHERE year_str IN ('2023', '2024')
+
+Write all string literals in the SQL of a cube — level expressions, CTEs,
+:tag:`olap_jinja` blocks, :tag:`olap_access_filters` values — with backticks.
+A definition that contains no single quote can be pasted into the
+``olap_definition`` table as-is; with ordinary ``'...'`` literals every quote
+has to be doubled on insert, and Jinja blocks with quotes inside ``replace()``
+calls are nearly impossible to escape by hand. The syntax check
+(:ref:`validation_debugging`) reports a warning when it finds a single quote
+in cube SQL.
+
+The flip side of the substitution: an **identifier** can never be quoted with
+backticks — it would turn into a string literal. Quote unusual column names
+with double quotes (``t."bad name"``); BigQuery-style backtick-quoted table
+names cannot appear inside a cube definition at all.
 
 Measure group design
 ^^^^^^^^^^^^^^^^^^^^
@@ -592,6 +626,8 @@ CTEs can serve as data sources for both measure groups and dimensions — refere
 the CTE name in a ``FROM`` or ``LEFT JOIN`` clause and give it an alias as usual
 (for example ``LEFT JOIN calendar times``).
 
+.. _cube_user_roles:
+
 User roles
 ----------
 
@@ -629,7 +665,14 @@ filter line.
 Each filter occupies its own line and has one of two forms:
 ``<alias> in ('value1', 'value2')`` — the role sees **only** the listed values,
 or ``<alias> not in ('value1', 'value2')`` — the role sees everything **except**
-the listed values.
+the listed values. The ``in`` / ``not in`` operator is case-insensitive
+(``IN`` and ``NOT IN`` work too). Each value is a quoted string constant and
+is taken exactly as written — parentheses, commas and spaces inside the quotes
+are part of the value; write an apostrophe doubled, as in SQL:
+``'O''Brien'``. Lines starting with ``--`` inside the block are treated as
+comments and skipped. A line that does not match these forms stops the cube
+from loading with an error naming the line — a silently dropped or distorted
+filter would widen access beyond what the role allows.
 The name to the left of ``in`` is the field's **alias** from the cube's SELECT section —
 the name after ``AS`` (or, when the field has no ``AS``, the expression itself with dots
 replaced by underscores: ``t.store_name`` becomes ``t_store_name``). Applying the
@@ -640,8 +683,7 @@ with ``--translation`` cannot be used here.
 
 To filter by several fields in one role, put each filter on its own line. Unlike the
 ``..._visible`` tags, the lines are **not** separated by commas — inside this block commas
-only separate the values of one ``in (...)`` list, and a stray comma at the start or end
-of a line makes the filter invalid. Filters on different fields are combined with AND
+only separate the values of one ``in (...)`` list. Filters on different fields are combined with AND
 (a row must satisfy all of them), while the values inside one ``in (...)`` list are
 alternatives (OR). Listing the same field again — on another line, or in another role the
 user belongs to — adds its values to the allowed set for ``in`` filters, and to the
@@ -761,6 +803,21 @@ The PivotTable shows the same numbers as with the legacy form. The
 difference is where the work happens: the database reads the fact table
 once, without joins and without casting keys to strings, and its own
 pre-aggregates can serve stage 1.
+
+**Choosing the form per cube.** :confval:`SQL_FORM` and :confval:`FILTER_MODE`
+in ``settings.json`` apply to the whole server. A cube definition can override
+them for itself with the cube-level tags :tag:`sql_form` and
+:tag:`filter_mode`, canonically placed in the ``--olap_cube`` block:
+
+.. code-block:: sql
+
+   --olap_cube
+   --sql_form=`two_stage` --filter_mode=`join_name`
+
+Cubes with and without pre-aggregates — or with pre-aggregates built for
+different filter strategies — can then share one server, each using the SQL
+form it was tuned for. A tag with an unknown value is reported by the syntax
+check and ignored: the server setting applies.
 
 **Which measures work in this form.** Stage 2 re-aggregates the partial
 results of stage 1, so a measure must be re-aggregatable:

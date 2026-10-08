@@ -180,7 +180,8 @@ FROM generate_series(0, 499) AS n;
 
 -- ─── 5. OLAP cube definition ─────────────────────────────────────────────────
 -- XLTable reads cube definitions from the `olap_definition` table.
--- Single quotes inside the definition string are escaped by doubling them ('').
+-- String literals inside the definition use backticks (`...`): the server
+-- reads ` as ', so the definition string needs no quote escaping at all.
 
 CREATE TABLE db.olap_definition (
     id         TEXT,
@@ -191,14 +192,14 @@ INSERT INTO db.olap_definition VALUES (
 'myOLAPcube',
 '
 with calendar as (
-    SELECT * FROM db.times WHERE year_str IN (''2023'', ''2024'', ''2025'')
+    SELECT * FROM db.times WHERE year_str IN (`2023`, `2024`, `2025`)
 )
 
 --olap_cube
 --olap_calculated_fields Calculated fields
 (sales_sum_sum / nullif(sales_sum_qty, 0)) as calc_avg_price --translation=`Average Price` --format=`#,##0.00;-#,##0.00`
 --olap_jinja
-{{ sql_text | replace("salesly.date_sale", "(salesly.date_sale::date + INTERVAL ''1 year'')::date::text") }}
+{{ sql_text | replace("salesly.date_sale", "(salesly.date_sale::date + INTERVAL `1 year`)::date::text") }}
 
 --olap_source Sales
 SELECT
@@ -261,7 +262,7 @@ FROM db.models models
 SELECT
 --olap_dimensions
  times.year_str  as times_year_str  --hierarchy=`Dates` --translation=`Year`
-,to_char(date_trunc(''quarter'', times.day_str::date), ''YYYY-MM'') as times_quarter_str --hierarchy=`Dates` --translation=`Quarter`
+,to_char(date_trunc(`quarter`, times.day_str::date), `YYYY-MM`) as times_quarter_str --hierarchy=`Dates` --translation=`Quarter`
 ,times.month_str as times_month_str --hierarchy=`Dates` --translation=`Month`
 ,times.day_str   as times_day_str   --hierarchy=`Dates` --translation=`Day`
 FROM calendar times

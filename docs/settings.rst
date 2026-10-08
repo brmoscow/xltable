@@ -75,6 +75,25 @@ Parameter reference
 
    Default: ``60``
 
+.. confval:: CREDENTIAL_DB.ca_cert
+
+   Path to a PEM file with the CA certificate (chain) that signed the
+   warehouse's TLS certificate — needed for a managed ClickHouse in a cloud
+   or a Trino server behind a corporate CA, whose roots are not public.
+   Supported by the ClickHouse and Trino connection types; see
+   :ref:`db_ca_cert`.
+
+   Example:
+
+   .. code-block:: json
+
+      "CREDENTIAL_DB": {
+          "...": "...",
+          "ca_cert": "/etc/xltable/yandex-ca.pem"
+      }
+
+   Default: not set (system trust store)
+
 .. confval:: EDITION
 
    Edition the server runs as:
@@ -535,6 +554,9 @@ Parameter reference
    computed this way — see :ref:`sql_form_two_stage` for the rules. Set
    ``WRITE_LOG`` to see which form each query used.
 
+   The setting applies to the whole server; a cube definition can override
+   it for itself with the :tag:`sql_form` tag.
+
    Example:
 
    .. code-block:: json
@@ -564,6 +586,9 @@ Parameter reference
    the query joins exactly the same tables, so a PivotTable is served by the
    view when its filters and axes together cover every dimension the view
    joins. Not useful on ClickHouse (projections cannot join).
+
+   The setting applies to the whole server; a cube definition can override
+   it for itself with the :tag:`filter_mode` tag.
 
    Example:
 

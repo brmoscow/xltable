@@ -170,7 +170,8 @@ FROM numbers(500);
 -- ─── 5. OLAP cube definition ─────────────────────────────────────────────────
 -- XLTable reads cube definitions from the `olap_definition` table.
 -- The string value of the `definition` column follows the XLTable SQL tag syntax.
--- Single quotes inside the definition string are escaped by doubling them ('').
+-- String literals inside the definition use backticks (`...`): the server
+-- reads ` as ', so the definition string needs no quote escaping at all.
 
 CREATE OR REPLACE TABLE db.olap_definition
 ENGINE = MergeTree() ORDER BY id AS
@@ -178,7 +179,7 @@ ENGINE = MergeTree() ORDER BY id AS
 SELECT 'myOLAPcube' AS id,
 '
 with calendar as (
-    SELECT * FROM db.Times WHERE year_str IN (''2023'', ''2024'', ''2025'')
+    SELECT * FROM db.Times WHERE year_str IN (`2023`, `2024`, `2025`)
 )
 
 --olap_cube

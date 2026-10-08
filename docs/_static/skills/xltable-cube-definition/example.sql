@@ -2,7 +2,7 @@
 -- Every tag is used once; each source block is a runnable SELECT.
 --definition_check_on
 with calendar as (
-    SELECT * FROM db.Times WHERE year_str IN ('2023', '2024', '2025')
+    SELECT * FROM db.Times WHERE year_str IN (`2023`, `2024`, `2025`)
 )
 
 --olap_cube

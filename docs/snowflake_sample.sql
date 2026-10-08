@@ -134,20 +134,21 @@ FROM seq;
 
 -- ─── 4. OLAP cube definition ─────────────────────────────────────────────────
 -- XLTable reads cube definitions from the `olap_definition` table.
--- Snowflake dollar-quoting ($$) allows single quotes without escaping.
+-- String literals inside the definition use backticks (`...`): the server
+-- reads ` as ', so the definition string needs no quote escaping at all.
 
 CREATE OR REPLACE TABLE olap.public.olap_definition AS
 SELECT 'myOLAPcube' AS id,
 $$
 with calendar as (
-    SELECT * FROM olap.public.Times WHERE year_str IN ('2023', '2024', '2025')
+    SELECT * FROM olap.public.Times WHERE year_str IN (`2023`, `2024`, `2025`)
 )
 
 --olap_cube
 --olap_calculated_fields Calculated fields
 (sales_sum_sum / nullif(sales_sum_qty, 0)) as calc_avg_price --translation=`Average Price` --format=`#,##0.00;-#,##0.00`
 --olap_jinja
-{{ sql_text | replace("salesly.date_sale", "TO_VARCHAR(DATEADD(YEAR, 1, TO_DATE(salesly.date_sale)), 'YYYY-MM-DD')") }}
+{{ sql_text | replace("salesly.date_sale", "TO_VARCHAR(DATEADD(YEAR, 1, TO_DATE(salesly.date_sale)), `YYYY-MM-DD`)") }}
 
 --olap_source Sales
 SELECT
@@ -210,7 +211,7 @@ FROM olap.public.Models models
 SELECT
 --olap_dimensions
  times.year_str as times_year_str --hierarchy=`Dates` --translation=`Year`
-,TO_VARCHAR(DATE_TRUNC('QUARTER', TO_DATE(times.day_str)), 'YYYY-MM') as times_quarter_str --hierarchy=`Dates` --translation=`Quarter`
+,TO_VARCHAR(DATE_TRUNC(`QUARTER`, TO_DATE(times.day_str)), `YYYY-MM`) as times_quarter_str --hierarchy=`Dates` --translation=`Quarter`
 ,times.month_str as times_month_str --hierarchy=`Dates` --translation=`Month`
 ,times.day_str as times_day_str --hierarchy=`Dates` --translation=`Day`
 FROM calendar times

@@ -102,7 +102,7 @@ Do not copy the `<-` annotations into a real definition.
 
 | Rule | What goes wrong otherwise |
 |------|---------------------------|
-| **No backtick (`` ` ``) anywhere in SQL** — it is the tag-value delimiter. Quote identifiers with `"..."`, strings with `'...'`. | Every backtick is replaced by `'` before parsing; SQL breaks or a tag value is cut. |
+| **A backtick is a single quote**: the server replaces every `` ` `` with `'` before parsing. Write string literals with backticks (`` `2024` ``, `` `EU` ``) everywhere — SQL expressions, CTEs, Jinja, access-filter values — so the definition contains no `'` at all. Never quote identifiers with backticks (they become strings) — use `"..."` for odd column names. | A definition with `'` cannot be inserted into `olap_definition` without doubling every quote (the checker warns); a backtick-quoted identifier turns into a string literal and the SQL breaks. |
 | **No word `FROM` inside a dimension expression** — `EXTRACT(YEAR FROM x)`, `SUBSTRING(x FROM 1)`, `TRIM(x FROM y)`. Use dialect functions (`toYear`, `date_trunc`, `to_char`, `FORMAT_DATE`, `strftime`). | The `--olap_dimensions` field list is cut at the first `FROM`; fields after it vanish. |
 | **No `--` comments, `LEFT JOIN`, or `--olap_` text inside field lists, expressions or prose** (including the CTE zone before `--olap_cube`). | Comments become tags; `--olap_` splits the definition. |
 | **One field per line, leading commas, no trailing comma.** Tags after the alias on the same line. | Field boundaries misparse. |
@@ -116,7 +116,7 @@ Do not copy the `<-` annotations into a real definition.
 | **`--olap_description` and `--olap_ai_instructions` at the very end**; each runs to the next `--olap_*` tag. | Following blocks become part of the description text. |
 | **`--olap_jinja` is the last tag of its block** (`--olap_drillthrough` and `--olap_calculated_fields` go above it). Avoid Jinja unless the task asks. | Tags below it are rendered into every SQL. |
 | **Calculated fields guard division**: `x / nullIf(y, 0)` (`NULLIF` in most dialects). Inputs from different measure groups are FULL-JOINed and may be NULL. | Division by zero / NULL cells. |
-| **Storage escaping**: single quotes inside the definition string doubled (`''`) in ClickHouse / PostgreSQL / Greenplum / Trino / DuckDB / StarRocks, `\'` in Databricks (Spark), or use `"""..."""` (BigQuery) / `$$...$$` (Snowflake). The definition text itself always uses plain `'`. | Quotes vanish or the INSERT fails. |
+| **Storage escaping**: a definition whose string literals are all backticks contains no `'` and is inserted into `olap_definition` as-is. Only when plain `'` remain: double them (`''`) in ClickHouse / PostgreSQL / Greenplum / Trino / DuckDB / StarRocks, `\'` in Databricks (Spark), or wrap the whole definition in `"""..."""` (BigQuery) / `$$...$$` (Snowflake). | Quotes vanish or the INSERT fails. |
 
 ## Modeling guidance
 
@@ -195,7 +195,7 @@ Do not copy the `<-` annotations into a real definition.
 
 - [ ] A comment or CTE line precedes `--olap_cube`; block order matches the skeleton.
 - [ ] Each source: `--olap_source <Name>` / `SELECT` / `--olap_measures` or `--olap_dimensions` / fields / `FROM <table> <alias>` / `LEFT JOIN ...`.
-- [ ] No backticks in SQL; no `FROM`, `--`, `LEFT JOIN`, `--olap_` inside expressions or prose.
+- [ ] String literals in backticks — no `'` anywhere in the definition; backticks never quote identifiers; no `FROM`, `--`, `LEFT JOIN`, `--olap_` inside expressions or prose.
 - [ ] Every dimension's `FROM table alias` appears verbatim as `LEFT JOIN table alias` in each fact block that must be sliced by it.
 - [ ] Hierarchy levels of one hierarchy live in one source, ordered top → bottom.
 - [ ] `one-table` cubes: fact-table dimensions reuse the fact alias; lookup-table columns have no alias prefix.
@@ -203,7 +203,7 @@ Do not copy the `<-` annotations into a real definition.
 - [ ] Roles: five directives each, `--olap_access_filters` last, filters by alias, every group from the requirement covered.
 - [ ] `--olap_description` and `--olap_ai_instructions` are the last blocks.
 - [ ] `--definition_check_on` present on its own line — REQUIRED, never omit it.
-- [ ] Delivered as a `.sql` file plus, for database-stored cubes, the INSERT/UPDATE into `olap_definition` with correct quote escaping.
+- [ ] Delivered as a `.sql` file plus, for database-stored cubes, the INSERT/UPDATE into `olap_definition` (no quote escaping needed when all string literals are backticks).
 
 ## Reference
 

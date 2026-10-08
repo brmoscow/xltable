@@ -135,9 +135,10 @@ FROM seq;
 
 -- ─── 4. OLAP cube definition ─────────────────────────────────────────────────
 -- XLTable reads cube definitions from the `olap_definition` table.
--- Single quotes inside the definition string are escaped with a backslash (\').
--- Spark SQL does NOT treat '' as an escaped quote: adjacent literals are
--- concatenated ('It''s' becomes Its), so the quotes would silently vanish.
+-- String literals inside the definition use backticks (`...`): the server
+-- reads ` as ', so the definition string needs no quote escaping at all.
+-- (This also avoids the Spark SQL pitfall where '' concatenates literals
+-- instead of escaping a quote.)
 
 CREATE OR REPLACE TABLE db.olap_definition (
     id         STRING,
@@ -148,14 +149,14 @@ INSERT INTO db.olap_definition VALUES (
 'myOLAPcube',
 '
 with calendar as (
-    SELECT * FROM db.Times WHERE year_str IN (\'2023\', \'2024\', \'2025\')
+    SELECT * FROM db.Times WHERE year_str IN (`2023`, `2024`, `2025`)
 )
 
 --olap_cube
 --olap_calculated_fields Calculated fields
 (sales_sum_sum / nullif(sales_sum_qty, 0)) as calc_avg_price --translation=`Average Price` --format=`#,##0.00;-#,##0.00`
 --olap_jinja
-{{ sql_text | replace("salesly.date_sale", "date_format(add_months(to_date(salesly.date_sale), 12), \'yyyy-MM-dd\')") }}
+{{ sql_text | replace("salesly.date_sale", "date_format(add_months(to_date(salesly.date_sale), 12), `yyyy-MM-dd`)") }}
 
 --olap_source Sales
 SELECT
@@ -218,7 +219,7 @@ FROM db.Models models
 SELECT
 --olap_dimensions
  times.year_str as times_year_str --hierarchy=`Dates` --translation=`Year`
-,date_format(date_trunc(\'QUARTER\', to_date(times.day_str)), \'yyyy-MM\') as times_quarter_str --hierarchy=`Dates` --translation=`Quarter`
+,date_format(date_trunc(`QUARTER`, to_date(times.day_str)), `yyyy-MM`) as times_quarter_str --hierarchy=`Dates` --translation=`Quarter`
 ,times.month_str as times_month_str --hierarchy=`Dates` --translation=`Month`
 ,times.day_str   as times_day_str   --hierarchy=`Dates` --translation=`Day`
 FROM calendar times

@@ -56,11 +56,16 @@ Unpack the installer scripts and run the install script:
 
 The script will:
 
-- Install ``supervisor``, ``unzip`` and ``apache2``
+- Install ``supervisor``, ``unzip``, ``ca-certificates`` and ``apache2``
 - Extract xltable to ``/usr/olap/xltable/``
 - Create ``/usr/olap/xltable/setting/settings.json`` from the example (if missing)
 - Configure supervisor to autostart several xltable worker processes
-  (one per CPU core, up to 4 by default)
+  (one per CPU core, up to 4 by default). The workers run as the user who
+  ran the script, or as a dedicated system user with ``--service-user``
+  (see below); their environment points ``SSL_CERT_FILE`` and
+  ``REQUESTS_CA_BUNDLE`` to ``/etc/ssl/certs/ca-certificates.crt``, so a
+  CA added to the system store with ``update-ca-certificates`` (a managed
+  ClickHouse in a cloud, a corporate CA) is trusted — see :ref:`db_ca_cert`
 - Configure an Apache front on ports 80 and 443: TLS termination and a
   load balancer across the worker processes (``127.0.0.1:5000``,
   ``5001``, ...). Without ``--cert``/``--key`` a self-signed certificate
@@ -111,6 +116,14 @@ are kept.
      - No Apache: your own load balancer talks to the workers on
        ``0.0.0.0:5000..``. With ``--auth ad`` the balancer must perform
        Kerberos itself and its address goes to ``--trusted-proxy``.
+   * - ``bash install_xltable.sh --service-user olap``
+     - Run the workers as a dedicated system user instead of the user who
+       ran the script: ``olap`` is created without a login shell (home
+       ``/usr/olap/xltable``) when missing, written to the supervisor
+       config and given the application folder. Use it when the installing
+       account is an administrator, or for a machine image whose installing
+       user will not exist later. A re-run and ``update_xltable.sh`` keep
+       that user; ``settings.json`` is then edited with ``sudo``.
    * - ``bash install_xltable.sh --front-only --timeout 600``
      - Reconfigure the front only (proxy timeout for long reports, a new
        certificate, a switch between ``--auth ad`` and ``--auth app``):
@@ -468,6 +481,11 @@ The application folder will be at ``C:\olap\xltable\``.
 **6. Configure settings**
 
 Edit the configuration file ``C:\olap\xltable\setting\settings.json`` and fill in all required fields (database connections, users, etc.). The license file is not referenced from the configuration — upload it via the admin panel and it is stored as ``xltable.lic`` next to the server code.
+A warehouse whose TLS certificate is issued by a cloud provider's or corporate
+CA (a managed ClickHouse, Trino behind a corporate proxy) needs that CA in a
+PEM file referenced by ``ca_cert`` in ``CREDENTIAL_DB``; for ClickHouse a CA
+imported into the Windows certificate store (Trusted Root Certification
+Authorities) works as well, for Trino only ``ca_cert`` does (:ref:`db_ca_cert`).
 
 **7. Configure IIS with web.config**
 

@@ -5,8 +5,13 @@ Companion to `SKILL.md`. Two kinds of tags:
 - **Block tags** — `--olap_<name> <value>` on its own line; the value is the
   rest of the line (spaces allowed, no quoting).
 - **Inline tags** — after a field or a JOIN on the same line:
-  ``--<tag>=`value` ``; several per line separated by spaces. Backticks are
-  the delimiter, which is why they may never appear in the SQL itself.
+  ``--<tag>=`value` ``; several per line separated by spaces.
+
+The server replaces every backtick with `'` before parsing, so `` ` `` and
+`'` are equivalent anywhere in the definition. Write all string literals with
+backticks (`` `2024` ``) — the definition then contains no single quote and
+is inserted into `olap_definition` without any escaping. Identifiers can
+never be backtick-quoted (they would become strings) — use `"..."`.
 
 ## Block tags
 
@@ -31,6 +36,13 @@ Companion to `SKILL.md`. Two kinds of tags:
 
 Inside role blocks a directive's value is read to the next `--`, so every
 role needs all five directives (even `all` or empty).
+
+## Cube-level option tags (value after `=`, canonical place: the `--olap_cube` block)
+
+| Tag | Meaning |
+|-----|---------|
+| ``--sql_form=`legacy` `` \| ``--sql_form=`two_stage` `` | Overrides the server-wide `SQL_FORM` setting for this cube: which SQL shape is generated (`two_stage` = pre-aggregation friendly form). Unknown value → warning, server setting applies; first occurrence wins. |
+| ``--filter_mode=`key_list` `` \| ``--filter_mode=`join_name` `` | Overrides the server-wide `FILTER_MODE` for this cube: how dimension filters reach the fact table in the two-stage form (key lists vs. joined dimension names). Only meaningful when the two-stage form is active. |
 
 ## Inline tags (on a field line)
 
@@ -70,8 +82,11 @@ role needs all five directives (even `all` or empty).
 
 **Database table** (default, `CUBE_SOURCE=database`): table `olap_definition`
 with columns `id` (cube name) and `definition` (text). Every database that
-has such a table becomes a catalog in Excel; every row a cube. Quote
-escaping inside the string literal:
+has such a table becomes a catalog in Excel; every row a cube.
+
+A definition whose string literals are all backticks contains no `'` and
+needs **no escaping** — insert it as one plain string literal. Only when
+plain `'` remain in the text:
 
 | Warehouse | Escaping |
 |-----------|----------|
@@ -111,16 +126,19 @@ Give every level a label that is distinct from the other levels (`2024`,
 `2024-Q1`, `2024-01`, `2024-01-15`) — a quarter labelled like its first
 month is confusing in Excel.
 
+String literals in the expressions below are written with backticks — the
+server reads them as quotes (see the note at the top of this file).
+
 | Warehouse | Year | Quarter label (`2024-Q1`) | Month label (`2024-01`) | Day |
 |-----------|------|---------------------------|-------------------------|-----|
-| ClickHouse | `toYear(d)` | `concat(toString(toYear(d)), '-Q', toString(toQuarter(d)))` | `formatDateTime(d, '%Y-%m')` | `toDate(d)` |
-| PostgreSQL / Greenplum | `to_char(d, 'YYYY')` | `to_char(d, 'YYYY-"Q"Q')` | `to_char(d, 'YYYY-MM')` | `d::date` |
-| BigQuery | `FORMAT_DATE('%Y', d)` | `FORMAT_DATE('%Y-Q%Q', d)` | `FORMAT_DATE('%Y-%m', d)` | `DATE(d)` |
-| Snowflake | `TO_VARCHAR(d, 'YYYY')` | `TO_VARCHAR(d, 'YYYY') \|\| '-Q' \|\| QUARTER(d)` | `TO_VARCHAR(d, 'YYYY-MM')` | `TO_DATE(d)` |
-| Trino | `date_format(d, '%Y')` | `date_format(d, '%Y') \|\| '-Q' \|\| cast(quarter(d) as varchar)` | `date_format(d, '%Y-%m')` | `date(d)` |
-| StarRocks | `date_format(d, '%Y')` | `concat(date_format(d, '%Y'), '-Q', quarter(d))` | `date_format(d, '%Y-%m')` | `date(d)` |
-| DuckDB | `strftime(d, '%Y')` | `strftime(d, '%Y') \|\| '-Q' \|\| quarter(d)` | `strftime(d, '%Y-%m')` | `d::date` |
-| Databricks | `date_format(d, 'yyyy')` | `concat(date_format(d, 'yyyy'), '-Q', quarter(d))` | `date_format(d, 'yyyy-MM')` | `to_date(d)` |
+| ClickHouse | `toYear(d)` | ``concat(toString(toYear(d)), `-Q`, toString(toQuarter(d)))`` | ``formatDateTime(d, `%Y-%m`)`` | `toDate(d)` |
+| PostgreSQL / Greenplum | ``to_char(d, `YYYY`)`` | ``to_char(d, `YYYY-"Q"Q`)`` | ``to_char(d, `YYYY-MM`)`` | `d::date` |
+| BigQuery | ``FORMAT_DATE(`%Y`, d)`` | ``FORMAT_DATE(`%Y-Q%Q`, d)`` | ``FORMAT_DATE(`%Y-%m`, d)`` | `DATE(d)` |
+| Snowflake | ``TO_VARCHAR(d, `YYYY`)`` | ``TO_VARCHAR(d, `YYYY`) \|\| `-Q` \|\| QUARTER(d)`` | ``TO_VARCHAR(d, `YYYY-MM`)`` | `TO_DATE(d)` |
+| Trino | ``date_format(d, `%Y`)`` | ``date_format(d, `%Y`) \|\| `-Q` \|\| cast(quarter(d) as varchar)`` | ``date_format(d, `%Y-%m`)`` | `date(d)` |
+| StarRocks | ``date_format(d, `%Y`)`` | ``concat(date_format(d, `%Y`), `-Q`, quarter(d))`` | ``date_format(d, `%Y-%m`)`` | `date(d)` |
+| DuckDB | ``strftime(d, `%Y`)`` | ``strftime(d, `%Y`) \|\| `-Q` \|\| quarter(d)`` | ``strftime(d, `%Y-%m`)`` | `d::date` |
+| Databricks | ``date_format(d, `yyyy`)`` | ``concat(date_format(d, `yyyy`), `-Q`, quarter(d))`` | ``date_format(d, `yyyy-MM`)`` | `to_date(d)` |
 
 Prefer a physical dates table when the warehouse has one; otherwise build the
 calendar CTE from a generated series (`numbers()` in ClickHouse,

@@ -6,6 +6,78 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
+Version 2.1.3 — unreleased
+--------------------------
+
+- **SQL form per cube** — the :tag:`sql_form` and :tag:`filter_mode` tags in
+  a cube definition override the server-wide :confval:`SQL_FORM` and
+  :confval:`FILTER_MODE` settings for that cube, so cubes tuned for different
+  pre-aggregate strategies (key lists vs. joined names, or no pre-aggregates
+  at all) can share one server. An unknown tag value is reported by the
+  syntax check and the server setting applies. See :ref:`sql_form_two_stage`.
+
+- **String literals in cubes: backticks everywhere** — the parser has always
+  read a backtick as a single quote, and this is now the documented,
+  recommended way to write string literals anywhere in a cube definition
+  (SQL expressions, CTEs, Jinja blocks, access-filter values): a definition
+  without single quotes is pasted into the ``olap_definition`` table as-is,
+  with no quote doubling. Autogen now emits date templates with backticks,
+  the syntax check warns about single quotes in cube SQL, and the sample
+  scripts use backticks throughout. See :ref:`cube_backtick_literals`.
+
+- **Autogen: quantity columns become SUM measures** — integer columns named
+  like quantities or amounts (``qty``, ``cnt``, ``amount``, ``total``,
+  ``weight`` …, matched as parts of the name: ``qty_ordered``) are now
+  classified as SUM measures even when they hold only a few small values;
+  previously such a column became a category dimension and the PivotTable
+  could not sum it. Small integers without a name signal (``grade``,
+  ``status_code``) remain categories. See :ref:`cube_autogen`.
+
+- **Ubuntu installer: dedicated service user** — ``bash install_xltable.sh
+  --service-user olap`` runs the workers as a system user without a login
+  shell instead of the account that ran the installer; the user is created
+  when missing, written to the supervisor config and owns the application
+  folder, and later re-runs of the installer and ``update_xltable.sh`` keep
+  it. Both scripts now perform file operations through ``sudo``, so an
+  installation owned by the service user can be updated by any
+  administrator. See :ref:`install_ubuntu`.
+
+- **Managed ClickHouse and corporate CAs are trusted** — the first query to
+  a cloud ClickHouse (Yandex Cloud and others) from the distribution failed
+  with ``CERTIFICATE_VERIFY_FAILED``: the provider's CA is not among the
+  public roots. The new ``ca_cert`` key of :confval:`CREDENTIAL_DB` (ClickHouse,
+  Trino; also on the *Connection* page of the admin console) points to the
+  CA PEM file; on Ubuntu the installer additionally sets ``SSL_CERT_FILE``
+  and ``REQUESTS_CA_BUNDLE`` for the workers, so a CA installed with
+  ``update-ca-certificates`` works without it. See :ref:`db_ca_cert`.
+
+- **First start with several workers no longer logs a crash** — when the
+  worker processes started simultaneously on a server without ``cache.db``,
+  the second one could fail with ``sqlite3.OperationalError: database is
+  locked`` while creating the cache and was restarted by supervisor; the
+  cache now waits for the other process instead.
+
+- **Search in the Excel filter dropdown is safe for any text** — the search
+  string typed in the PivotTable filter is now escaped before it reaches the
+  SQL query: a search containing an apostrophe (``O'Brien``) no longer fails,
+  ``%`` and ``_`` are matched literally instead of acting as wildcards, and
+  the text can no longer alter the query itself. The search condition is also
+  combined with the role's :tag:`olap_access_filters` instead of replacing
+  them, so searching a filtered field can no longer list values the role is
+  not allowed to see.
+
+- **Role access filters keep special characters in values** — values of
+  :tag:`olap_access_filters` containing parentheses, commas or an apostrophe
+  (written as ``''``, e.g. ``'O''Brien'``) are now parsed exactly as written;
+  previously such values were silently distorted (``'X (old)'`` became
+  ``X old``, ``'Smith, John'`` became two values), which could widen a
+  ``not in`` restriction. ``IN`` / ``NOT IN`` written in upper case no longer
+  crash cube processing, a malformed filter line now refuses to load the cube
+  with a clear error instead of failing obscurely, and comment lines starting
+  with ``--`` inside the filter block are skipped. See :ref:`cube_user_roles`.
+
+------------------------------------------------------------
+
 Version 2.1.2 — 2026-09-11
 --------------------------
 
