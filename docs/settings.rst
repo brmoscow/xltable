@@ -692,6 +692,15 @@ Parameter reference
 
    Default: not set
 
+   .. note::
+
+      ``ADMIN_GROUPS`` is the only way to grant admin access. The legacy
+      ``OWNERS`` key (admin accounts bypassing groups, from version 1.x)
+      is no longer read: accounts listed there get no access, and a
+      configuration that still contains ``OWNERS`` logs a warning at
+      startup. Move such accounts to :confval:`USERS` /
+      :confval:`USER_GROUPS` with a group listed in ``ADMIN_GROUPS``.
+
 .. confval:: API_TOKENS
 
    Bearer tokens (a string or a list of strings) accepted by the cache

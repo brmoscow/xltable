@@ -9,6 +9,19 @@ Stay up to date with the latest releases by following us on
 Version 2.1.3 — unreleased
 --------------------------
 
+- **Removed: the legacy ``OWNERS`` setting** — admin accounts bypassing
+  user groups (a remnant of version 1.x) are no longer read: administrators
+  are defined only by :confval:`ADMIN_GROUPS` (local accounts via
+  :confval:`USERS` / :confval:`USER_GROUPS`, domain accounts via their
+  Active Directory groups). A configuration that still contains ``OWNERS``
+  starts normally and logs a warning; the listed accounts no longer have
+  admin access. See :confval:`ADMIN_GROUPS`.
+
+- License verification is faster on busy servers: the license file is
+  re-read and its RSA signature re-checked only when the file changes,
+  instead of on every MCP and REST API request (expiry and clock checks
+  still run on every request).
+
 - **Third-party license notices in every distribution** — the root of the
   desktop and server packages (and of the offline dependency bundle) now
   contains ``THIRD-PARTY-NOTICES.txt`` with the names, versions and license
