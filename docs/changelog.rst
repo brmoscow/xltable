@@ -9,6 +9,11 @@ Stay up to date with the latest releases by following us on
 Version 2.1.3 — unreleased
 --------------------------
 
+- **CSV export available from header cells too** — the **Additional
+  Actions** → **Export full table to CSV** menu item now appears when
+  right-clicking a row or column header of the pivot, not only a value
+  cell. See :ref:`excel_export`.
+
 - **Database visibility per user group** — in the server edition with
   ``CUBE_SOURCE=database`` two new settings limit which warehouse databases
   (cube catalogs) a user sees: :confval:`DATABASES` for the server as a

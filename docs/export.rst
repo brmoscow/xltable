@@ -29,8 +29,8 @@ returns the pivot to the normal aggregated mode.
 Full export to a CSV file
 -------------------------
 
-Right-click any cell of the Pivot Table and
-choose **Additional Actions** → **Export full table to CSV**. The default
+Right-click any cell of the Pivot Table — a value cell or a row/column
+header — and choose **Additional Actions** → **Export full table to CSV**. The default
 browser opens a status page; when the file is ready, the download starts
 automatically. The export contains exactly what the pivot is configured to
 show — same fields, same filters, same expansions (WYSIWYG) — but complete,
