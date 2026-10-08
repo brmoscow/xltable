@@ -522,7 +522,17 @@ Parameter reference
 
 .. confval:: CONVERT_FIELDS_TO_STRING
 
-   Forces conversion of certain fields to string type before returning results.
+   Forces conversion of dimension level expressions to string type in the
+   generated SQL (``toString(...)`` or the dialect equivalent).
+
+   Whatever the setting, the level values that come back from the database are
+   converted to text by the server before the PivotTable axes are built, so with
+   ``false`` a numeric level no longer breaks the query when the database is
+   able to return a mixed column for the ``[All]`` totals (recent ClickHouse,
+   StarRocks). Databases that reject a query mixing the ``'[All]'`` total with
+   a numeric column (older ClickHouse, Greenplum, Trino, BigQuery, Snowflake)
+   still need an explicit ``toString`` in the level definition when the setting
+   is off.
 
    Example:
 

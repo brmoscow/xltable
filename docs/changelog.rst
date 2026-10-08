@@ -9,6 +9,28 @@ Stay up to date with the latest releases by following us on
 Version 2.1.3 — unreleased
 --------------------------
 
+- **Drillthrough sees the full Jinja context** — cube and measure-group Jinja
+  templates are now rendered for ``DRILLTHROUGH`` queries (a double-click on a
+  PivotTable cell) with the same ``context`` object as regular queries: the
+  user, their groups and the clicked cell's filters. Previously the context was
+  empty, so cubes whose templates read ``context`` (for example row-level
+  security by user group) failed to open detail rows. See :ref:`jinja_var`.
+
+- **Native-typed levels no longer break the PivotTable** — when
+  :confval:`CONVERT_FIELDS_TO_STRING` is ``false`` and a dimension level is a
+  numeric column, databases that return the ``[All]`` totals as a mixed-type
+  column (recent ClickHouse, StarRocks) caused a server-side sorting error.
+  Level values are now converted to text by the server after the query, in one
+  place, so inside the engine levels are always strings.
+
+- **DMV queries answered** — ``SELECT ... FROM $system.<rowset>`` statements
+  sent by ADOMD/ADODB clients, Power BI and third-party OLAP browsers (Excel
+  never sends them) are now recognized: ``DBSCHEMA_CATALOGS``,
+  ``MDSCHEMA_CUBES``, ``MDSCHEMA_DIMENSIONS`` and ``MDSCHEMA_MEASURES`` return
+  a tabular result built from the same data as the corresponding Discover
+  responses, other rowsets get a clear "not supported" message instead of an
+  internal error.
+
 - **SQL form per cube** — the :tag:`sql_form` and :tag:`filter_mode` tags in
   a cube definition override the server-wide :confval:`SQL_FORM` and
   :confval:`FILTER_MODE` settings for that cube, so cubes tuned for different

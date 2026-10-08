@@ -170,8 +170,8 @@ total includes the Promo Tag key:
 .. code-block:: jinja
 
    --olap_jinja
-   {# request = what the user selected (level_name values); in drillthrough the
-      context is empty and req = None - only branch 2 applies there #}
+   {# request = what the user selected (level_name values); in drillthrough
+      request.dimensions is empty - only branch 2 applies there #}
    {% set req = context.get("request") %}
    {% if req and "PROMO_TAG" in req.dimensions %}
        {# branch 1: expand the fact rows, numbering the copies of each row #}
@@ -385,6 +385,18 @@ What the user selected in Excel for this query. All values are ``level_name``.
 
    ``request.filter_values`` contains raw, unescaped user input. Do not insert it
    directly into SQL — use it for display / logic only, or escape it yourself.
+
+.. note::
+
+   **Drillthrough** (a double-click on a PivotTable cell, see :ref:`drillthrough`)
+   renders the same templates with the same ``context``: ``user``, ``now``,
+   ``cube`` and the coordinates of the clicked cell in ``request.filters`` /
+   ``request.filter_values`` are all available, so row-level security written in
+   Jinja applies to the detail rows too. ``request.measures``, ``dimensions``,
+   ``calculated_fields``, ``axis0`` and ``axis1`` are empty — a drillthrough query
+   has no aggregation, so a template that branches on ``request.dimensions``
+   stays in its filter-only branch. ``sql.sources`` holds only the fact source of
+   the drilled measure group.
 
 sql — the generated query
 ^^^^^^^^^^^^^^^^^^^^^^^^^

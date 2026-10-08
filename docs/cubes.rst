@@ -588,7 +588,9 @@ How it works:
 - **Filters apply.** The cell's row, column and slicer context becomes the ``WHERE``
   clause, using the same row-level security and filtering as normal queries.
 - **CTEs and Jinja apply** exactly as for regular queries (measure-group Jinja, then
-  the cube CTE, then cube-level Jinja).
+  the cube CTE, then cube-level Jinja), with the same ``context`` object — the
+  user, their groups and the clicked cell's filters are available to the
+  templates (see the drillthrough note in :ref:`jinja_var`).
 
 If a measure group has no ``olap_drillthrough`` tag, drilling a cell of that group
 falls back to returning just the clicked measure as a single column.
