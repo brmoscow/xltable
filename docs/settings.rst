@@ -294,6 +294,60 @@ Parameter reference
 
    Default: not set
 
+.. confval:: DATABASES
+
+   Server edition with :confval:`CUBE_SOURCE` ``"database"``: the databases
+   (cube catalogs) the server shows at all. Every other warehouse database
+   with an ``olap_definition`` table is hidden from the catalog list in
+   Excel, from ``list_databases`` in MCP and from the REST API, and a
+   request that names such a database directly is rejected
+   (``Database 'x' is not available to this user``). Combine with
+   :confval:`GROUP_DATABASES` to split the allowed databases between
+   groups. Picked up on the fly, no restart or cache clearing needed.
+   Ignored with the folder cube source (there is always one catalog,
+   ``Cubes``).
+
+   Example:
+
+   .. code-block:: json
+
+      "DATABASES": ["sales", "finance"]
+
+   Default: not set — all databases of the warehouse are visible
+
+.. confval:: GROUP_DATABASES
+
+   Server edition with :confval:`CUBE_SOURCE` ``"database"``: which
+   databases each user group sees. Keys are group names — the groups from
+   :confval:`USER_GROUPS` for local users and Active Directory groups for
+   domain users; values are lists of database names. A user sees the union
+   of the databases of all their groups (within :confval:`DATABASES`, when
+   it is set). A user none of whose groups is listed here sees **no**
+   databases — a group that should see everything has to be listed with
+   every database. To give a single user their own set, put them in a
+   dedicated group. Hidden databases are not just left out of the lists:
+   a request that names one directly is rejected. Picked up on the fly.
+   The **Cache** page of the admin console shows the resulting list per
+   user (see :ref:`admin_panel`).
+
+   Example:
+
+   .. code-block:: json
+
+      "USER_GROUPS": {
+          "ivan": ["analysts"],
+          "olga": ["finance_team"]
+      },
+      "GROUP_DATABASES": {
+          "analysts": ["sales"],
+          "finance_team": ["sales", "finance"]
+      }
+
+   Here ``ivan`` sees ``sales``, ``olga`` sees ``sales`` and ``finance``, and a
+   user from a group that is not listed sees nothing.
+
+   Default: not set — groups do not restrict database visibility
+
 .. confval:: MAX_CELLS
 
    Limits the size of the pivoted result returned to Excel, measured in

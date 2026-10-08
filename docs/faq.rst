@@ -106,6 +106,31 @@ A successfully generated cube is saved as a plain ``.sql`` file into the
 cubes folder (with the installer — ``Documents\XLTable\cubes``); the
 **Cubes** page of the admin console lists every cube the server sees.
 
+Excel shows "Cannot read the list of cubes in database …" instead of the cube list.
+------------------------------------------------------------------------------------
+
+The server connected to the warehouse but could not read the
+``olap_definition`` table of the selected database; the text after the
+colon is the warehouse's own error. Typical causes:
+
+- the account from ``CREDENTIAL_DB`` has no ``SELECT`` right on
+  ``olap_definition`` (``Not enough privileges`` / ``ACCESS_DENIED`` /
+  ``permission denied``) — ask the administrator for the grant;
+- the connection was lost mid-request (``Lost connection``, ``timed out``) —
+  retry; if it persists, check the warehouse and the network between it and
+  the XLTable server.
+
+A database that has no ``olap_definition`` table at all is not an error: it
+is listed with no cubes. MCP clients and the REST API receive the same text
+as an error result; the metadata cache does not keep the failed attempt, so
+the next request after the cause is fixed reads the list again.
+
+.. note::
+   Snowflake reports a missing ``SELECT`` grant with the same error as a
+   missing table (``Object '…' does not exist or not authorized``), so on
+   Snowflake a database the account cannot read is listed with no cubes
+   rather than with an error — check the grant on ``OLAP_DEFINITION``.
+
 Where is the specific ClickHouse database configured?
 -----------------------------------------------------
 

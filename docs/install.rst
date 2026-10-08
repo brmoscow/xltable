@@ -950,7 +950,10 @@ The pages:
 
   - a per-user table showing active sessions, the number of cached entries
     and the time of the last activity, with a **Sign out** button that drops
-    the sessions of a single user without affecting the others;
+    the sessions of a single user without affecting the others; when
+    database visibility is configured (:confval:`DATABASES` /
+    :confval:`GROUP_DATABASES`), a **Databases** column shows which
+    databases each user sees;
   - statistics of the shared SQL result cache (entries, size, hit rate).
     Hit/miss counters accumulate since the last reset — they survive restarts
     and cache clearing; the **Reset stats** button starts counting from zero,

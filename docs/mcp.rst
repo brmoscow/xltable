@@ -56,7 +56,10 @@ Tools
        `Creating cubes from the chat`_.
    * - ``list_databases``
      - Server edition with ``CUBE_SOURCE=database`` only: lists the databases
-       (cube catalogs) of the warehouse.
+       (cube catalogs) of the warehouse — the ones visible to the user
+       under :confval:`DATABASES` / :confval:`GROUP_DATABASES`; a hidden
+       database named in the ``database`` argument of any tool is reported
+       as unknown.
 
 Security roles from the cube definition apply on the MCP path the same way
 they apply in Excel.

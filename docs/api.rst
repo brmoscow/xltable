@@ -45,7 +45,9 @@ With the ``olap_definition`` cube source (``CUBE_SOURCE=database``) and
 more than one database in the warehouse, pass the database name: a
 ``database`` query parameter on the ``GET`` endpoints, a ``database`` field
 in the body of ``POST /api/query``. A single database is selected
-automatically.
+automatically. Only the databases visible to the user under
+:confval:`DATABASES` / :confval:`GROUP_DATABASES` count: a hidden one
+named in the request is reported as unknown (``400``).
 
 Query
 -----

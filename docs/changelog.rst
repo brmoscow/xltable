@@ -9,6 +9,28 @@ Stay up to date with the latest releases by following us on
 Version 2.1.3 — unreleased
 --------------------------
 
+- **Database visibility per user group** — in the server edition with
+  ``CUBE_SOURCE=database`` two new settings limit which warehouse databases
+  (cube catalogs) a user sees: :confval:`DATABASES` for the server as a
+  whole and :confval:`GROUP_DATABASES` per user group (local groups from
+  ``USER_GROUPS`` or Active Directory groups). The filter applies to the
+  catalog list in Excel, ``list_databases`` in MCP and the REST API, and a
+  hidden database named directly is rejected, not only left out. Without
+  the settings every database with an ``olap_definition`` table is visible,
+  as before. The **Cache** page of the admin console shows the resulting
+  list per user. See :confval:`GROUP_DATABASES`.
+
+- **Warehouse errors on the cube list are shown, not hidden** — when the
+  server cannot read the ``olap_definition`` table of a database (no
+  ``SELECT`` right, a lost connection, a wrong database name), Excel, MCP
+  clients and the REST API now receive the warehouse's own error text
+  (``Cannot read the list of cubes in database '…': …``) instead of an
+  empty cube list, and the failed result is not kept in the metadata cache.
+  A database that simply has no ``olap_definition`` table is still listed
+  with no cubes, as before. On StarRocks the **Test connection** button of
+  the admin console reports a lost connection as an error instead of
+  "no databases are visible". See :doc:`faq`.
+
 - **REST API for cubes** — ``GET /api/cubes``, ``GET /api/cubes/<cube>``
   and ``POST /api/query`` return the cube list, a cube schema and an
   aggregated pivot query as JSON, through the same engine, roles,
