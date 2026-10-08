@@ -9,6 +9,11 @@ Stay up to date with the latest releases by following us on
 Version 2.1.3 — unreleased
 --------------------------
 
+- **Third-party license notices in every distribution** — the root of the
+  desktop and server packages (and of the offline dependency bundle) now
+  contains ``THIRD-PARTY-NOTICES.txt`` with the names, versions and license
+  texts of the bundled open-source libraries.
+
 - **CSV export available from header cells too** — the **Additional
   Actions** → **Export full table to CSV** menu item now appears when
   right-clicking a row or column header of the pivot, not only a value

@@ -481,6 +481,8 @@ The join is then treated as part of the current ``olap_source`` block only: it d
 path that other measure groups or dimensions could connect through. Use it whenever
 you need an auxiliary table inside one source without exposing it to the rest of the cube.
 
+.. _calculated_fields:
+
 Calculated fields
 -----------------
 
@@ -498,9 +500,25 @@ Example:
    --olap_calculated_fields Calculated fields
    (sales_sum_sum / nullif(sales_sum_qty, 0)) as avg_price --translation=`Average Price`
 
-A calculated field may combine measures from **different** measure groups: the
-per-group results are merged with a FULL JOIN before the expression is applied,
-so any measure alias defined in the cube can be referenced here.
+What an expression may contain
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The expression is ordinary SQL of your warehouse, placed into the **outer
+SELECT** of the generated query — it is never translated or interpreted by
+XLTable. Anything the warehouse accepts in a select list works:
+
+- arithmetic and parentheses: ``(a - b) / nullif(a, 0)``;
+- functions of your database: ``round(...)``, ``greatest(...)``, ``coalesce(...)``;
+- conditions: ``case when sales_sum_sum > 0 then ... else ... end``;
+- window functions over the result rows: ``sum(sales_sum_sum) over ()``
+  (each result row is one dimension combination, so a window over the whole
+  result gives the total of what is currently displayed and filtered).
+
+Refer to measures by their **SQL aliases** (``sales_sum_sum``), not by raw
+table columns — by the time the expression runs, the per-group queries have
+already aggregated and the raw rows are gone. For the same reason do **not**
+wrap the aliases in ``sum()`` or another aggregate: the inputs are aggregated
+values already.
 
 An expression may also reference the alias of **another calculated field** —
 in any order of declaration and across ``--olap_calculated_fields`` blocks:
@@ -518,13 +536,120 @@ expression were written out by hand. Circular references (including a field
 referencing itself) are rejected with a clear error — the syntax check in the
 admin console reports them as well.
 
+A measure referenced by a selected calculated field is pulled into the SQL
+automatically, even when the measure itself is not on the PivotTable. Helper
+measures that exist only to feed calculated fields are typically declared with
+``--hide`` so they never clutter the field list.
+
 .. note::
 
-   A measure may be ``NULL`` (no matching rows — especially when the inputs
-   come from different measure groups) or zero for a given cell. Always guard
-   division against ``NULL`` and zero with ``nullif``, as in the examples
-   above: ``sales_sum_sum / nullif(sales_sum_qty, 0)`` returns ``NULL``
-   instead of failing where nothing was sold.
+   An expression without Jinja is normalized to upper case when the SQL is
+   built, so do not rely on case-sensitive **string literals** inside it —
+   a literal like ```n/a``` comes out as ```N/A```. If you need exact case,
+   put the expression through Jinja (see below) — a template is rendered as
+   written.
+
+Division by zero and NULL
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A measure may be ``NULL`` (no matching rows — especially when the inputs
+come from different measure groups) or zero for a given cell. Always guard
+division against ``NULL`` and zero with ``nullif``, as in the examples
+above: ``sales_sum_sum / nullif(sales_sum_qty, 0)`` returns ``NULL``
+instead of failing where nothing was sold. When a ``NULL`` input should be
+treated as zero (for example returns that simply did not happen), wrap it in
+``coalesce(..., 0)``.
+
+Combining measures from different groups (FULL JOIN)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A calculated field may combine measures from **different** measure groups:
+each group runs as its own aggregated query and the per-group results are
+merged with a ``FULL JOIN`` on the shared dimension attributes before the
+expression is applied, so any measure alias defined in the cube can be
+referenced. Consequences to keep in mind:
+
+- A dimension combination present in one group but not the other produces a
+  row where the missing group's measures are ``NULL`` — guard with
+  ``coalesce`` / ``nullif``.
+- A dimension that only one group is related to puts the other group's
+  measures on the empty member of that dimension (see
+  :ref:`sql_generation_logic`). Expressions over both groups are meaningful
+  only for dimensions **shared** by all groups involved.
+- The merged result grows with the number of combinations; a calculated field
+  over three groups joins three aggregated result sets.
+
+Evaluation order: filters first, totals recomputed
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The order is: **filters → aggregation → FULL JOIN → calculated field**.
+PivotTable filters, slicers and the role's access filters go into the
+``WHERE`` clause of each measure-group query, so a calculated field always
+sees already-filtered, already-aggregated inputs.
+
+Excel requests subtotals and grand totals as separate queries at a coarser
+grouping, and the expression is **recomputed from the re-aggregated inputs**
+at every level. A ratio therefore behaves like in Analysis Services: the
+total of ``sales / qty`` is ``total sales / total qty`` (a weighted ratio),
+not the sum or average of the per-row ratios.
+
+Display: translation, format, folder
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Calculated fields take the same per-field tags as measures:
+
+- :tag:`translation` — display name in Excel (must be unique in the cube);
+- :tag:`format` — Excel number format string, e.g. ``--format=`0.0%``` for
+  ratios;
+- :tag:`hide` — hide the field from everyone (for intermediate steps);
+- ``--description`` / ``--synonyms`` — AI semantics for MCP clients
+  (see :ref:`cube_ai_semantics`).
+
+The value of the ``--olap_calculated_fields`` tag itself is the **folder**
+name under which the fields appear in the Excel field list.
+
+Typical examples
+^^^^^^^^^^^^^^^^
+
+Margin, share of total, average price, and year-over-year growth — the
+bread-and-butter calculated fields:
+
+.. code-block:: sql
+
+   --olap_cube
+   --olap_calculated_fields Calculated fields
+    (sales_sum_sum - sales_sum_cost) / nullif(sales_sum_sum, 0) as calc_margin
+        --translation=`Margin %` --format=`0.0%;-0.0%`
+   ,sales_sum_sum / nullif(sales_sum_qty, 0) as calc_avg_price
+        --translation=`Average Price` --format=`#,##0.00`
+   ,sales_sum_sum / nullif(sum(sales_sum_sum) over (), 0) as calc_share
+        --translation=`Share of Total` --format=`0.0%`
+   ,(sales_sum_sum - salesly_sum_sum) / nullif(salesly_sum_sum, 0) as calc_yoy
+        --translation=`Growth YoY` --format=`0.0%;-0.0%`
+
+Notes on the examples:
+
+- ``calc_share`` uses a window over the final result, so it is the share of
+  what is currently displayed under the current filters; on a total row it
+  is 100%.
+- ``calc_yoy`` compares two measure groups: ``salesly_*`` comes from a
+  second measure group over the same fact table whose dates are shifted one
+  year forward by a Jinja script — the *Sales last year* pattern of the
+  :ref:`unified example <unified_example>`. The growth field then divides
+  measures of the two groups as usual. For AI clients the same question is
+  answered without a dedicated field by the ``compare_periods`` MCP operator
+  (see :ref:`mcp_operators`).
+
+Jinja in expressions
+^^^^^^^^^^^^^^^^^^^^
+
+An expression may contain Jinja (``{{ ... }}`` / ``{% ... %}``). It is
+rendered with the same ``context`` object as cube Jinja scripts — the
+``cube`` and ``request`` namespaces are available, so the expression can
+adapt to what the user selected: for example, build a window
+``partition by`` over the currently selected dimension levels, or switch a
+formula depending on the dimensions in play. See :doc:`jinja` for the
+context reference and debugging tools.
 
 .. _drillthrough:
 
@@ -624,9 +749,76 @@ Example:
        SELECT ...
    )
 
-CTEs can serve as data sources for both measure groups and dimensions — reference
-the CTE name in a ``FROM`` or ``LEFT JOIN`` clause and give it an alias as usual
-(for example ``LEFT JOIN calendar times``).
+Everything above ``--olap_cube`` is the CTE zone, and it is prepended **to
+every SQL query the server generates** for the cube — measure-group queries,
+filter dropdown lists, drillthrough. Two practical consequences:
+
+- Keep it cheap. A CTE that scans a fact table is re-executed by each of
+  those queries. A calendar belongs in a physical date table when the
+  warehouse has one; otherwise generate it from a sequence — ``numbers()``
+  in ClickHouse, ``generate_series`` in PostgreSQL / Greenplum / DuckDB,
+  ``GENERATE_DATE_ARRAY`` in BigQuery, ``sequence`` in Trino / Databricks.
+- Do not write ``--`` comments or ``--olap_*`` literals in the zone — a
+  comment would be parsed as a tag and cut the definition (and remember that
+  at least one line must precede ``--olap_cube``, see
+  `Anatomy of a cube definition`_).
+
+CTE as a data source
+^^^^^^^^^^^^^^^^^^^^
+
+CTEs can serve as data sources for both measure groups and dimensions —
+reference the CTE name in a ``FROM`` or ``LEFT JOIN`` clause and give it an
+alias as usual. A calendar dimension built from a CTE:
+
+.. code-block:: sql
+
+   WITH calendar AS (
+       SELECT toDate(d) AS day_str,
+              formatDateTime(d, `%Y-%m`) AS month_str,
+              toString(toYear(d)) AS year_str
+       FROM (SELECT toDate(`2020-01-01`) + number AS d FROM numbers(4000))
+   )
+
+   --olap_source Dates
+   SELECT
+   --olap_dimensions
+    times.year_str as times_year_str --translation=`Year` --hierarchy=`Dates`
+   ,times.month_str as times_month_str --translation=`Month` --hierarchy=`Dates`
+   FROM calendar times
+
+   --olap_source Sales
+   SELECT
+   --olap_measures
+    sum(sales.sum) as sales_sum_sum --translation=`Sales Amount`
+   FROM db.Sales sales
+   LEFT JOIN calendar times ON sales.date_sale = times.day_str
+
+The usual linking rule applies unchanged: the dimension and the measure
+group connect through the **same name and alias** (``calendar times`` in
+both). A ``LEFT JOIN`` on the same CTE under a different alias — or on a
+copy of the CTE under another name — does not link; the measure then
+ignores the dimension and silently shows the grand total in every row, so
+verify the link with a live query (put the dimension on rows and check the
+numbers differ).
+
+Dialect notes
+^^^^^^^^^^^^^
+
+The CTE text is passed to the warehouse verbatim, so it must be valid SQL
+of **your** dialect; XLTable does not translate it. Points that differ
+between warehouses:
+
+- Sequence generators differ (see the list above) — a cube moved to another
+  warehouse usually needs its calendar CTE rewritten.
+- ClickHouse evaluates a ``WITH`` subquery at each place it is referenced,
+  it does not materialize the result; a heavy CTE referenced by several
+  joins costs several executions.
+- Recursive CTEs (``WITH RECURSIVE``) are not available in every warehouse
+  and version — check your warehouse documentation before relying on one.
+- The backtick rule applies inside the CTE zone like everywhere else in a
+  definition: every backtick becomes a single quote (write string literals
+  with backticks, see `String literals — write them with backticks`_), so
+  BigQuery-style backtick-quoted table names cannot be used.
 
 .. _cube_user_roles:
 
@@ -708,6 +900,145 @@ Do not confuse the two visibility mechanisms: the ``--hide`` tag hides a field
 **globally**, for everyone (typically a helper measure used only inside calculated
 fields), whereas the ``..._visible`` tags control visibility **per role** — each role
 sees only the measures, dimensions and attributes listed for it.
+
+Where the groups come from
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The names under ``--olap_user_groups`` are matched against the connecting
+user's **group list**, and that list depends on how the user authenticated:
+
+- **Local users** (:confval:`USERS` in ``settings.json``, managed on the
+  Users page of the admin console): the groups are exactly what
+  :confval:`USER_GROUPS` assigns to the user name. A local user with no
+  entry there has no groups — and matches no role.
+- **Domain users** (Windows SSO through IIS, a Kerberos/LDAP front, or
+  Basic authentication checked against the directory): the groups are the
+  user's **Active Directory / LDAP group names** as defined in the domain.
+  Which domain users may connect at all is controlled separately by
+  ``access_groups`` in :confval:`CREDENTIAL_ACTIVE_DIRECTORY`.
+- **OAuth tokens** (MCP clients and agents) carry no groups of their own:
+  the token resolves back to the local or domain account it was issued to,
+  and the groups come from :confval:`USER_GROUPS` or the directory exactly
+  as above. The same applies to users impersonated through
+  ``X-Effective-User`` (:ref:`mcp_effective_user`).
+
+One cube definition therefore works unchanged for all authentication
+sources — a role lists group names, not user names, and the same group name
+(say ``finance_users``) can exist both as an AD group and in
+``USER_GROUPS`` entries of local accounts.
+
+Several roles, and users that match none
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A role applies to a user when at least one of its ``--olap_user_groups``
+names is among the user's groups. When several roles apply, they are
+**combined additively**:
+
+- the visible measures, dimensions and calculated fields are the union of
+  the roles' lists;
+- ``in`` filters on the same field add up to a larger allowed set, and
+  ``not in`` filters add up to a larger excluded set;
+- ``in`` and ``not in`` on the same field apply together (the allowed list
+  minus the excluded values).
+
+There is **no default role**. As soon as a cube contains at least one
+``--olap_user_role`` block, a user whose groups match none of the blocks is
+refused with *"User does not have access to the cube"*. A cube with no role
+blocks at all is open in full to every authenticated user. To give
+"everyone else" a baseline view, add a catch-all role for a group all users
+share (for example the access group that lets them onto the server):
+
+.. code-block:: sql
+
+   --olap_user_role
+   --olap_user_groups
+   olap_users
+   --olap_calculated_fields_visible
+   all
+   --olap_measures_visible
+   Sales
+   --olap_dimensions_visible
+   all
+   --olap_access_filters
+
+(An empty ``--olap_access_filters`` block is valid — the role sees the
+listed fields with no row restriction.)
+
+Typical schemes
+^^^^^^^^^^^^^^^
+
+**By region** — everyone sees the same fields, each sales group only its
+rows; filters on different fields combine with AND, so a role can be
+narrowed by region *and* channel:
+
+.. code-block:: sql
+
+   --olap_user_role
+   --olap_user_groups
+   sales_eu
+   --olap_calculated_fields_visible
+   all
+   --olap_measures_visible
+   all
+   --olap_dimensions_visible
+   all
+   --olap_access_filters
+   regions_name in (`EU`)
+
+**By department** — a shared dimension carries the org structure and each
+division role filters on its own value, while management matches a role
+with no filters. A user in two division groups sees the union of the two
+divisions' rows.
+
+**Everything except salaries** — row filters do not help here; use the
+visibility lists instead. Keep the sensitive measures in their own measure
+group (for example ``Payroll``) and list the permitted sources explicitly
+for the broad role, while the narrow role gets ``all``:
+
+.. code-block:: sql
+
+   --olap_user_role
+   --olap_user_groups
+   olap_users
+   --olap_calculated_fields_visible
+   all
+   --olap_measures_visible
+   Sales, Stock
+   --olap_dimensions_visible
+   all
+   --olap_access_filters
+
+   --olap_user_role
+   --olap_user_groups
+   hr_payroll
+   --olap_calculated_fields_visible
+   all
+   --olap_measures_visible
+   all
+   --olap_dimensions_visible
+   all
+   --olap_access_filters
+
+A ``..._visible`` list may name whole sources (``Sales``) or individual
+field aliases — listing a source makes all of its fields visible.
+
+Checking that a role works
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Verify row-level security as the restricted user, not as yourself:
+
+- **In Excel** — connect with the test user's credentials and open a filter
+  dropdown on the protected dimension: values outside the role's allowed
+  set must not appear at all (the server filters member lists, Keep Only /
+  Hide probes and drillthrough with the same conditions, not only the
+  numbers).
+- **In the log** — set :confval:`WRITE_LOG` to ``true`` and look at the
+  generated SQL for the user's query: the role's conditions must be present
+  in the ``WHERE`` clause of every measure-group query. This is the
+  ground truth of what the warehouse was actually asked.
+- **Over MCP** — call ``describe_cube`` as the user: it returns the cube as
+  that role sees it — hidden fields are absent, and the sample values of
+  dimension levels respect the access filters (see :ref:`mcp_semantics`).
 
 .. _cube_ai_semantics:
 

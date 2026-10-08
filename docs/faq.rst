@@ -402,11 +402,15 @@ Working example: :ref:`unified_example`.
 ClickHouse does not allow nesting window functions inside aggregates like MDX in Microsoft tools. How can we replicate multi-step measure logic?
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 
-Use Jinja scripts in the cube definition for multi-step measure logic.
-This allows you to inject filters and transform SQL before execution.
+For an expression over already-aggregated values — a ratio, a share via a
+window function, growth between two measure groups — a calculated field is
+usually enough: it is computed in the outer SELECT, after aggregation. For
+logic that must change the generated SQL itself, use Jinja scripts in the
+cube definition: they inject filters and transform SQL before execution.
 
 Documentation:
 
+- :ref:`calculated_fields`
 - :ref:`jinja_scripts`
 - :ref:`jinja_var`
 

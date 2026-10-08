@@ -173,6 +173,7 @@ to share a direct reference to it.
    The filters are enforced on every SQL query the server builds; an explicit
    filter on the same field in a query is intersected with the allowed values,
    and ``not in`` values never appear in results or filter dropdowns.
+   How to verify the filters as the restricted user: :ref:`cube_user_roles`.
 
    Example:
 
@@ -207,6 +208,9 @@ to share a direct reference to it.
    Marks the beginning of a block containing the list of calculated fields. After the tag, you must specify the name of the folder calculated fields.
    An expression may reference measure aliases and aliases of other calculated
    fields (in any order of declaration); circular references are rejected.
+   What an expression may contain, evaluation order, combining measure
+   groups and typical examples (margin, share, year-over-year):
+   :ref:`calculated_fields`.
 
    Example:
 
@@ -377,7 +381,9 @@ to share a direct reference to it.
 
 .. tag:: olap_user_role
 
-   Marks the beginning of a block defining a user role.
+   Marks the beginning of a block defining a user role. Where the matched
+   groups come from, how several roles combine, typical schemes and how to
+   verify a role: :ref:`cube_user_roles`.
 
    Example of a complete role block:
 
