@@ -185,6 +185,9 @@ and indicates which of them are available in XLTable.
    * - AI assistants connectivity (built-in :doc:`MCP server <mcp>`)
      -
      - ✓
+   * - Pivot table in the browser (:doc:`web pivot table <reports>`): macOS, no Excel at hand
+     -
+     - ✓
    * - **Administration**
      -
      -

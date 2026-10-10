@@ -85,6 +85,20 @@ in 2026.
        to the aggregated result, instead of joining and casting before aggregation.
      - Done (2.1.2)
 
+   * - 20
+     - API endpoint
+     - An HTTP API for querying cubes (dimensions, measures, filters, sorting, limit)
+       and retrieving cube metadata, with results in JSON or CSV.
+       Uses the same authentication, row-level security and result cache as Excel and MCP.
+       Intended for scripts, notebooks, embedded analytics and partner integrations.
+     - Done (2.1.3)
+
+   * - 23
+     - Web pivot table
+     - A pivot table in the browser over the same cubes, with export to Excel — for macOS
+       users and for anyone without Excel at hand. See :doc:`reports`.
+     - Done (2.1.3)
+
    * - 14
      - Native data types in dimension attributes
      - Currently all dimension attributes are cast to string. Planned support for integer and date types,
@@ -123,14 +137,6 @@ in 2026.
        and the shared result cache apply the same way as for Excel and MCP.
      -
 
-   * - 20
-     - API endpoint
-     - An HTTP API for querying cubes (dimensions, measures, filters, sorting, limit)
-       and retrieving cube metadata, with results in JSON or CSV.
-       Uses the same authentication, row-level security and result cache as Excel and MCP.
-       Intended for scripts, notebooks, embedded analytics and partner integrations.
-     -
-
    * - 21
      - Aggregate awareness
      - Support for pre-aggregated tables stored and refreshed by the database
@@ -147,12 +153,6 @@ in 2026.
      - Correctness tests inside the cube definition (``--olap_test`` blocks): a pivot
        query plus the expected result or a reference SQL, run by a CLI command and an MCP tool,
        with exit codes for CI. A ``check`` command validates a definition before deployment.
-     -
-
-   * - 23
-     - Web pivot table
-     - A pivot table in the browser over the same cubes, with export to Excel — for macOS
-       users and for anyone without Excel at hand.
      -
 
    * - 24

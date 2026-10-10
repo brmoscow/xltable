@@ -69,10 +69,14 @@ Request:
 
 ``dimensions`` and ``measures`` are names from the cube schema (case
 sensitive); at least one of them is required. ``filters`` are applied before
-aggregation: ``in``, ``not_in`` and ``between`` (exactly ``[low, high]``). A
-user's own access filters (row-level security) are always added on top of
-the request filters and cannot be widened by them. ``limit`` caps the number
-of result rows (1000 by default).
+aggregation: ``in``, ``not_in``, ``between`` (exactly ``[low, high]``) and
+``paths`` — member paths down a hierarchy, ``"level"`` being its top level on
+the path: ``{"level": "Year", "type": "paths", "values": [["2024"],
+["2023", "2023-Q1"]]}`` keeps the whole of 2024 plus one quarter of 2023 (an
+OR of the paths, each path an AND of its levels). A user's own access
+filters (row-level security) are always added on top of the request filters
+and cannot be widened by them. ``limit`` caps the number of result rows (1000
+by default).
 
 Response:
 
@@ -202,3 +206,26 @@ API queries go through the same path as MCP queries: with
 ``RESULT`` blocks, the ``log`` folder gets the SQL and Jinja dumps, and the
 shared SQL result cache serves identical queries to Excel, assistants and
 API clients alike (see :ref:`mcp_logging`).
+
+Reports of the web pivot table
+------------------------------
+
+The web pivot table (``/reports``) keeps its reports as JSON documents in
+:confval:`REPORTS_FOLDER`; the same documents are available through the API,
+so scripts and AI agents can create and change reports:
+
+- ``GET /api/reports`` — the list: ``id``, ``title``, ``owner``, ``cube``,
+  ``database``, ``updated`` and ``can_edit`` for the calling user;
+- ``POST /api/reports`` — create (the body is the document, ``owner`` and
+  the timestamps are set by the server); the response carries the new ``id``;
+- ``GET /api/reports/<id>`` — ``{"id", "report", "can_edit"}``;
+- ``PUT /api/reports/<id>`` — replace the document, ``DELETE`` — delete:
+  the owner or an administrator (:confval:`ADMIN_GROUPS`) only;
+- ``GET /api/schema/report`` — the JSON Schema of the document.
+
+Reading a report is open to every authenticated user: the data it shows is
+cut by the user's own roles and access filters. The ``queries`` part of a
+document is the specification of ``POST /api/pivot``; the ``charts`` part is
+the presentation (sort, totals, expanded members). The routes need the
+``web`` license feature.
+

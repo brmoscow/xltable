@@ -9,6 +9,24 @@ Stay up to date with the latest releases by following us on
 Version 2.1.3 — 2026-10-08
 --------------------------
 
+- **Web pivot table (preview)** — ``/reports``: an Excel-like pivot table in
+  the browser, for macOS and anyone without Excel. The field list, the four
+  areas with drag and drop, compact layout, subtotals, hierarchies with
+  ⊞/⊟, report filters with a member tree, "Σ Values" on rows or columns,
+  "Defer Layout Update" and "Update" follow Excel so that Excel users need
+  no training. The same engine, roles, row-level security and SQL cache as
+  Excel: the SQL of a layout is byte-for-byte the SQL Excel sends for it.
+  Sign-in through the server's OAuth page (or HTTP Basic where OAuth is not
+  available); a license feature flag of its own (``web``), seats shared with
+  Excel. Reports are saved as JSON documents in :confval:`REPORTS_FOLDER`
+  and opened by link: the owner or an administrator edits and deletes,
+  anyone else may save a copy; the documents are also available through
+  ``/api/reports`` for scripts and AI agents (see :doc:`api`).
+
+- **Filter type ``paths``** in ``POST /api/query`` and the ``query_cube`` MCP
+  tool — member paths down a hierarchy (an OR of paths), the form the web
+  pivot's report filter sends. See :doc:`api`.
+
 - **Removed: the legacy ``OWNERS`` setting** — admin accounts bypassing
   user groups (a remnant of version 1.x) are no longer read: administrators
   are defined only by :confval:`ADMIN_GROUPS` (local accounts via

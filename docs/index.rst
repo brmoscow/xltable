@@ -149,6 +149,13 @@ documentation as a single file — see :doc:`ai`.
 
 .. toctree::
    :maxdepth: 1
+   :caption: Web pivot table
+   :hidden:
+
+   reports
+
+.. toctree::
+   :maxdepth: 1
    :caption: AI assistants and API
    :hidden:
 

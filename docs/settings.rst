@@ -182,6 +182,21 @@ Parameter reference
 
    Default: ``"cubes"``
 
+.. confval:: REPORTS_FOLDER
+
+   Folder with the reports of the web pivot table (``/reports``): one JSON
+   file per report, written atomically; the server creates the folder on the
+   first save. A relative path is resolved from the application root (the
+   server working directory). Default: ``reports``. Several servers behind a
+   load balancer must share this folder (a network share), otherwise reports
+   stay local to the machine that saved them.
+
+   Example:
+
+   .. code-block:: json
+
+      "REPORTS_FOLDER": "D:/xltable/reports"
+
 .. confval:: WRITE_LOG
 
    Enables debug logging of XLTable operations (MDX, generated SQL, Jinja
