@@ -214,8 +214,9 @@ The web pivot table (``/reports``) keeps its reports as JSON documents in
 :confval:`REPORTS_FOLDER`; the same documents are available through the API,
 so scripts and AI agents can create and change reports:
 
-- ``GET /api/reports`` — the list: ``id``, ``title``, ``owner``, ``cube``,
-  ``database``, ``updated`` and ``can_edit`` for the calling user;
+- ``GET /api/reports`` — the calling user's reports (an administrator gets
+  everyone's): ``id``, ``title``, ``owner``, ``cube``, ``database``,
+  ``updated`` and ``can_edit``;
 - ``POST /api/reports`` — create (the body is the document, ``owner`` and
   the timestamps are set by the server); the response carries the new ``id``;
 - ``GET /api/reports/<id>`` — ``{"id", "report", "can_edit"}``;

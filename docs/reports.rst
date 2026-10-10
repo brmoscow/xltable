@@ -23,8 +23,9 @@ behind an authenticating front (Kerberos, a trusted proxy) the identity is
 taken from it and no sign-in page appears. The free edition opens the page
 without a sign-in.
 
-The list of saved reports is the start page; **New pivot** picks the database
-(on a multi-database server) and the cube and opens the builder.
+The start page lists the user's own saved reports (an administrator sees
+everyone's); **New pivot** picks the database (on a multi-database server) and
+the cube and opens the builder.
 
 The browsers: Chrome, Edge and Yandex Browser 80+, Firefox ESR.
 
@@ -60,9 +61,10 @@ Saving and sharing
 **Save** in the builder stores the report; the address of the saved report
 (``/reports/<id>``) is the link to share. The report filters chosen by the
 viewer travel in the link (``?f.Region=North``), so a link can point at a
-specific slice. The owner or an administrator (:confval:`ADMIN_GROUPS`) edits
-and deletes a report; anyone else may open it and **Save as** a copy under
-their own name. Reports are JSON documents in :confval:`REPORTS_FOLDER` and
+specific slice. Any signed-in user may open a report by its link and see it
+with their own data access; the owner or an administrator
+(:confval:`ADMIN_GROUPS`) edits and deletes a report, anyone else may
+**Save as** a copy under their own name. Reports are JSON documents in :confval:`REPORTS_FOLDER` and
 are also available through :doc:`the API <api>` for scripts and AI agents.
 
 **Download xlsx** writes the table as shown — the header, indented row

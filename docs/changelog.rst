@@ -19,8 +19,10 @@ Version 2.1.3 — 2026-10-08
   Sign-in through the server's OAuth page (or HTTP Basic where OAuth is not
   available); a license feature flag of its own (``web``), seats shared with
   Excel. Reports are saved as JSON documents in :confval:`REPORTS_FOLDER`
-  and opened by link: the owner or an administrator edits and deletes,
-  anyone else may save a copy; the documents are also available through
+  and opened by link: the start page lists the user's own reports (an
+  administrator sees everyone's), any signed-in user may open a report by
+  its link, the owner or an administrator edits and deletes, anyone else may
+  save a copy; the documents are also available through
   ``/api/reports`` for scripts and AI agents (see :doc:`api`).
 
 - **Filter type ``paths``** in ``POST /api/query`` and the ``query_cube`` MCP
