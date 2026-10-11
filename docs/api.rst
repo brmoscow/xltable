@@ -230,3 +230,43 @@ document is the specification of ``POST /api/pivot``; the ``charts`` part is
 the presentation (sort, totals, expanded members). The routes need the
 ``web`` license feature.
 
+.. _api_cubes_page:
+
+Cube status for analysts
+------------------------
+
+The :doc:`Cubes page <web_cubes>` of the web application is built on four
+``GET`` endpoints. They are open to analysts (:confval:`ANALYST_GROUPS`) and
+administrators only — the definition text, the SQL of the sources and the
+roles are internal to the cube; everyone else gets ``403``. The ``database``
+query parameter selects the catalog as on the other endpoints.
+
+- ``GET /api/cubes-overview`` — ``{"source", "cubes": [{"name",
+  "description", "access", "status", "error", "hint", "modified",
+  "path"}], "can_show_all", "hidden", "create_url"}``. With cube files
+  (``source: "folder"``) every cube carries its ``status`` (``ok`` /
+  ``error``), the file path and modification time; with the
+  ``olap_definition`` table the list comes without statuses — ask
+  ``/issues`` per cube. Cubes closed to the user by their roles are left
+  out and counted in ``hidden``; ``?all=1`` lists them too (administrators
+  and the free edition only, ``can_show_all``).
+- ``GET /api/cubes/<cube>/issues`` — ``{"cube", "status", "issues":
+  [{"severity", "check_id", "line", "section", "message"}], "error",
+  "hint"}``: the findings of the definition checker (``ERROR`` /
+  ``WARNING``) with line numbers, and the parse result of the server for
+  this user.
+- ``GET /api/cubes/<cube>/definition`` — ``{"cube", "text", "path",
+  "modified"}``: the definition text as the engine reads it, read-only.
+- ``GET /api/cubes/<cube>/structure`` — the cube as the server understood
+  it for the calling user: ``dimensions`` with ``levels`` (``name``,
+  ``sql``, ``alias``, ``table``), ``measures`` (``format``, ``sql``,
+  ``calculated``), ``sources`` (``type``, ``line``, ``fields``),
+  ``calculated_fields`` and ``roles`` (``groups``, visibility,
+  ``access_filters`` with lines). Unlike ``GET /api/cubes/<cube>``, which
+  any user and MCP agents receive, this document includes the SQL.
+
+``POST /api/pivot`` accepts ``"debug": true`` from an analyst or an
+administrator: the response then carries ``sql`` (the text sent to the
+warehouse), ``elapsed`` (seconds) and ``cached`` (the result came from the
+SQL cache). For other users the flag is ignored.
+

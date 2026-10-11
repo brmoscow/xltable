@@ -9,6 +9,19 @@ Stay up to date with the latest releases by following us on
 Version 2.1.3 — 2026-10-08
 --------------------------
 
+- **Cubes page** — ``/cubes`` in the web application: the state of every
+  cube without opening Excel. The list shows a status per cube; the card
+  shows the checker findings with line numbers (**Problems**), the cube as
+  the server understood it — sources, dimensions and levels with their
+  SQL, measures with formats, calculated fields, roles (**Structure**), a
+  pivot table on the cube with the exact SQL sent to the warehouse, the
+  query time and the cache flag (**Preview**), and the read-only text with
+  the problem lines highlighted (**Definition**). The analyst edits the
+  cube in their own editor as before and presses **Refresh**. The page is
+  open to the new :confval:`ANALYST_GROUPS` and to administrators; by
+  default a user sees the cubes their roles allow, an administrator may
+  show all. See :doc:`web_cubes` and the endpoints in :doc:`api`.
+
 - **Web pivot table (preview)** — ``/reports``: an Excel-like pivot table in
   the browser, for macOS and anyone without Excel. The field list, the four
   areas with drag and drop, compact layout, subtotals, hierarchies with

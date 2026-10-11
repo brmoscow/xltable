@@ -716,6 +716,25 @@ Parameter reference
       startup. Move such accounts to :confval:`USERS` /
       :confval:`USER_GROUPS` with a group listed in ``ADMIN_GROUPS``.
 
+.. confval:: ANALYST_GROUPS
+
+   Defines user groups that see the **Cubes** page of the web application
+   (``/cubes`` — cube status, checker findings with line numbers, the
+   structure as the server understood it, a preview with the SQL sent to
+   the warehouse; see :doc:`web_cubes`). A user whose
+   :confval:`USER_GROUPS` (or Active Directory groups) intersect this list
+   is an analyst; administrators (:confval:`ADMIN_GROUPS`) see the page
+   without being listed here. An analyst does not get the admin console.
+
+   Example:
+
+   .. code-block:: json
+
+      "ANALYST_GROUPS": ["cube_authors"]
+
+   Default: not set — only administrators see the page. In the free desktop
+   edition the single local user sees it without this setting.
+
 .. confval:: API_TOKENS
 
    Bearer tokens (a string or a list of strings) accepted by the cache

@@ -149,10 +149,11 @@ documentation as a single file — see :doc:`ai`.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Web pivot table
+   :caption: Web application
    :hidden:
 
    reports
+   web_cubes
 
 .. toctree::
    :maxdepth: 1
