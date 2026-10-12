@@ -1,8 +1,11 @@
 Web pivot table
 ===============
 
-XLTable can show the same cubes as a pivot table in the browser — for macOS
-users and for anyone without Excel at hand. The page is built to look and
+The web pivot table is the third way to work with XLTable cubes, next to
+Excel and AI assistants: the same cubes as a pivot table in the browser, with
+reports saved on the server and shared by link. Nothing is installed on the
+user's machine, so it also serves macOS users and anyone without Excel at
+hand. The page is built to look and
 behave like the Excel pivot table, so Excel users need no training: the field
 list on the right, the four areas (Filters, Columns, Rows, Values) with drag
 and drop, the compact layout, subtotals, hierarchies with ⊞/⊟, report filters

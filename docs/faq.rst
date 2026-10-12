@@ -423,14 +423,15 @@ server, not only XLTable.
 
 Options for Mac users:
 
+- open the same cubes as a pivot table in the browser — the
+  :doc:`web pivot table <reports>` looks and behaves like the Excel pivot
+  table and needs nothing installed;
 - ask the same cubes questions in an AI chat — Claude Desktop and other MCP
   clients run on macOS and connect to the XLTable server (see
   :ref:`mcp_clients`);
 - run Excel for Windows in a virtual machine (Parallels) or on a remote
   desktop;
 - use a Windows PC.
-
-A browser-based PivotTable that needs no Excel is on the roadmap.
 
 How does XLTable perform on large cubes (billions of rows)?
 ------------------------------------------------------------
@@ -463,7 +464,8 @@ installations. Excel connects through the standard *From Analysis Services*
 dialog; no add-in is installed (see :doc:`excel`).
 
 Excel for Mac and Excel for the web cannot open XMLA connections (see the
-previous question). The XLTable server runs on Linux or Windows — see
+previous question) — their users work with the same cubes in the
+:doc:`web pivot table <reports>`. The XLTable server runs on Linux or Windows — see
 :ref:`system_requirements`.
 
 What is the license cost and trial period length?
@@ -497,6 +499,11 @@ per named user regardless of the interface — a user connecting from both
 Excel and an AI assistant occupies one seat. A license without the flag means
 MCP is disabled while Excel keeps working. See :doc:`mcp` for details.
 
+The web pivot table works the same way: it is a license feature flag
+(``"web": true``), and a user who opens a report in the browser takes the
+same named seat as in Excel — one person in Excel, the browser and an AI
+assistant occupies one seat. See :doc:`reports`.
+
 Is the license tied to a specific server?
 ------------------------------------------
 
@@ -522,17 +529,20 @@ For pilots, Linux deployment is usually simpler. Windows is typically chosen whe
 Can XLTable be connected from LibreOffice or OpenOffice?
 ----------------------------------------------------------
 
-Currently, the service works only with Excel. Support for other clients is planned for the future.
+Not as a Pivot Table client: of desktop spreadsheets only Excel for Windows
+connects over XMLA. Users without Excel work with the same cubes in the
+browser — see :doc:`reports`.
 
 I opened the server address in a browser and see a page, not data.
 -------------------------------------------------------------------
 
-That is expected: the server address (``https://server/``) is the data
-endpoint for Excel and AI assistants, not a web application. Since 2.1.1 a
-browser gets a short page that says so and points to the admin console
-(``/admin``, administrators only), the MCP endpoint (``/mcp``) and the
-documentation. Excel connects to the same address through the Data
-Connection Wizard.
+That is expected: the server address itself (``https://server/``) is the
+data endpoint for Excel and AI assistants. Since 2.1.1 a browser gets a
+short page that says so and points to the admin console (``/admin``,
+administrators only), the MCP endpoint (``/mcp``) and the documentation.
+Excel connects to the same address through the Data Connection Wizard. To
+work with the cubes in the browser, open the web application at
+``https://server/reports`` — see :doc:`reports`.
 
 Excel cannot connect to the server.
 ------------------------------------

@@ -95,8 +95,9 @@ in 2026.
 
    * - 23
      - Web pivot table
-     - A pivot table in the browser over the same cubes, with export to Excel — for macOS
-       users and for anyone without Excel at hand. See :doc:`reports`.
+     - A pivot table in the browser over the same cubes — the third way to work with them,
+       next to Excel and AI assistants: reports saved on the server and shared by link,
+       export to Excel, nothing to install (macOS included). See :doc:`reports`.
      - Done (2.1.3)
 
    * - 14

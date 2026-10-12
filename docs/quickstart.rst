@@ -69,6 +69,8 @@ what happens when the port is taken — is described in :ref:`start_page`.
 Next steps
 ----------
 
+- :doc:`reports` — the same cubes as a pivot table in the browser
+  (``http://127.0.0.1:5000/reports``), no Excel needed
 - :doc:`mcp` — connect an AI assistant to your cubes: Claude Desktop,
   Claude Code, Copilot in VS Code, a local model, or any other MCP client
 - :doc:`cubes` — the cube definition format: measures, dimensions,

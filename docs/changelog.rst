@@ -23,7 +23,9 @@ Version 2.1.3 — 2026-10-08
   show all. See :doc:`web_cubes` and the endpoints in :doc:`api`.
 
 - **Web pivot table (preview)** — ``/reports``: an Excel-like pivot table in
-  the browser, for macOS and anyone without Excel. The field list, the four
+  the browser — the third way to work with the cubes, next to Excel and AI
+  assistants; nothing to install, so it also serves macOS and anyone without
+  Excel. The field list, the four
   areas with drag and drop, compact layout, subtotals, hierarchies with
   ⊞/⊟, report filters with a member tree, "Σ Values" on rows or columns,
   "Defer Layout Update" and "Update" follow Excel so that Excel users need

@@ -7,12 +7,14 @@ XLTable Documentation
 Self-service analytics on big data — governed by IT, loved by users.
 
 XLTable is an XMLA-compatible OLAP semantic layer for modern analytical
-databases. Business users explore data in native **Excel Pivot Tables** or ask
-questions in plain language through AI assistants — no SQL for end users, no
-data copies, no add-ins, no BI tools in between. Excel becomes the front end,
-your warehouse stays the single source of truth, and XLTable deploys inside
-your perimeter: IT defines models, access rights and performance centrally,
-while business users keep working in the tool they know best.
+databases. Business users explore data in native **Excel Pivot Tables**, in
+a **pivot table in the browser**, or ask questions in plain language through
+AI assistants — no SQL for end users, no data copies, no add-ins, no BI tools
+in between. Excel is the main front end, the browser and AI work on the same
+cubes with the same numbers, your warehouse stays the single source of truth,
+and XLTable deploys inside your perimeter: IT defines models, access rights
+and performance centrally, while business users keep working in the tool they
+know best.
 
 .. grid:: 1 2 2 3
    :gutter: 3
@@ -51,6 +53,14 @@ while business users keep working in the tool they know best.
 
       Connect Pivot Tables over XMLA, authentication modes,
       data refresh, drill through and file export.
+
+   .. grid-item-card:: :octicon:`browser;1em` Web pivot table
+      :link: reports
+      :link-type: doc
+
+      The same cubes as a pivot table in the browser — built to
+      work like Excel, with saved reports shared by link and
+      :doc:`cube structure and status <web_cubes>` for analysts.
 
    .. grid-item-card:: :octicon:`hubot;1em` AI assistants (MCP)
       :link: mcp
@@ -97,8 +107,10 @@ Why XLTable?
 - Native Excel Pivot Tables on big data — drag-and-drop over the standard
   SSAS/XMLA workflow, no SQL, no retraining
 - Centralized semantic layer: dimensions, measures, hierarchies, calculated fields
-- One model, two ways to explore: the same cube answers Excel Pivot Tables
-  and AI assistants (:doc:`MCP connector <mcp>`)
+- One model, three ways to explore: the same cube answers Excel Pivot Tables,
+  the :doc:`pivot table in the browser <reports>` and AI assistants
+  (:doc:`MCP connector <mcp>`) — with the same numbers and the same access
+  rights
 - Code-first: cube definitions are plain SQL files — keep them in Git, review
   changes in pull requests, deploy through your CI/CD flow
 - Fine-grained access control down to rows and members, Active Directory / LDAP integration
