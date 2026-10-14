@@ -902,13 +902,14 @@ Features
 The admin panel is organized as a left-side menu of sections, each section
 holding one or more pages. The menu skeleton is the same in both editions:
 
-- **Quick start** — a standalone menu item above the sections, *free
-  desktop edition only*: the onboarding checklist, see :ref:`start_page`;
+- **Quick start** and **Create cube** — standalone menu items above the
+  sections, *free desktop edition only*: the onboarding checklist (see
+  :ref:`start_page`) and the cube wizard (see :ref:`cube_autogen`); the list
+  of cubes with their status is the **Cubes** page of the web application
+  (:doc:`web_cubes`), opened from the header;
 - **Connection**: Warehouse connection (see :doc:`connection`; read-only
   with a **Test connection** button on the server edition, editable in the
   free desktop edition);
-- **Cubes**: Cubes, Create cube — *free desktop edition only*, the section
-  is absent on the server edition;
 - **Administration**: Server status, License, Seats, Cache;
 - **Help**: Connect Excel & AI (how to point Excel PivotTables and MCP
   clients at this server — the Excel breadcrumb and, in the free edition,
@@ -973,14 +974,15 @@ The pages:
 - **Resources** — direct links to the XLTable documentation and support.
 
 In the **free desktop edition** the admin console is the analyst's main
-workspace, and the menu additionally shows the **Cubes** section with two
-pages: **Cubes** (the live list of cube files in the cubes folder, with the
-parse status of each) and **Create cube** (a web wizard that generates a
-cube from one warehouse table) — see :ref:`cube_autogen`. The menu starts
-with the standalone **Quick start** item — the onboarding checklist
-described in :ref:`start_page` — and the Help section additionally offers
-**Get the server edition**. Everything else, including the License and
-Cache pages, is the same as described above.
+workspace: the menu starts with two standalone items — **Quick start**, the
+onboarding checklist described in :ref:`start_page`, and **Create cube**, a
+web wizard that generates a cube from one warehouse table (see
+:ref:`cube_autogen`) — and the Help section additionally offers **Get the
+server edition**. The cubes themselves — the live list of the cubes folder
+with the parse status of each file, the problems with line numbers, the
+structure and a preview — are on the **Cubes** page of the web application
+(:doc:`web_cubes`), one click away in the header. Everything else,
+including the License and Cache pages, is the same as described above.
 
 ------------------------------------------------------------
 
@@ -997,8 +999,7 @@ your data.
 **Automatic browser launch.** ``XLTable.exe`` always starts the server. On
 every interactive start (the exe was started by a person, not by a
 scheduler or a service) the browser opens on the admin console
-automatically after the server is up — on the Quick start page until the
-onboarding is complete, on the Cubes page afterwards. A non-interactive
+automatically after the server is up — on the Quick start page. A non-interactive
 start never opens anything — the addresses are still written to the server
 log. The cubes folder itself is created automatically at startup when it
 does not exist yet.
@@ -1024,9 +1025,9 @@ port number and the path to ``settings.json`` where to change
 2.1.0) still running on the port is reported as another program — close
 its window instead of changing the port.
 
-**The Quick start page** is the default landing page of the admin console
-until the onboarding is complete; after all four steps are done the console
-opens on the **Cubes** page and Quick start stays in the menu as a
+**The Quick start page** is the default landing page of the admin console;
+after all four steps are done it shows an "all done" banner with a link to
+the **Cubes** page of the web application and stays in the menu as a
 reference. While the onboarding is in progress, the pages involved in the
 steps (Warehouse connection, the Create cube wizard) show a link back to
 Quick start, so it is easy to return to the plan after finishing a step.

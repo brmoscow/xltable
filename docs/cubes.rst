@@ -118,14 +118,14 @@ definition from scratch.
 
 In the **free desktop edition** the easiest way is the web wizard: open the
 admin console (``http://127.0.0.1:5000/admin``) and open the **Create
-cube** page of the **Cubes** section. The wizard walks the same steps in
-the browser: filter the
+cube** page. The wizard walks the same steps in the browser: filter the
 warehouse tables by a substring and pick one, review how each column was
 classified — and why, name the cube and save. If a cube file with that name
 already exists, the wizard always asks — overwrite, save under another name
 or cancel; nothing is ever overwritten silently. The saved cube appears on
-the **Cubes** page (the live list of the cubes folder with the parse status
-of each file) and in Excel immediately. The classification is applied as
+the **Cubes** page of the web application (the live list of the cubes
+folder with the parse status of each file, see :doc:`web_cubes`) and in
+Excel immediately. The classification is applied as
 proposed — to adjust a role, edit the saved ``.sql`` file in any SQL editor;
 the server reloads it on save.
 
@@ -510,9 +510,13 @@ XLTable. Anything the warehouse accepts in a select list works:
 - arithmetic and parentheses: ``(a - b) / nullif(a, 0)``;
 - functions of your database: ``round(...)``, ``greatest(...)``, ``coalesce(...)``;
 - conditions: ``case when sales_sum_sum > 0 then ... else ... end``;
-- window functions over the result rows: ``sum(sales_sum_sum) over ()``
-  (each result row is one dimension combination, so a window over the whole
-  result gives the total of what is currently displayed and filtered).
+- window functions over the result rows: ``sum(sales_sum_sum) over ()``.
+  Note that the result rows include the subtotal and grand-total rows the
+  PivotTable asked for (they come from the same ``GROUPING SETS`` query),
+  so a window over the whole result counts every value several times — a
+  "share of total" built this way is wrong (with one dimension on rows the
+  total row shows 50%, with two 33%). Use the measure-group pattern of
+  `Typical examples`_ instead.
 
 Refer to measures by their **SQL aliases** (``sales_sum_sum``), not by raw
 table columns — by the time the expression runs, the per-group queries have
@@ -572,10 +576,13 @@ referenced. Consequences to keep in mind:
 - A dimension combination present in one group but not the other produces a
   row where the missing group's measures are ``NULL`` — guard with
   ``coalesce`` / ``nullif``.
-- A dimension that only one group is related to puts the other group's
-  measures on the empty member of that dimension (see
-  :ref:`sql_generation_logic`). Expressions over both groups are meaningful
-  only for dimensions **shared** by all groups involved.
+- A dimension that only one group is related to is ignored by the other
+  group: its measures repeat their total — under the current filters and
+  the dimensions the group *is* related to — in every member of that
+  dimension (the Analysis Services behaviour for unrelated dimensions).
+  This is what the "share of total" pattern below relies on; for any other
+  expression over both groups use only dimensions **shared** by all groups
+  involved.
 - The merged result grows with the number of combinations; a calculated field
   over three groups joins three aggregated result sets.
 
@@ -622,16 +629,34 @@ bread-and-butter calculated fields:
         --translation=`Margin %` --format=`0.0%;-0.0%`
    ,sales_sum_sum / nullif(sales_sum_qty, 0) as calc_avg_price
         --translation=`Average Price` --format=`#,##0.00`
-   ,sales_sum_sum / nullif(sum(sales_sum_sum) over (), 0) as calc_share
+   ,sales_sum_sum / nullif(salesall_sum_sum, 0) as calc_share
         --translation=`Share of Total` --format=`0.0%`
    ,(sales_sum_sum - salesly_sum_sum) / nullif(salesly_sum_sum, 0) as calc_yoy
         --translation=`Growth YoY` --format=`0.0%;-0.0%`
 
 Notes on the examples:
 
-- ``calc_share`` uses a window over the final result, so it is the share of
-  what is currently displayed under the current filters; on a total row it
-  is 100%.
+- ``calc_share`` — the share of a product (brand, manufacturer, …) in total
+  sales — divides by a measure of a **second measure group over the same
+  fact table** that is *not* joined to the product dimension:
+
+  .. code-block:: sql
+
+     --olap_source Sales all products
+     SELECT
+     --olap_measures
+      sum(salesall.amount) as salesall_sum_sum --translation=`Sales Amount all products` --hide
+     FROM db.Sales salesall
+     LEFT JOIN db.Stores stores ON salesall.store_id = stores.id
+     LEFT JOIN calendar times ON salesall.date_sale = times.day_str
+
+  A product on rows or in a filter changes ``sales_sum_sum`` but not the
+  denominator, while the other filters (period, region) apply to both — so a
+  product row shows its share and a total row shows 100%; with Region and
+  Product on rows the denominator is the region subtotal. A window
+  ``sum(sales_sum_sum) over ()`` does **not** work here, see the note under
+  `What an expression may contain`_. The variant "share in the stores where
+  the product is present" needs a Jinja script: :ref:`jinja_share_presence`.
 - ``calc_yoy`` compares two measure groups: ``salesly_*`` comes from a
   second measure group over the same fact table whose dates are shifted one
   year forward by a Jinja script — the *Sales last year* pattern of the

@@ -70,6 +70,13 @@ with their own data access; the owner or an administrator
 **Save as** a copy under their own name. Reports are JSON documents in :confval:`REPORTS_FOLDER` and
 are also available through :doc:`the API <api>` for scripts and AI agents.
 
+The start page lists the reports; the **⋯** menu of a row opens the report,
+opens it for editing (the owner or an administrator), copies its link, saves
+a copy under a new name or deletes it. On a report page the **Reports ›**
+crumb next to the title leads back to the list; **Edit**, **Download
+xlsx** and **Copy link** are buttons, **Save as** and **Delete** sit in the
+same **⋯** menu.
+
 **Download xlsx** writes the table as shown — the header, indented row
 labels, totals and number formats — into an Excel workbook; Excel for Mac
 opens it as a regular sheet.
@@ -82,5 +89,6 @@ flag (``web``, shown as *Web reports* on the License page of the admin
 console); seats are shared with Excel per named user — a viewer opening a
 report by link takes a seat as an Excel user does. Settings:
 :confval:`REPORTS_FOLDER` (where reports are stored), :confval:`MAX_CELLS`
-(the size limit). The admin console links to the page (**Reports ↗**) and
-shows the reports folder and the number of saved reports.
+(the size limit). The admin console opens the page from its header
+(**Reports**, in a new tab) and shows the reports folder and the number of
+saved reports.

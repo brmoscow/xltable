@@ -104,7 +104,8 @@ read, or ask your administrator for a ``SELECT`` grant on it.
 
 A successfully generated cube is saved as a plain ``.sql`` file into the
 cubes folder (with the installer — ``Documents\XLTable\cubes``); the
-**Cubes** page of the admin console lists every cube the server sees.
+**Cubes** page of the web application (:doc:`web_cubes`) lists every cube
+the server sees.
 
 Excel shows "Cannot read the list of cubes in database …" instead of the cube list.
 ------------------------------------------------------------------------------------

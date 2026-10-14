@@ -11,7 +11,7 @@ opening Excel.
 
 There is no editor on the page: the definition is still edited in the SQL
 editor of your choice; the page shows the result. Save the file (or the row
-of ``olap_definition``), press **Refresh** on the page.
+of ``olap_definition``), press **Reload cubes** on the page.
 
 ------------------------------------------------------------
 
@@ -30,9 +30,10 @@ It opens for
 Everyone else gets a message that the page is available to analysts and
 administrators only. An analyst does not get the admin console
 (``/admin``: license, connection, sessions) — the Cubes page lives in the
-web application next to :doc:`reports`; the admin console links to it
-(**Cubes ↗**). The sign-in is the one of the web application (the server's
-OAuth page or the identity from an authenticating front).
+web application next to :doc:`reports`; the admin console opens it from its
+header (**Cubes**, in a new tab). The sign-in is the one of the web
+application (the server's OAuth page or the identity from an authenticating
+front).
 
 The cube list
 -------------
@@ -56,8 +57,9 @@ list is always current. With cubes in the ``olap_definition`` table
 the list comes without statuses: a cube is checked when its card opens, and
 **Check all** checks the whole list one cube after another.
 
-**Refresh** re-reads the list and the open card. **Create cube** (the free
-edition) opens the cube wizard of the admin console.
+**Reload cubes** re-reads the list and the open card after you saved a
+definition. **Create cube** (the free edition) opens the cube wizard of the
+admin console.
 
 The cube card
 -------------

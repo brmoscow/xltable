@@ -20,7 +20,17 @@ Version 2.1.3 — 2026-10-08
   cube in their own editor as before and presses **Refresh**. The page is
   open to the new :confval:`ANALYST_GROUPS` and to administrators; by
   default a user sees the cubes their roles allow, an administrator may
-  show all. See :doc:`web_cubes` and the endpoints in :doc:`api`.
+  show all. The admin console opens Reports and Cubes from its header, in
+  a new tab. See :doc:`web_cubes` and the endpoints in :doc:`api`.
+
+- Free desktop edition: the **Cubes** list page of the admin console is
+  gone — the cubes with their status live on the Cubes page of the web
+  application; **Create cube** (the wizard) stays in the admin console as a
+  standalone menu item next to Quick start.
+
+- The **MCP access** page of the admin console is now **Sign-ins**: it
+  lists and revokes the OAuth tokens of AI applications and of the web
+  application (Reports, Cubes) alike.
 
 - **Web pivot table (preview)** — ``/reports``: an Excel-like pivot table in
   the browser — the third way to work with the cubes, next to Excel and AI

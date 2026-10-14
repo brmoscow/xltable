@@ -729,7 +729,8 @@ remembered for 90 days per user and application. Access rights and cube
 roles are the user's own (groups from AD or ``USER_GROUPS``), re-checked at
 least every :confval:`AUTH_CACHE_TIMEOUT` — removing a user from the access
 group cuts the token off within that time; an administrator can revoke
-tokens immediately on the **MCP access** page of the admin console.
+tokens immediately on the **Sign-ins** page of the admin console (it lists
+the tokens of AI applications and of the web application alike).
 
 **Fronts.** The OAuth paths must reach the application without the front's
 own authentication — MCP clients even probe ``/oauth/authorize`` without
