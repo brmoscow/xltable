@@ -100,6 +100,20 @@ in 2026.
        export to Excel, nothing to install (macOS included). See :doc:`reports`.
      - Done (2.1.3)
 
+   * - 18
+     - Excel for Mac support
+     - Working with XLTable data on macOS. Excel for Mac cannot connect to an
+       OLAP server directly (a Microsoft limitation), so this is covered by the
+       web pivot table (#23): cubes in the browser, reports shared by link,
+       export to an Excel file.
+     - Done (2.1.3)
+
+   * - 32
+     - Database visibility per user group
+     - Restrict which databases (catalogs) each user group can see and query when cubes
+       are stored in the database.
+     - Done (2.1.3)
+
    * - 14
      - Native data types in dimension attributes
      - Currently all dimension attributes are cast to string. Planned support for integer and date types,
@@ -121,11 +135,6 @@ in 2026.
      - Built-in Jinja functions
      - A library of built-in Jinja functions available in cube SQL templates
        for common transformations, date handling, and formatting operations.
-     -
-
-   * - 18
-     - Excel for Mac support
-     - Ability to work with XLTable data in Excel on macOS.
      -
 
    * - 19
@@ -200,8 +209,3 @@ in 2026.
      - Returns the SQL the engine would run for a pivot query, without executing it.
      -
 
-   * - 32
-     - Database visibility per user group
-     - Restrict which databases (catalogs) each user group can see and query when cubes
-       are stored in the database.
-     -
