@@ -50,6 +50,11 @@ Version 2.1.3 — 2026-10-08
   save a copy; the documents are also available through
   ``/api/reports`` for scripts and AI agents (see :doc:`api`).
 
+- The same measure dragged into **Values** a second time — the usual way to
+  show a number next to its **Show Values As** percentage — no longer fails
+  the pivot: the server returns the measure twice, as Analysis Services
+  does, and Excel fills both columns. See :ref:`excel_show_values_as`.
+
 - **Filter type ``paths``** in ``POST /api/query`` and the ``query_cube`` MCP
   tool — member paths down a hierarchy (an OR of paths), the form the web
   pivot's report filter sends. See :doc:`api`.

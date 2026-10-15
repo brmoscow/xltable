@@ -223,6 +223,37 @@ deep in one click — for example, a year straight down to days.
 
 ------------------------------------------------------------
 
+.. _excel_show_values_as:
+
+Show Values As (additional calculations)
+----------------------------------------
+
+The **Show Values As** calculations of a value field — **% of Grand Total**,
+**% of Column Total**, **% of Parent Row Total**, **Running Total In**,
+**Rank Largest to Smallest**, **Difference From** and the rest — are
+computed by Excel itself from the numbers already in the pivot. Nothing has
+to be added to the cube for them, and the server sees at most a repeated
+query of the same layout.
+
+To show a measure both as a number and as a percentage, drag the same
+measure into **Values** a second time: Excel names the copy ``Sales
+Quantity2``, and **Show Values As** is set on the copy. The server answers
+such a layout the way Analysis Services does — the measure comes back twice
+in the result, so both columns fill in.
+
+.. note::
+
+   **Difference From** / **% Difference From** with the base item
+   *(previous)* or *(next)* compare with the neighbouring item on the axis,
+   not with the same period of the previous calendar year: if a year is
+   missing from the data or filtered out, "previous" is the previous visible
+   year. A calendar year-over-year comparison is a measure of its own in the
+   cube — the sample cubes define ``Sales last year Quantity`` this way, a
+   copy of the measure with the dates shifted by a year (see
+   :doc:`clickhouse_sample`).
+
+------------------------------------------------------------
+
 Troubleshooting connection issues
 -----------------------------------
 
