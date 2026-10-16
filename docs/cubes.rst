@@ -881,6 +881,10 @@ The order of the directives inside the block is free, with one exception:
 of the role block, so any directive placed below it would be misread as a
 filter line.
 
+A PivotTable filter, a slicer or a saved workbook may select a member that the
+role's filters exclude; such a selection yields an empty result, as in Analysis
+Services — the grid shows no rows and a zero total, without an error.
+
 Each filter occupies its own line and has one of two forms:
 ``<alias> in ('value1', 'value2')`` — the role sees **only** the listed values,
 or ``<alias> not in ('value1', 'value2')`` — the role sees everything **except**

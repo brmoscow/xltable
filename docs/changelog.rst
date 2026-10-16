@@ -219,6 +219,13 @@ Version 2.1.3 — 2026-10-08
   the cross-site check introduced in 2.1.0: a browser never attaches such a
   header by itself. Basic and SSO credentials remain guarded.
 
+- **Filtering by a member the role cannot see gives an empty grid** — when a
+  report filter, a slicer or a saved workbook selects a member that the
+  user's :tag:`olap_access_filters` exclude (for example a region the role
+  is not allowed to see), the PivotTable now shows an empty result with a
+  zero total, as Analysis Services does. Previously Excel displayed the
+  error "Sorry, functionality is not supported, but will be available soon".
+
 ------------------------------------------------------------
 
 Version 2.1.2 — 2026-09-11
