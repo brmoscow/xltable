@@ -108,26 +108,28 @@ Step 1: Run the SQL script
 
 Download :download:`duckdb_sample.sql <duckdb_sample.sql>` and run it to
 create the database file. Place the file where the XLTable service can read
-it, e.g. ``/usr/olap/xltable/data/`` on Linux.
+it, e.g. ``/usr/olap/data/`` on Linux — outside the application folder
+``/usr/olap/xltable``, which the update script replaces (only ``setting/``, the
+license and the cubes folder survive an update).
 
 **Option A — DuckDB CLI**
 
 .. code-block:: bash
 
-   mkdir -p /usr/olap/xltable/data
-   duckdb /usr/olap/xltable/data/sample.duckdb -f duckdb_sample.sql
+   mkdir -p /usr/olap/data
+   duckdb /usr/olap/data/sample.duckdb -f duckdb_sample.sql
 
 **Option B — Python**
 
 .. code-block:: bash
 
-   python -c "import duckdb; duckdb.connect('/usr/olap/xltable/data/sample.duckdb').execute(open('duckdb_sample.sql').read())"
+   python -c "import duckdb; duckdb.connect('/usr/olap/data/sample.duckdb').execute(open('duckdb_sample.sql').read())"
 
 Verify that all tables were created:
 
 .. code-block:: bash
 
-   duckdb -readonly /usr/olap/xltable/data/sample.duckdb \
+   duckdb -readonly /usr/olap/data/sample.duckdb \
      "SELECT table_name, estimated_size AS rows FROM duckdb_tables() WHERE schema_name = 'db' ORDER BY table_name"
 
 Expected output:
@@ -160,7 +162,7 @@ connection block:
    {
        "SERVER_DB": "DuckDB",
        "CREDENTIAL_DB": {
-           "database": "/usr/olap/xltable/data/sample.duckdb",
+           "database": "/usr/olap/data/sample.duckdb",
            "read_only": true,
            "query_timeout": 60
        },
@@ -187,7 +189,7 @@ Make sure the file is readable by the account the XLTable service runs under
 
 .. code-block:: bash
 
-   sudo chown olap /usr/olap/xltable/data/sample.duckdb
+   sudo chown olap /usr/olap/data/sample.duckdb
 
 XLTable automatically discovers all cubes stored in the ``olap_definition``
 table, so no additional cube configuration is needed.
@@ -269,7 +271,7 @@ the cube definition the same way as tables:
 
 .. code-block:: sql
 
-   FROM read_parquet('/usr/olap/xltable/data/sales/*.parquet') sales
+   FROM read_parquet('/usr/olap/data/sales/*.parquet') sales
 
 Only the ``olap_definition`` table itself has to exist inside the ``.duckdb``
 file.
@@ -325,7 +327,7 @@ Troubleshooting
 
     .. code-block:: bash
 
-       duckdb -readonly /usr/olap/xltable/data/sample.duckdb "SELECT id FROM db.olap_definition"
+       duckdb -readonly /usr/olap/data/sample.duckdb "SELECT id FROM db.olap_definition"
 
     Also confirm that ``USER_GROUPS`` in ``settings.json`` contains
     ``"olap_users"`` for the connecting user.

@@ -272,12 +272,15 @@ single file readable by the XLTable service account.
 
     "SERVER_DB": "DuckDB",
     "CREDENTIAL_DB": {
-        "database": "/usr/olap/xltable/data/analytics.duckdb",
+        "database": "/usr/olap/data/analytics.duckdb",
         "read_only": true,
         "query_timeout": 60
     },
 
 ``database`` is the path to the ``.duckdb`` file (use an absolute path).
+Keep the file **outside** the application folder ``/usr/olap/xltable``: the
+Ubuntu update script replaces that folder and preserves only ``setting/``,
+the license and the cubes folder — a database file inside it is lost on update.
 ``read_only`` is optional and defaults to ``true``; keep it enabled so that
 several XLTable worker processes can open the same file simultaneously.
 A ready-to-run sample database script is described in :doc:`duckdb_sample`.
