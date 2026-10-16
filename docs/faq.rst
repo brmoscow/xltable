@@ -403,6 +403,12 @@ Working example: :ref:`unified_example`.
 ClickHouse does not allow nesting window functions inside aggregates like MDX in Microsoft tools. How can we replicate multi-step measure logic?
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 
+First check whether Excel already does it: **share of total, share of the
+parent row, running total, rank** and *difference from the previous item*
+are **Show Values As** calculations of the pivot table, computed by Excel
+from the numbers it already has — nothing is added to the cube
+(:ref:`excel_show_values_as`).
+
 For an expression over already-aggregated values — a ratio, a share via a
 window function, growth between two measure groups — a calculated field is
 usually enough: it is computed in the outer SELECT, after aggregation. For
@@ -411,6 +417,7 @@ cube definition: they inject filters and transform SQL before execution.
 
 Documentation:
 
+- :ref:`excel_show_values_as`
 - :ref:`calculated_fields`
 - :ref:`jinja_scripts`
 - :ref:`jinja_var`

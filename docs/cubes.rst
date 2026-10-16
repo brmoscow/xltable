@@ -636,6 +636,12 @@ bread-and-butter calculated fields:
 
 Notes on the examples:
 
+- For a share or a running total that is only needed *in a report*, the
+  **Show Values As** calculations of the Excel pivot table (% of Grand Total,
+  % of Parent Row Total, Running Total In, Rank) need no cube change at all —
+  see :ref:`excel_show_values_as`. A share defined in the cube is for when it
+  must be a reusable measure: in other calculated fields, for AI clients and
+  the web pivot table, or with a denominator Excel cannot build.
 - ``calc_share`` — the share of a product (brand, manufacturer, …) in total
   sales — divides by a measure of a **second measure group over the same
   fact table** that is *not* joined to the product dimension:
