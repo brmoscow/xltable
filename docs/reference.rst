@@ -561,7 +561,8 @@ to share a direct reference to it.
    (``-1 year``, ``-3 month``, ``-7 day``) or through a key column of the
    calendar (``times.py_day``). Requires a calendar (:tag:`date`) and a
    single-equality join from the measure group to it. Empty when the query
-   has no calendar level. See :ref:`smart_measures`.
+   has no calendar level. See the Limits in
+   :ref:`smart_measures`.
 
    Syntax: ``--offset=`-1 year``` or ``--offset=`<calendar alias>.<column>```
 
@@ -575,7 +576,7 @@ to share a direct reference to it.
 
    On a measure: compute it without the dimensions of the listed sources
    (comma-separated names of ``--olap_source`` blocks with
-   ``--olap_dimensions``) — the denominator of a share. See
+   ``--olap_dimensions``) — the denominator of a share. See the Limits in
    :ref:`smart_measures`.
 
    Syntax: ``--exclude=`Models,Stores```

@@ -745,8 +745,8 @@ Rules:
 - The join between the measure group and the calendar must be a single
   equality ``fact.column = calendar.column``.
 - Without any calendar level in the query — not on the axes, not in filters,
-  not in slicers — the measure is empty, as ``ParallelPeriod`` of ``[All]`` in
-  Analysis Services: there is nothing to compare with.
+  not in slicers — there is nothing to compare with, as with ``ParallelPeriod``
+  of ``[All]`` in Analysis Services; the cell shows ``0`` (see `Limits`_).
 - Drillthrough on the measure returns the rows of the shifted period.
 
 Share without a dimension: ``--exclude``
@@ -792,6 +792,35 @@ form work unchanged. The copy is not visible in Excel; the generated SQL is in
 the log with ``WRITE_LOG`` and on the Preview tab of the Cubes page. The
 hand-written form (``Sales last year`` source with a Jinja date shift, the
 ``Sales all products`` source) still works and is what the tags expand to.
+
+Limits
+^^^^^^
+
+- Interval form, date types: in BigQuery the shifted column must be of type
+  ``DATE`` (``TIMESTAMP`` / ``DATETIME`` — use a key column); in Databricks
+  ``date_add`` / ``add_months`` return ``DATE``, so a ``TIMESTAMP`` fact column
+  loses its time part (use a key column).
+- The interval join compares an expression (``date + 1 year``) with the
+  calendar key: the fact gets no partition pruning, and the two-stage SQL form
+  falls back to the classic form for the copy. The key-column form keeps an
+  equality join — prefer it on large facts.
+- "Empty" without a calendar level is shown as ``0``, like any measure of a
+  group with no rows.
+- "No calendar level in the query" means no level marked :tag:`date`; an
+  unmarked level of the same hierarchy does not count.
+- Copied source Jinja: only ``alias.`` references are rewritten
+  (``sales.`` becomes ``sales__offset_m1y.``); scripts matching the
+  ``FROM db.sales sales`` text or reading ``context.sql.sources["sales"]`` do
+  not apply to the copy.
+- ``alias.`` is also rewritten inside string literals of the copy's SQL.
+- Drillthrough on a visible :tag:`exclude` measure works when the excluded
+  dimension is not on the cell's axes or filters; with the dimension in the
+  cell the detail query fails (engine limitation of unrelated sources) — keep
+  the denominator hidden and expose the share as a calculated field (the usual
+  pattern above).
+- A cube built from one denormalized table, where the measure source and a
+  ``one-table`` dimension source share the alias, cannot use the tags: give the
+  dimension source its own alias.
 
 .. _drillthrough:
 
