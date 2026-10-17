@@ -120,6 +120,11 @@ Do not copy the `<-` annotations into a real definition.
 
 ## Modeling guidance
 
+- **Previous period and share without a dimension**: mark the calendar levels
+  ``--date=`year` `` etc. and write the derived measure as its own line with
+  ``--offset=`-1 year` `` (same measure a year back) or ``--exclude=`Models` ``
+  (ignore that source's dimensions: share denominator) instead of a second
+  measure group with Jinja.
 - **Calendar**: a Dates dimension must come from a dates table or a generated
   series (`numbers()`, `generate_series`, `UNNEST(GENERATE_DATE_ARRAY ...)`),
   never from `SELECT DISTINCT date FROM <fact>` — the CTE is prefixed to

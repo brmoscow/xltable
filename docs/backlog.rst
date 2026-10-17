@@ -128,8 +128,11 @@ in 2026.
 
    * - 16
      - DAX support
-     - Support for DAX query language alongside MDX for cube interaction.
-     -
+     - Complex measures without DAX: the previous period and the share of total
+       are tags on the measure (:ref:`smart_measures`); running totals, ranks and
+       percent of parent are available in Excel through *Show Values As*. DAX as a
+       query language for Power BI remains a separate topic.
+     - Done (2.1.3)
 
    * - 17
      - Built-in Jinja functions

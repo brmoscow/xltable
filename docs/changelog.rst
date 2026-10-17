@@ -9,6 +9,17 @@ Stay up to date with the latest releases by following us on
 Version 2.1.3 — 2026-10-08
 --------------------------
 
+- **Smart measures** — three tags in the cube definition replace the second
+  measure group and the Jinja date shift for the most common calculations:
+  :tag:`date` marks the calendar levels, :tag:`offset` gives the same measure
+  for the previous period (``--offset=`-1 year``` or a key column of the
+  calendar for fiscal and 52/53-week calendars), :tag:`exclude` computes a
+  measure without the dimensions of a source — the denominator of a share.
+  Every derived measure is still an explicit line with its own name and
+  format; the server expands the tag into the cube you would write by hand,
+  so filters, roles, drillthrough and the cache work unchanged. The syntax
+  checker validates the tags. See :ref:`smart_measures`.
+
 - **Cubes page** — ``/cubes`` in the web application: the state of every
   cube without opening Excel. The list shows a status per cube; the card
   shows the checker findings with line numbers (**Problems**), the cube as

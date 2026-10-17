@@ -540,6 +540,52 @@ to share a direct reference to it.
    when the field is placed on a Pivot Table. Leaving the tag out lets
    Excel apply its default general format.
 
+.. tag:: date
+
+   Marks a level of the date hierarchy as the calendar level of the given
+   grain (``year``, ``quarter``, ``month``, ``week``, ``day``). All ``--date``
+   levels of a cube belong to one hierarchy; the ``FROM`` alias of that source
+   is the calendar alias used by :tag:`offset`. See :ref:`smart_measures`.
+
+   Syntax: ``--date=`month```
+
+   Example:
+
+   .. code-block:: sql
+
+      times.month_str as times_month_str --hierarchy=`Dates` --translation=`Month` --date=`month`
+
+.. tag:: offset
+
+   On a measure: the same measure for the period shifted back by an interval
+   (``-1 year``, ``-3 month``, ``-7 day``) or through a key column of the
+   calendar (``times.py_day``). Requires a calendar (:tag:`date`) and a
+   single-equality join from the measure group to it. Empty when the query
+   has no calendar level. See :ref:`smart_measures`.
+
+   Syntax: ``--offset=`-1 year``` or ``--offset=`<calendar alias>.<column>```
+
+   Example:
+
+   .. code-block:: sql
+
+      sum(sales.qty) as sales_py_qty --translation=`Sales Quantity PY` --offset=`-1 year`
+
+.. tag:: exclude
+
+   On a measure: compute it without the dimensions of the listed sources
+   (comma-separated names of ``--olap_source`` blocks with
+   ``--olap_dimensions``) — the denominator of a share. See
+   :ref:`smart_measures`.
+
+   Syntax: ``--exclude=`Models,Stores```
+
+   Example:
+
+   .. code-block:: sql
+
+      sum(sales.qty) as sales_all_qty --translation=`Sales all models` --exclude=`Models` --hide
+
 .. _unified_example:
 
 Unified example

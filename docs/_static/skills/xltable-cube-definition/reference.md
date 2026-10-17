@@ -56,6 +56,9 @@ role needs all five directives (even `all` or empty).
 | `--hide` | any field | Hidden from Excel for everyone (helper measures for calculated fields). |
 | ``--description=`text` `` | any field | Business meaning, units, caveats — for AI assistants. |
 | ``--synonyms=`a;b;c` `` | any field | Alternative names, `;`-separated — for AI assistants. |
+| ``--date=`year|quarter|month|week|day` `` | dimension level | Calendar grain of a level of the date hierarchy (all `--date` levels of a cube are one hierarchy; its `FROM` alias is the calendar alias for `--offset`). |
+| ``--offset=`-1 year` `` / ``--offset=`times.py_day` `` | measure | The same measure for the previous period: an interval `<±N> year|quarter|month|week|day`, or a key column of the calendar (fiscal / 52-53-week). Needs `--date` and a single-equality join to the calendar; empty without a calendar level in the query. |
+| ``--exclude=`Src1,Src2` `` | measure | The measure ignores the dimensions of these `--olap_source` names (denominator of a share). |
 
 ## Inline tags (on a LEFT JOIN line)
 

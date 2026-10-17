@@ -71,10 +71,10 @@ FROM db.Models models
 --olap_source Dates
 SELECT
 --olap_dimensions
- times.year_str as times_year_str --hierarchy=`Dates` --translation=`Year`
-,toQuarter(toDate(times.day_str)) as times_quarter_str --hierarchy=`Dates` --translation=`Quarter`
-,times.month_str as times_month_str --hierarchy=`Dates` --translation=`Month`
-,times.day_str as times_day_str --hierarchy=`Dates` --translation=`Day`
+ times.year_str as times_year_str --hierarchy=`Dates` --translation=`Year` --date=`year`
+,toQuarter(toDate(times.day_str)) as times_quarter_str --hierarchy=`Dates` --translation=`Quarter` --date=`quarter`
+,times.month_str as times_month_str --hierarchy=`Dates` --translation=`Month` --date=`month`
+,times.day_str as times_day_str --hierarchy=`Dates` --translation=`Day` --date=`day`
 FROM calendar times
 
 --olap_user_role

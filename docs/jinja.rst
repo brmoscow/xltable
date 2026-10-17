@@ -18,6 +18,10 @@ This page covers:
   ``request`` / ``sql`` namespaces, plus ``user`` and ``now``);
 - how to debug templates and inspect the context.
 
+For the two most common advanced metrics — the previous period and a share
+without a dimension — use the tags of :ref:`smart_measures` instead of a
+script; Jinja remains for what the tags do not cover.
+
 .. _jinja_scripts:
 
 Jinja scripts
@@ -46,7 +50,8 @@ overall query.
    SQL of every query, breaking it. The cube syntax checker reports this as an
    error.
 
-Example of a Jinja script modifying SQL:
+Example of a Jinja script modifying SQL (the same as ``--offset=`-1 year```
+on the measure — see :ref:`smart_measures`):
 
 .. code-block:: jinja
 

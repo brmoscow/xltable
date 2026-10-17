@@ -642,6 +642,9 @@ Notes on the examples:
   see :ref:`excel_show_values_as`. A share defined in the cube is for when it
   must be a reusable measure: in other calculated fields, for AI clients and
   the web pivot table, or with a denominator Excel cannot build.
+- ``salesall_*`` / ``salesly_*`` are measured by one line with
+  :ref:`smart_measures` (``--exclude`` / ``--offset``); the hand-written
+  variant shown below is what the tag does inside.
 - ``calc_share`` — the share of a product (brand, manufacturer, …) in total
   sales — divides by a measure of a **second measure group over the same
   fact table** that is *not* joined to the product dimension:
@@ -681,6 +684,114 @@ adapt to what the user selected: for example, build a window
 ``partition by`` over the currently selected dimension levels, or switch a
 formula depending on the dimensions in play. See :doc:`jinja` for the
 context reference and debugging tools.
+
+.. _smart_measures:
+
+Smart measures
+--------------
+
+Two typical calculations — *the same measure for the previous period* and
+*the measure without one of the dimensions* (the denominator of a share) —
+are written as one measure line with a tag instead of a second measure group
+and a Jinja script. Every derived measure is declared explicitly, with its own
+alias, name and format, like in Databricks metric views or Cube.
+
+The calendar
+^^^^^^^^^^^^
+
+Mark the levels of the date hierarchy with :tag:`date` so the server knows
+which dimension is the calendar and what grain each level has:
+
+.. code-block:: sql
+
+   --olap_source Dates
+   SELECT
+   --olap_dimensions
+    times.year_str  as times_year_str  --hierarchy=`Dates` --translation=`Year`  --date=`year`
+   ,times.month_str as times_month_str --hierarchy=`Dates` --translation=`Month` --date=`month`
+   ,times.day_str   as times_day_str   --hierarchy=`Dates` --translation=`Day`   --date=`day`
+   FROM calendar times
+
+One calendar per cube; the ``FROM`` alias of this source (``times``) is the
+*calendar alias* used by the measure groups' joins.
+
+Previous period: ``--offset``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: sql
+
+   --olap_source Sales
+   SELECT
+   --olap_measures
+    sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity`
+   ,sum(sales.qty) as sales_py_qty  --translation=`Sales Quantity PY` --offset=`-1 year`
+   FROM db.sales sales
+   LEFT JOIN calendar times ON sales.date_sale = times.day_str
+
+``Sales Quantity PY`` is the same measure one year back: with Year = 2025 in
+the report filter it shows 2024; with months on rows, March 2025 shows March
+2024; a slicer by store applies to both. Growth is an ordinary calculated
+field: ``(sales_sum_qty - sales_py_qty) / nullif(sales_py_qty, 0)``.
+
+Rules:
+
+- The interval is ``<±N> year|quarter|month|week|day``. The fact's date
+  column must be of a date/datetime type of your warehouse (the server
+  shifts it with the warehouse's own function).
+- For string dates, 52/53-week and fiscal calendars use a **key column** of
+  the calendar instead of an interval: ``--offset=`times.py_day``` — a column
+  that holds "the matching day a year ago" the way *you* define it. The join
+  becomes ``ON sales.date_sale = times.py_day``.
+- The join between the measure group and the calendar must be a single
+  equality ``fact.column = calendar.column``.
+- Without any calendar level in the query — not on the axes, not in filters,
+  not in slicers — the measure is empty, as ``ParallelPeriod`` of ``[All]`` in
+  Analysis Services: there is nothing to compare with.
+- Drillthrough on the measure returns the rows of the shifted period.
+
+Share without a dimension: ``--exclude``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: sql
+
+   --olap_source Sales
+   SELECT
+   --olap_measures
+    sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity`
+   ,sum(sales.qty) as sales_all_qty --translation=`Sales Quantity all models` --exclude=`Models` --hide
+   FROM db.sales sales
+   LEFT JOIN db.models models ON sales.model = models.id
+   LEFT JOIN calendar times ON sales.date_sale = times.day_str
+
+   --olap_cube
+   --olap_calculated_fields Calculated fields
+    sales_sum_qty / nullif(sales_all_qty, 0) as calc_share --translation=`Share of models` --format=`0.0%`
+
+``sales_all_qty`` ignores the dimensions of the source ``Models``: with Model
+on rows every row shows the total over all models (under the other filters),
+so ``calc_share`` is the model's share; with Region and Model on rows the
+denominator is the region subtotal. The argument is the name of a
+``--olap_source`` with ``--olap_dimensions`` (several — comma-separated);
+to exclude a single attribute, move it into its own source.
+
+What the tag does inside
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+A tag is a shortcut for the cube you could write by hand. Before parsing, the
+server moves the tagged measures into a copy of the measure group — a second
+``--olap_source`` named ``Sales__offset_m1y`` / ``Sales__excl_Models`` with the
+fact aliased ``sales__offset_m1y`` — and rewrites its joins: the calendar join
+gets the shift (``ON (sales__offset_m1y.date_sale + INTERVAL '1 year') =
+times.day_str`` in DuckDB, ``addYears(...)`` in ClickHouse, ``DATEADD`` in
+Snowflake, ...), the joins to excluded sources are dropped. Everything else —
+other joins, ``--olap_drillthrough``, the source's Jinja, roles — is copied.
+The copy is an ordinary measure group: the per-group queries are joined with
+``FULL JOIN`` as described in `Combining measures from different groups
+(FULL JOIN)`_, so filters, row-level security, the cache and the two-stage SQL
+form work unchanged. The copy is not visible in Excel; the generated SQL is in
+the log with ``WRITE_LOG`` and on the Preview tab of the Cubes page. The
+hand-written form (``Sales last year`` source with a Jinja date shift, the
+``Sales all products`` source) still works and is what the tags expand to.
 
 .. _drillthrough:
 
