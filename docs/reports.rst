@@ -39,7 +39,9 @@ Everything works as in Excel:
 
 - tick a field in the list or drag it into an area; measures go to Values,
   dimension levels to Rows, Columns or Filters; a hierarchy (such as Dates:
-  year, quarter, month, day) is one field and is added as a whole;
+  year, quarter, month, day) is one field and is added as a whole; drag a
+  field out of the areas (onto the table or the field list) to remove it,
+  or use **Remove field** in the field's ▾ menu;
 - ⊞/⊟ next to a member expands and collapses it; a plain field gets ⊟ when
   another plain field follows it;
 - **Row Labels ▾** and **Column Labels ▾** open the Excel menu: sort A to Z,
@@ -61,7 +63,8 @@ oversized report — narrow a filter or collapse a level.
 Saving and sharing
 ------------------
 
-**Save** in the builder stores the report; the address of the saved report
+**Save** in the builder stores the report under the title you typed in the
+header (an empty title is refused: the field turns red); the address of the saved report
 (``/reports/<id>``) is the link to share. The report filters chosen by the
 viewer travel in the link (``?f.Region=North``), so a link can point at a
 specific slice. Any signed-in user may open a report by its link and see it

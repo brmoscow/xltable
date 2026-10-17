@@ -258,12 +258,13 @@ query parameter selects the catalog as on the other endpoints.
 - ``GET /api/cubes/<cube>/definition`` — ``{"cube", "text", "path",
   "modified"}``: the definition text as the engine reads it, read-only.
 - ``GET /api/cubes/<cube>/structure`` — the cube as the server understood
-  it for the calling user: ``dimensions`` with ``levels`` (``name``,
-  ``sql``, ``alias``, ``table``), ``measures`` (``format``, ``sql``,
-  ``calculated``), ``sources`` (``type``, ``line``, ``fields``),
-  ``calculated_fields`` and ``roles`` (``groups``, visibility,
-  ``access_filters`` with lines). Unlike ``GET /api/cubes/<cube>``, which
-  any user and MCP agents receive, this document includes the SQL.
+  it for the calling user: ``dimensions`` with ``levels``, ``measures`` and
+  ``calculated_fields`` — every field with the same keys (``line`` in the
+  definition text, ``name``, ``sql``, ``alias``, ``table``, ``format``),
+  ``sources`` (``type``, ``line``, ``fields``) and ``roles``
+  (``groups``, visibility, ``access_filters`` with lines). Unlike ``GET
+  /api/cubes/<cube>``, which any user and MCP agents receive, this document
+  includes the SQL.
 
 ``POST /api/pivot`` accepts ``"debug": true`` from an analyst or an
 administrator: the response then carries ``sql`` (the text sent to the

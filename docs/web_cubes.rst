@@ -75,12 +75,12 @@ block closes the cube to this user) is shown above the list with a hint of
 what to do. Click a finding to jump to its line in **Definition**.
 
 **Structure** — the cube as the server understood it for the current user:
-the sources with their type and line, the dimensions with levels (the SQL
-expression, the column alias and the table of each level, hierarchies
-marked), the measures with their format and SQL, the calculated fields, and
-the role blocks with their groups, visibility settings and access filters.
-What a user's roles hide is not listed — the structure is per user, as in
-Excel.
+the sources, the dimensions with their levels (SQL expression, column alias,
+table), the measures (plus the number format), the calculated fields and
+the role blocks with their groups, visibility settings and access
+filters. The first column of every table is the line of the definition —
+click it to jump to that line in **Definition**. What a user's roles hide is
+not listed — the structure is per user, as in Excel.
 
 **Preview** — a pivot table on this cube: the same field list, areas,
 hierarchies and menus as in :doc:`reports`, so the analyst checks the
