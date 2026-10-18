@@ -248,8 +248,8 @@ in the result, so both columns fill in.
    not with the same period of the previous calendar year: if a year is
    missing from the data or filtered out, "previous" is the previous visible
    year. A calendar year-over-year comparison is a measure of its own in the
-   cube — the sample cubes define ``Sales last year Quantity`` this way, a
-   copy of the measure with the dates shifted by a year (see
+   cube — the sample cubes define ``Sales last year Quantity`` this way, the
+   same measure with ``--offset`` (see :ref:`smart_measures` and
    :doc:`clickhouse_sample`).
 
 ------------------------------------------------------------

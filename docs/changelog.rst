@@ -20,6 +20,12 @@ Version 2.1.4 — 2026-10-18
   so filters, roles, drillthrough and the cache work unchanged. The syntax
   checker validates the tags. See :ref:`smart_measures`.
 
+- The sample cubes of every dialect, the ClickHouse reference cube and the
+  cube-definition skill define *Sales last year* with ``--offset`` on a key
+  column of the calendar (``py_day_str`` in the ``calendar`` CTE) instead
+  of a second measure group with a Jinja date shift; the date levels carry
+  :tag:`date`.
+
 Version 2.1.3 — 2026-10-08
 --------------------------
 

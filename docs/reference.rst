@@ -609,20 +609,21 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     SELECT 'myOLAPcube' AS id,
     '	
     with calendar as (
-        SELECT * FROM db.Times where year_str in (`2023`, `2024`, `2025`)
+        SELECT *, toString(toDate(day_str) - INTERVAL 1 YEAR) AS py_day_str
+        FROM db.Times where year_str in (`2023`, `2024`, `2025`)
     )
 
     --olap_cube
     --olap_calculated_fields Calculated fields
     (sales_sum_sum / nullif(sales_sum_qty, 0)) as calc_avg_price --translation=`Average Price` --format=`#,##0.00;-#,##0.00`
-    --olap_jinja
-    {{ sql_text | replace("salesly.date_sale", "addYears(salesly.date_sale, 1)") }}
 
     --olap_source Sales
     SELECT
     --olap_measures
      sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity` --format=`#,##0;-#,##0` --description=`Units sold, pcs` --synonyms=`quantity;units;pieces`
     ,sum(sales.sum) as sales_sum_sum --translation=`Sales Amount` --format=`#,##0.00;-#,##0.00` --hide
+    ,sum(sales.qty) as salesly_sum_qty --translation=`Sales last year Quantity` --format=`#,##0;-#,##0` --offset=`times.py_day_str`
+    ,sum(sales.sum) as salesly_sum_sum --translation=`Sales last year Amount` --format=`#,##0.00;-#,##0.00` --hide --offset=`times.py_day_str`
     FROM db.Sales sales
     LEFT JOIN db.Stores stores on sales.store = stores.id
     LEFT JOIN db.Models models on sales.model = models.id
@@ -630,16 +631,6 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     LEFT JOIN db.Currencies curr on sales.currency = curr.id --relationship=`part-source`
     --olap_drillthrough
     stores_name, regions_name, models_name, times_day_str, sales_sum_qty, sales_sum_sum
-
-    --olap_source Sales last year
-    SELECT
-    --olap_measures
-     sum(salesly.qty) as salesly_sum_qty --translation=`Sales last year Quantity` --format=`#,##0;-#,##0`
-    ,sum(salesly.sum) as salesly_sum_sum --translation=`Sales last year Amount` --format=`#,##0.00;-#,##0.00` --hide 
-    FROM db.Sales salesly
-    LEFT JOIN db.Stores stores on salesly.store = stores.id
-    LEFT JOIN db.Models models on salesly.model = models.id
-    LEFT JOIN calendar times on salesly.date_sale = times.day_str  
 
     --olap_source Stock
     SELECT
@@ -679,10 +670,10 @@ as a reference when creating new OLAP cubes XLTable for ClickHouse.
     --olap_source Dates
     SELECT
     --olap_dimensions
-     times.year_str as times_year_str --hierarchy=`Dates` --translation=`Year`
-    ,toQuarter(toDate(times.day_str)) as times_quarter_str --hierarchy=`Dates` --translation=`Quarter`
-    ,times.month_str as times_month_str --hierarchy=`Dates` --translation=`Month` 
-    ,times.day_str as times_day_str --hierarchy=`Dates` --translation=`Day` 
+     times.year_str as times_year_str --hierarchy=`Dates` --translation=`Year` --date=`year`
+    ,toQuarter(toDate(times.day_str)) as times_quarter_str --hierarchy=`Dates` --translation=`Quarter` --date=`quarter`
+    ,times.month_str as times_month_str --hierarchy=`Dates` --translation=`Month` --date=`month`
+    ,times.day_str as times_day_str --hierarchy=`Dates` --translation=`Day` --date=`day`
     FROM calendar times
 
     --olap_user_role

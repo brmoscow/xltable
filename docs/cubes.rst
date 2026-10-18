@@ -666,11 +666,10 @@ Notes on the examples:
   ``sum(sales_sum_sum) over ()`` does **not** work here, see the note under
   `What an expression may contain`_. The variant "share in the stores where
   the product is present" needs a Jinja script: :ref:`jinja_share_presence`.
-- ``calc_yoy`` compares two measure groups: ``salesly_*`` comes from a
-  second measure group over the same fact table whose dates are shifted one
-  year forward by a Jinja script — the *Sales last year* pattern of the
-  :ref:`unified example <unified_example>`. The growth field then divides
-  measures of the two groups as usual. For AI clients the same question is
+- ``calc_yoy`` divides by ``salesly_*`` — the same measure a year back, one
+  line with ``--offset`` (the *Sales last year* measures of the
+  :ref:`unified example <unified_example>`). The growth field then divides
+  the two measures as usual. For AI clients the same question is
   answered without a dedicated field by the ``compare_periods`` MCP operator
   (see :ref:`mcp_operators`).
 

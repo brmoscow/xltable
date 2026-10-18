@@ -192,36 +192,27 @@ INSERT INTO db.olap_definition VALUES (
 'myOLAPcube',
 '
 with calendar as (
-    SELECT * FROM db.times WHERE year_str IN (`2023`, `2024`, `2025`)
+    SELECT *, (day_str::date - INTERVAL `1 year`)::date::text AS py_day_str
+    FROM db.times WHERE year_str IN (`2023`, `2024`, `2025`)
 )
 
 --olap_cube
 --olap_calculated_fields Calculated fields
 (sales_sum_sum / nullif(sales_sum_qty, 0)) as calc_avg_price --translation=`Average Price` --format=`#,##0.00;-#,##0.00`
---olap_jinja
-{{ sql_text | replace("salesly.date_sale", "(salesly.date_sale::date + INTERVAL `1 year`)::date::text") }}
 
 --olap_source Sales
 SELECT
 --olap_measures
  sum(sales.qty)    as sales_sum_qty --translation=`Sales Quantity` --format=`#,##0;-#,##0`
 ,sum(sales.amount) as sales_sum_sum --translation=`Sales Amount`   --format=`#,##0.00;-#,##0.00`
+,sum(sales.qty)    as salesly_sum_qty --translation=`Sales last year Quantity` --format=`#,##0;-#,##0` --offset=`times.py_day_str`
+,sum(sales.amount) as salesly_sum_sum --translation=`Sales last year Amount`   --format=`#,##0.00;-#,##0.00` --offset=`times.py_day_str`
 FROM db.sales sales
 LEFT JOIN db.stores stores ON sales.store = stores.id
 LEFT JOIN db.models models ON sales.model = models.id
 LEFT JOIN calendar times ON sales.date_sale = times.day_str
 --olap_drillthrough
 stores_name, regions_name, models_name, times_day_str, sales_sum_qty, sales_sum_sum
-
---olap_source Sales last year
-SELECT
---olap_measures
- sum(salesly.qty)    as salesly_sum_qty --translation=`Sales last year Quantity` --format=`#,##0;-#,##0`
-,sum(salesly.amount) as salesly_sum_sum --translation=`Sales last year Amount`   --format=`#,##0.00;-#,##0.00`
-FROM db.sales salesly
-LEFT JOIN db.stores stores ON salesly.store = stores.id
-LEFT JOIN db.models models ON salesly.model = models.id
-LEFT JOIN calendar times ON salesly.date_sale = times.day_str
 
 --olap_source Stock
 SELECT
@@ -261,10 +252,10 @@ FROM db.models models
 --olap_source Dates
 SELECT
 --olap_dimensions
- times.year_str  as times_year_str  --hierarchy=`Dates` --translation=`Year`
-,to_char(date_trunc(`quarter`, times.day_str::date), `YYYY-MM`) as times_quarter_str --hierarchy=`Dates` --translation=`Quarter`
-,times.month_str as times_month_str --hierarchy=`Dates` --translation=`Month`
-,times.day_str   as times_day_str   --hierarchy=`Dates` --translation=`Day`
+ times.year_str  as times_year_str  --hierarchy=`Dates` --translation=`Year` --date=`year`
+,to_char(date_trunc(`quarter`, times.day_str::date), `YYYY-MM`) as times_quarter_str --hierarchy=`Dates` --translation=`Quarter` --date=`quarter`
+,times.month_str as times_month_str --hierarchy=`Dates` --translation=`Month` --date=`month`
+,times.day_str   as times_day_str   --hierarchy=`Dates` --translation=`Day` --date=`day`
 FROM calendar times
 
 --olap_user_role

@@ -223,10 +223,10 @@ Available fields in the Pivot Table:
      - ``sum(sales.sum)``
    * - Sales last year Quantity
      - Measure
-     - Same query, dates shifted +1 year via Jinja
+     - Same measure a year back: ``--offset=`times.py_day_str```
    * - Sales last year Amount
      - Measure
-     - Same query, dates shifted +1 year via Jinja
+     - Same measure a year back: ``--offset=`times.py_day_str```
    * - Stock Quantity
      - Measure
      - ``sum(stock.qty)`` — current snapshot, not tied to dates

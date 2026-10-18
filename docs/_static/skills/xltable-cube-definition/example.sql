@@ -2,36 +2,27 @@
 -- Every tag is used once; each source block is a runnable SELECT.
 --definition_check_on
 with calendar as (
-    SELECT * FROM db.Times WHERE year_str IN (`2023`, `2024`, `2025`)
+    SELECT *, toString(toDate(day_str) - INTERVAL 1 YEAR) AS py_day_str
+    FROM db.Times WHERE year_str IN (`2023`, `2024`, `2025`)
 )
 
 --olap_cube
 --olap_calculated_fields Calculated fields
 (sales_sum_sum / nullif(sales_sum_qty, 0)) as calc_avg_price --translation=`Average Price` --format=`#,##0.00;-#,##0.00`
---olap_jinja
-{{ sql_text | replace("salesly.date_sale", "toString(toDate(salesly.date_sale) + INTERVAL 1 YEAR)") }}
 
 --olap_source Sales
 SELECT
 --olap_measures
  sum(sales.qty) as sales_sum_qty --translation=`Sales Quantity`      --format=`#,##0;-#,##0`         --description=`Units sold, pcs`     --synonyms=`quantity;units;pieces`
 ,sum(sales.sum) as sales_sum_sum --translation=`Sales Amount`        --format=`#,##0.00;-#,##0.00`    --description=`Revenue, currency units` --synonyms=`revenue;turnover;sales`
+,sum(sales.qty) as salesly_sum_qty --translation=`Sales last year Quantity` --format=`#,##0;-#,##0` --offset=`times.py_day_str`
+,sum(sales.sum) as salesly_sum_sum --translation=`Sales last year Amount`   --format=`#,##0.00;-#,##0.00` --offset=`times.py_day_str`
 FROM db.Sales sales
 LEFT JOIN db.Stores stores ON sales.store = stores.id
 LEFT JOIN db.Models models ON sales.model = models.id
 LEFT JOIN calendar times ON sales.date_sale = times.day_str
 --olap_drillthrough
 stores_name, regions_name, models_name, times_day_str, sales_sum_qty, sales_sum_sum
-
---olap_source Sales last year
-SELECT
---olap_measures
- sum(salesly.qty) as salesly_sum_qty --translation=`Sales last year Quantity` --format=`#,##0;-#,##0`
-,sum(salesly.sum) as salesly_sum_sum --translation=`Sales last year Amount`   --format=`#,##0.00;-#,##0.00`
-FROM db.Sales salesly
-LEFT JOIN db.Stores stores ON salesly.store = stores.id
-LEFT JOIN db.Models models ON salesly.model = models.id
-LEFT JOIN calendar times ON salesly.date_sale = times.day_str
 
 --olap_source Stock
 SELECT
