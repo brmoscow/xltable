@@ -479,7 +479,10 @@ before. Limits:
 - two many-to-many dimensions on the axes of one measure group: the fact row
   is counted once only in the grouping sets where **both** are rolled up;
 - a coarser level of the same many-to-many dimension (brand group with brands
-  on rows) sums the copies of its brands as before.
+  on rows) sums the copies of its brands as before;
+- a level of a dimension joined *through* the many-to-many source (a
+  ``Supervisors`` table joined to ``Managers``) on the axes without a level of
+  the many-to-many source itself: the copies are summed as before.
 
 one-table:
 
