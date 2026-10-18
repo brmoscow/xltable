@@ -6,7 +6,7 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
-Version 2.1.3 — 2026-10-08
+Version 2.1.4 — 2026-10-18
 --------------------------
 
 - **Smart measures** — three tags in the cube definition replace the second
@@ -19,6 +19,9 @@ Version 2.1.3 — 2026-10-08
   format; the server expands the tag into the cube you would write by hand,
   so filters, roles, drillthrough and the cache work unchanged. The syntax
   checker validates the tags. See :ref:`smart_measures`.
+
+Version 2.1.3 — 2026-10-08
+--------------------------
 
 - **Cubes page** — ``/cubes`` in the web application: the state of every
   cube without opening Excel. The list shows a status per cube; the card
