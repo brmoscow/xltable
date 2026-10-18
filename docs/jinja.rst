@@ -274,8 +274,6 @@ depends on the brand too, so the cube needs:
    FROM db.Sales salespres
    LEFT JOIN db.Stores stores ON salespres.store_id = stores.id
    LEFT JOIN presence pres ON salespres.store_id = pres.store_id --relationship=`many-to-many`
-   --olap_jinja
-   ...the script below...
 
    --olap_source Brands
    SELECT
@@ -289,66 +287,31 @@ depends on the brand too, so the cube needs:
     stores.name as stores_name --translation=`Store`
    FROM db.Stores stores
 
-With **Brand in a filter** this already works without Jinja: for a
-``many-to-many`` join the engine builds ``JOIN (SELECT DISTINCT store_id FROM
-presence WHERE brand IN (...)) pres``, so a store is counted once however many
-of the selected brands it carries. With **Brand on rows** every brand row is
-right too, but the grand total is not: the join multiplies each sale by the
-number of brands present in the store, and ``[All]`` sums all the copies. The
-measure-group script fixes the total the same way as the array example
-above — it numbers the copies and sums only the first one in the grouping set
-that has no brand:
+No Jinja is needed for the totals. With **Brand in a filter** the engine
+builds ``JOIN (SELECT DISTINCT store_id FROM presence WHERE brand IN (...))
+pres``, so a store is counted once however many of the selected brands it
+carries. With **Brand on rows** the join multiplies each sale by the number of
+brands present in the store — every brand row is right (each brand gets the
+whole store), and in the grouping sets without the brand (``[All]``, a region
+subtotal with Region × Brand on rows) the engine numbers the copies and sums
+each fact row once; see :ref:`many-to-many totals <m2m_totals>` for what it
+does inside and the limits.
 
-.. code-block:: jinja
-
-   --olap_jinja
-   {# only when Brand is on rows/columns; with Brand in a filter the engine's
-      own DISTINCT subquery already counts each store once #}
-   {% set req = context.get("request") %}
-   {% if req and "BRAND" in req.dimensions %}
-       {# 1: wrap the presence subquery built by the engine and number the
-          brands within each store - pres_n = 1 marks the first copy of a row #}
-       {% set sql_text = sql_text
-           | replace("(SELECT DISTINCT", "(SELECT *, row_number() over (partition by store_id order by brand_name) as pres_n FROM (SELECT DISTINCT") %}
-       {# 2: close the wrapper; the outer alias stays "pres", so ON is unchanged #}
-       {% set sql_text = sql_text
-           | replace(") as pres ON", ") p) as pres ON") %}
-       {# 3: a _ded twin of the measure - the value on the first copy only #}
-       {% set sql_text = sql_text
-           | replace("salespres.amount as salespres_amount", "salespres.amount as salespres_amount, case when pres.pres_n = 1 then salespres.amount else 0 end as salespres_amount_ded") %}
-       {# 4: grouping sets with Brand sum the full value, sets without it
-          (grand total, subtotals of other dimensions) sum the _ded column #}
-       {% set sql_text = sql_text
-           | replace("sum(salespres_amount) as ", "case when grouping(BRAND_GR)=1 then sum(salespres_amount_ded) else sum(salespres_amount) end as ") %}
-   {% endif %}
-   {{ sql_text }}
-
-How the ``replace`` targets map to the generated SQL:
-
-- ``(SELECT DISTINCT`` … ``) as pres ON`` — the subquery the engine builds
-  for the ``many-to-many`` join (``pres`` is the alias of the presence table).
-  The script wraps it so that every row gets ``pres_n``, the number of the
-  brand within its store;
-- ``salespres.amount as salespres_amount`` — the measure column in the inner
-  row-level ``SELECT``; a ``_ded`` twin keeps the value on the first copy of
-  the row only;
-- ``sum(salespres_amount) as`` — the outer aggregation over ``GROUPING SETS``;
-  ``BRAND_GR`` is the grouping key of the level (its ``level_name`` plus
-  ``_GR``).
-
-A region subtotal with Region × Brand on rows is handled the same way: the
-region row has ``grouping(BRAND_GR) = 1`` and sums the deduplicated column.
-The example was verified on the sample cube; the exact strings for your own
-cube are in the ``===== JINJA =====`` / ``===== SQL =====`` sections of the
-log with ``WRITE_LOG`` on.
+Cubes written for earlier versions carried a measure-group script that did
+the same by hand (``row_number()`` over the ``SELECT DISTINCT`` subquery and
+a ``_ded`` twin of the measure). On the current engine it is harmless but
+redundant; the cube syntax checker reports it as ``CHK_M2M_JINJA_HINT`` —
+remove the script.
 
 .. note::
 
    Presence is static here — "the brand has ever been sold in the store",
    regardless of the period selected; a per-period presence needs the period
-   key in the presence table and in both joins. The script covers one level
-   (Brand); a Manufacturer → Brand hierarchy on rows needs the same treatment
-   per level, while in a filter any level of the presence table works as is.
+   key in the presence table and in both joins. A Manufacturer → Brand
+   hierarchy on the presence table: the manufacturer subtotal with brands on
+   rows sums the copies of its brands (see the limits of
+   :ref:`many-to-many totals <m2m_totals>`), while in a filter any level of
+   the presence table works as is.
 
 .. _jinja_var:
 

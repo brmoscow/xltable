@@ -140,7 +140,9 @@ Do not copy the `<-` annotations into a real definition.
   product): join the dimension on the shared column with
   ``--relationship=`many-to-many` ``; XLTable wraps it in `SELECT DISTINCT`, so
   totals at the shared level stay correct and finer levels repeat the value,
-  as in Analysis Services.
+  as in Analysis Services. `[All]` and the subtotals of other dimensions
+  count each fact row once — the engine does it, no Jinja script
+  (`row_number()`, `_ded` twin) is needed.
 - **Flat denormalized table** (one wide table, common in ClickHouse). The
   `one-table` marker join has no `ON` and is the single exception to "every
   block runs as-is". One marker join per table; the fact alias is reused by

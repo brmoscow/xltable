@@ -449,6 +449,38 @@ many-to-many:
 
 Many-to-many relationships follow the classic Analysis Services model, where dimensions lack a unique key. Instead, a single measure group value maps to multiple dimension rows. For example, multiple managers can be assigned to the same store, causing overlapping results when filtering.
 
+.. _m2m_totals:
+
+**Totals.** A many-to-many level on rows or columns repeats the value of the
+shared key for every dimension row: with managers Alice and Emma both assigned
+to region North, each manager row shows the whole of North. The totals that do
+not contain the many-to-many level — ``[All]`` and the subtotals of other
+dimensions — count every fact row **once**: the region subtotal and the grand
+total show North one time, not twice. With the level only in a filter the
+engine already joins ``(SELECT DISTINCT key FROM dimension WHERE ...)``, so
+nothing is multiplied there.
+
+What the engine does inside, for a measure group whose many-to-many level is
+on the axes:
+
+1. numbers the copies of each key in the dimension subquery —
+   ``row_number() over (partition by region order by region) as managers__n``
+   around the ``SELECT DISTINCT`` it already builds;
+2. adds a twin of every measure column to the row-level ``SELECT``:
+   ``CASE WHEN managers__n = 1 THEN sales.qty ELSE NULL END as sales_qty__m2m``;
+3. aggregates the twin in the grouping sets without the level:
+   ``CASE WHEN grouping(MANAGERS_NAME_GR) = 1 THEN sum(sales_qty__m2m) ELSE sum(sales_qty) END``.
+
+Queries without a many-to-many level on the axes generate the same SQL as
+before. Limits:
+
+- ``count(*)`` has no column, so no twin is built and the total counts the
+  copies — use ``count(fact.id)``;
+- two many-to-many dimensions on the axes of one measure group: the fact row
+  is counted once only in the grouping sets where **both** are rolled up;
+- a coarser level of the same many-to-many dimension (brand group with brands
+  on rows) sums the copies of its brands as before.
+
 one-table:
 
 .. code-block:: sql
@@ -665,7 +697,8 @@ Notes on the examples:
   Product on rows the denominator is the region subtotal. A window
   ``sum(sales_sum_sum) over ()`` does **not** work here, see the note under
   `What an expression may contain`_. The variant "share in the stores where
-  the product is present" needs a Jinja script: :ref:`jinja_share_presence`.
+  the product is present" needs a presence table and a ``many-to-many``
+  denominator: :ref:`jinja_share_presence`.
 - ``calc_yoy`` divides by ``salesly_*`` — the same measure a year back, one
   line with ``--offset`` (the *Sales last year* measures of the
   :ref:`unified example <unified_example>`). The growth field then divides

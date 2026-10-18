@@ -26,6 +26,17 @@ Version 2.1.4 — 2026-10-18
   of a second measure group with a Jinja date shift; the date levels carry
   :tag:`date`.
 
+- **Many-to-many totals** — with a ``many-to-many`` level on rows or columns
+  the grand total ``[All]`` and the subtotals of other dimensions summed the
+  copies of the fact rows the join produces (two managers per region doubled
+  the region subtotal). The engine now numbers the copies and counts every
+  fact row once in the grouping sets without that level; the rows of the
+  level itself and queries with the level only in a filter are unchanged.
+  The Jinja workaround (``row_number()`` over the ``SELECT DISTINCT``
+  subquery, a ``_ded`` twin of the measure) is no longer needed — the syntax
+  checker points it out (``CHK_M2M_JINJA_HINT``). See
+  :ref:`many-to-many totals <m2m_totals>`.
+
 Version 2.1.3 — 2026-10-08
 --------------------------
 

@@ -67,7 +67,7 @@ role needs all five directives (even `all` or empty).
 | Value | Meaning |
 |-------|---------|
 | *(none)* | Regular relationship: the joined table's alias must match another `--olap_source`'s `FROM <table> <alias>`; that dimension slices this measure group. Indirect paths (Sales → Stores → Regions) resolve automatically. |
-| `many-to-many` | The dimension has no unique key relative to the fact (plan by category vs products; managers per region). XLTable wraps the dimension in `SELECT DISTINCT` on the join key to avoid double counting at the shared level. |
+| `many-to-many` | The dimension has no unique key relative to the fact (plan by category vs products; managers per region). XLTable wraps the dimension in `SELECT DISTINCT` on the join key to avoid double counting at the shared level, and with the level on rows or columns counts each fact row once in `[All]` and the subtotals of other dimensions (the engine numbers the copies itself). No Jinja workaround (`row_number()`, `_ded` twin) is needed; the checker warns if one is present. Limits: `count(*)` still counts the copies (use `count(fact.id)`), a coarser level of the same dimension sums the copies of its members. |
 | `one-table` | Flat table: no ON clause, the join is never emitted; the dimension's expressions are pasted into the fact query unchanged. Dimensions read from the fact table use the fact's alias (`FROM db.sales sales` in both blocks); a small lookup table for filter lists is joined with the same marker and its dimension lists **bare column names** that exist identically in the fact table. |
 | `part-source` | Helper join that belongs to this source only (lookup / conversion table); does not create a cube-wide source or join path. |
 
