@@ -120,6 +120,10 @@ Do not copy the `<-` annotations into a real definition.
 
 ## Modeling guidance
 
+- **Member order**: Excel shows members in the server's alphabetical text
+  order and label filters compare text (as with SSAS). Make values sort by
+  their text: dates `YYYY-MM-DD`, months `YYYY-MM` or `01 January`, numeric
+  codes padded with `lpad(..., 6, '0')`, business orders prefixed `1 S`, `2 M`.
 - **Previous period and share without a dimension**: mark the calendar levels
   ``--date=`year` `` etc. and write the derived measure as its own line with
   ``--offset=`-1 year` `` (same measure a year back) or ``--exclude=`Models` ``

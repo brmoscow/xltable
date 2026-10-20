@@ -199,6 +199,13 @@ Both commands work the same way as with SSAS, including items of multi-level
 hierarchies. Excel first asks the server for the hierarchy position of each
 selected item and then applies the resulting filter to the field.
 
+.. note::
+
+   Items of a field come in the order the server returns them — alphabetical by
+   text, the same as with Analysis Services — and **Label Filters** compare
+   that text. Dates in ISO form and month names with a number sort naturally;
+   see :ref:`member_order` for the cube-side recipes.
+
 ------------------------------------------------------------
 
 Expanding and collapsing fields

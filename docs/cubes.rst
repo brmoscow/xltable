@@ -388,6 +388,32 @@ Above the SELECT statement, add the ``olap_source`` tag followed by the dimensio
 You can define multiple measure groups and dimensions this way, starting each with olap_source and separating the scripts with a blank line.
 
 
+.. _member_order:
+
+Member order
+^^^^^^^^^^^^
+
+Members of a level are returned to Excel in **alphabetical order of their
+text**, and Excel shows them in the order the server returns them — it does
+not sort OLAP members itself (Analysis Services behaves the same way: the
+order of a level is the server's business). Every level value is text, so
+``10`` comes before ``2`` and *August* before *January*. Make the text sort
+the way you want it read:
+
+- dates — ISO form ``YYYY-MM-DD``, months ``YYYY-MM``, quarters ``YYYY-Q1``;
+- month and weekday names — prefix the number: ``01 January``, ``02 February``;
+- numeric codes shown as numbers — pad with leading zeros in SQL
+  (``lpad(toString(sales.code), 6, '0')`` in ClickHouse, ``lpad(code::text, 6, '0')``
+  in PostgreSQL / DuckDB) or keep the natural key in the caption only when it is
+  already fixed-width;
+- sizes, stages and other business orders — prefix an ordinal: ``1 S``, ``2 M``,
+  ``3 L``, ``4 XL``.
+
+Label filters in Excel ("begins with", "greater than" …) compare the same text,
+exactly as they do with Analysis Services, so a code level filtered with
+*greater than 10* keeps ``2`` and ``20`` and drops ``10``: filter codes by
+**selecting items** or by a dedicated range level instead.
+
 Hierarchies
 ^^^^^^^^^^^
 
