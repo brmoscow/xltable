@@ -94,7 +94,9 @@ saved — to keep it, build it on the Reports page.
 **Definition** — the text of the cube, read-only, with line numbers; lines
 with findings are highlighted (red for errors, yellow for warnings) and show
 the message on hover. With cube files in a folder the file path and
-modification time are shown above the text.
+modification time are shown above the text. **Export → Apache Ossie
+(YAML)** above the text downloads the cube as an open semantic-model
+document for dbt, Snowflake or an AI agent — see :doc:`ossie`.
 
 Settings
 --------

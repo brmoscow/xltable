@@ -69,6 +69,11 @@ connected the agent can also load the cube and check it with
 documentation — replace ``stable`` in the download URL with your XLTable
 version to match the server you run.
 
+The semantics the agent writes into a cube — descriptions, synonyms, AI
+instructions, metrics and joins — are not locked in XLTable: the cube can be
+exported to the open Apache Ossie format for dbt, Snowflake or another
+agent, see :doc:`ossie`.
+
 Machine-readable index
 ----------------------
 

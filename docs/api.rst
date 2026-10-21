@@ -235,7 +235,7 @@ the presentation (sort, totals, expanded members). The routes need the
 Cube status for analysts
 ------------------------
 
-The :doc:`Cubes page <web_cubes>` of the web application is built on four
+The :doc:`Cubes page <web_cubes>` of the web application is built on five
 ``GET`` endpoints. They are open to analysts (:confval:`ANALYST_GROUPS`) and
 administrators only — the definition text, the SQL of the sources and the
 roles are internal to the cube; everyone else gets ``403``. The ``database``
@@ -265,6 +265,11 @@ query parameter selects the catalog as on the other endpoints.
   (``groups``, visibility, ``access_filters`` with lines). Unlike ``GET
   /api/cubes/<cube>``, which any user and MCP agents receive, this document
   includes the SQL.
+- ``GET /api/cubes/<cube>/ossie`` — the cube definition as an
+  `Apache Ossie <https://github.com/apache/ossie>`_ semantic model, a YAML
+  file attachment (``<cube>.ossie.yaml``); ``?format=json`` for JSON,
+  ``?roles=1`` to include the roles and access filters. The mapping and the
+  vendor extension are described in :doc:`ossie`.
 
 ``POST /api/pivot`` accepts ``"debug": true`` from an analyst or an
 administrator: the response then carries ``sql`` (the text sent to the

@@ -194,6 +194,7 @@ documentation as a single file — see :doc:`ai`.
    cubes
    jinja
    reference
+   ossie
 
 .. toctree::
    :maxdepth: 1

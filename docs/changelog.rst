@@ -9,6 +9,18 @@ Stay up to date with the latest releases by following us on
 Version 2.1.4 — 2026-10-18
 --------------------------
 
+- **Export to Apache Ossie** — a cube definition can be downloaded as an
+  `Apache Ossie <https://github.com/apache/ossie>`_ semantic model (YAML or
+  JSON, format ``0.2.0.dev0``): sources become datasets, levels fields,
+  measures metrics in the portable ``OSSIE_SQL_2026`` dialect where the
+  expression allows it, joins relationships; descriptions, synonyms and AI
+  instructions travel along. What Ossie has no place for — hierarchies,
+  folders, formats, smart-measure tags, Jinja, CTEs — is kept in a
+  ``XLTABLE`` vendor extension, so nothing is lost. **Export → Apache Ossie
+  (YAML)** on the Definition tab of the Cubes page, or ``GET
+  /api/cubes/<cube>/ossie``; roles and access filters only with
+  ``?roles=1``. See :doc:`ossie`.
+
 - **Smart measures** — three tags in the cube definition replace the second
   measure group and the Jinja date shift for the most common calculations:
   :tag:`date` marks the calendar levels, :tag:`offset` gives the same measure

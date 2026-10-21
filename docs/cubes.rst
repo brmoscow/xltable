@@ -22,6 +22,10 @@ the overall logic will feel familiar.
 In Analysis Services, cube structure is designed in a graphical environment and then deployed.
 In XLTable, cube structure is defined using SQL scripts.
 
+The definition is not locked in: a cube can be exported to the open
+`Apache Ossie <https://github.com/apache/ossie>`_ semantic-model format for
+dbt, Snowflake and AI agents — see :doc:`ossie`.
+
 Anatomy of a cube definition
 ----------------------------
 

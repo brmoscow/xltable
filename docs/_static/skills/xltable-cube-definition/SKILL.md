@@ -37,7 +37,10 @@ Core principle: **write SQL that runs first, then tag it.** Every
    statement for `olap_definition` with dialect-specific quote escaping (see
    `reference.md`). With `CUBE_SOURCE=folder` the `.sql` file itself is the
    deliverable — drop it into the cubes folder. Never invent access-filter
-   values — take them from the requirement or ask.
+   values — take them from the requirement or ask. A loaded cube can be
+   exported to the open Apache Ossie semantic-model format (YAML) from the
+   Cubes page of the web application when the same model is needed in dbt
+   or another tool.
 
 ## Skeleton (fixed top-to-bottom order)
 
