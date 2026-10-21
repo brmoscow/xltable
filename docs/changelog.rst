@@ -47,7 +47,8 @@ Version 2.1.4 — 2026-10-18
   per calendar level), combines with ``--offset`` (the stock at the end of
   the same month a year ago). Replaces the hand-written "max date" subquery
   or the separate snapshot source. The syntax checker validates the tag
-  (``CHK_SEMI_VALUE``, ``CHK_SEMI_CALENDAR``). See
+  (``CHK_SEMI_VALUE``, ``CHK_SEMI_CALENDAR``) and warns about a calendar
+  hierarchy level without ``--date`` (``CHK_DATE_HIERARCHY_UNTAGGED``). See
   :ref:`value at a date <semi_measures>`.
 
 Version 2.1.3 — 2026-10-08

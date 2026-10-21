@@ -596,7 +596,8 @@ to share a direct reference to it.
    rows show the stock at the end of each month, the year total the stock at
    December 31, not the sum. Requires a calendar (:tag:`date`) and a
    single-equality join from the measure group to it, like :tag:`offset`;
-   combines with :tag:`offset` / :tag:`exclude`. See the Limits in
+   combines with :tag:`offset` and with :tag:`exclude` of non-calendar
+   sources. See the Limits in
    :ref:`smart_measures` and :ref:`semi_measures`.
 
    Syntax: ``--semi=`last``` or ``--semi=`first```

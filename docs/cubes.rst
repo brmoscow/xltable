@@ -908,9 +908,9 @@ Rules:
   is the sum of the stores at the same date. The calendar subtotals (the year
   with months on rows) are the value at the last day of the year, **not** the
   sum of the months.
-- Combines with :tag:`offset` and :tag:`exclude` on the same line:
-  ``--semi=`last` --offset=`-1 year``` is the stock at the end of the same
-  month a year ago.
+- Combines with :tag:`offset` and with :tag:`exclude` of non-calendar sources
+  on the same line: ``--semi=`last` --offset=`-1 year``` is the stock at the
+  end of the same month a year ago.
 
 What the tag does inside
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -937,13 +937,16 @@ column of the measure gets a twin per calendar level on the axes, computed
 with a window over the rows left after ``WHERE`` — so date filters and slicers
 are respected::
 
-   CASE WHEN stock.day_d = max(stock.day_d) OVER (PARTITION BY times.month_str)
-        THEN stock.qty END as stock_qty__semi_2
+   CASE WHEN stock.day_d = max(stock.day_d) OVER (PARTITION BY times.year_str, times.month_str)
+        THEN stock.qty END as stock_qty__semi_last_2
 
-plus one twin with ``OVER ()`` for the totals (``stock_qty__semi_all``;
-``first`` uses ``min``). The outer aggregate picks the twin by the grouping
+The partition is cumulative — the expressions of the calendar levels on the
+axes from the coarsest down to this one (the same expressions that stand
+before ``NAME_GR`` in the inner query). Plus one twin with ``OVER ()`` for
+the totals (``stock_qty__semi_last_all``; ``first`` uses ``min`` and the
+``__semi_first_`` twins). The outer aggregate picks the twin by the grouping
 set of the row: ``CASE WHEN grouping(TIMES_MONTH_STR_GR)=0 THEN
-sum(stock_qty__semi_2) … ELSE sum(stock_qty__semi_all) END``. With
+sum(stock_qty__semi_last_2) … ELSE sum(stock_qty__semi_last_all) END``. With
 ``--offset`` / ``--exclude`` on the same line the tag travels with the measure
 into the copy.
 
@@ -961,7 +964,11 @@ Limits
 - "Empty" without a calendar level is shown as ``0``, like any measure of a
   group with no rows.
 - "No calendar level in the query" means no level marked :tag:`date`; an
-  unmarked level of the same hierarchy does not count.
+  unmarked level of the same hierarchy does not count — mark every level of
+  the calendar hierarchy (the syntax checker warns about the unmarked ones,
+  ``CHK_DATE_HIERARCHY_UNTAGGED``): with ``--semi`` an unmarked day level on
+  the axes shows the value only on the last day of the month and ``0`` on the
+  other days.
 - Copied source Jinja: only ``alias.`` references are rewritten
   (``sales.`` becomes ``sales__offset_m1y.``); scripts matching the
   ``FROM db.sales sales`` text or reading ``context.sql.sources["sales"]`` do
@@ -987,6 +994,13 @@ Limits
 - ``--semi``: ``count(*)`` and other measures without an ``alias.column``
   reference get no twin and are aggregated over the whole period (a warning
   in the log).
+- ``--semi``: the fact's date column (the left side of the calendar join)
+  must be at day granularity — a ``DATE`` or a day-truncated value; with a
+  ``DateTime`` and several snapshots per day "the last day" becomes the last
+  moment.
+- ``--semi`` cannot be combined with ``--exclude`` of the calendar source (the
+  copy would have no join to take the date from); ``--exclude`` of other
+  sources is fine.
 
 .. _drillthrough:
 

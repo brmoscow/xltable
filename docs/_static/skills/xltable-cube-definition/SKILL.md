@@ -133,9 +133,10 @@ Do not copy the `<-` annotations into a real definition.
   ``--semi=`last` `` on the measure (its aggregate over the last day with data
   in the cell's period: the month shows the end-of-month stock, the year total
   the stock at December 31), never a plain `sum` over days. Needs the calendar
-  join like `--offset`. The day is found once for the measure group under the
-  filters, not per store or product — feed a daily snapshot, not sparse
-  events.
+  join like `--offset`, on a fact column at day granularity (a date or a
+  day-truncated value, not a timestamp). The day is found once for the
+  measure group under the filters, not per store or product — feed a daily
+  snapshot, not sparse events.
 - **Calendar**: a Dates dimension must come from a dates table or a generated
   series (`numbers()`, `generate_series`, `UNNEST(GENERATE_DATE_ARRAY ...)`),
   never from `SELECT DISTINCT date FROM <fact>` — the CTE is prefixed to
