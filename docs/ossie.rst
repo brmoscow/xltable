@@ -58,9 +58,10 @@ scripts, CI pipelines and agents:
 The cube is exported from its definition text as the engine reads it,
 without the expansion of :ref:`smart measures <smart_measures>`: the derived
 measures (``--offset``, ``--exclude``, ``--semi``) stay single lines with
-their tags in the extension, the generated twin sources do not appear. A
-definition the parser refuses answers ``400`` with the parser's message, as
-``/issues`` would.
+their tags in the extension, the generated twin sources do not appear. The
+export works on the text, so the issues ``/issues`` reports do not stop it;
+``400`` answers only what cannot be exported at all — a cube without
+sources, a source without ``FROM``, a subquery in ``FROM``.
 
 Mapping
 -------
@@ -141,8 +142,9 @@ current Ossie core specification, the one dbt and Snowflake target.
        relationship.
    * - :tag:`hierarchy`, :tag:`folder`, :tag:`hide`,
        :tag:`filter_no_parents`
-     - ``hierarchies`` and ``folders`` in the extension of the dataset,
-       ``hidden`` in the extension of the field or metric
+     - ``hierarchies``, ``folders`` and the list of ``hidden`` levels in the
+       extension of the dataset; ``hidden: true`` in the extension of a
+       hidden metric
      - Hierarchies are on the Ossie roadmap, not in the format yet.
    * - Roles, :tag:`olap_access_filters`, ``--olap_*_visible``
      - Not exported; with ``roles=1`` — ``roles`` in the extension of the
