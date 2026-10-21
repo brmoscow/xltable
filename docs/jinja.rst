@@ -58,6 +58,11 @@ on the measure — see :ref:`smart_measures`):
    --olap_jinja
    {{ sql_text | replace("salesly.date_sale", "addYears(salesly.date_sale, 1)") }}
 
+The other classic script — a subquery for the *last date* of the period, to
+show stock or balances at a date instead of their sum — is not needed either
+for the typical case: ``--semi=`last``` on the measure does it, see
+:ref:`semi_measures`.
+
 Every template receives two inputs:
 
 - ``sql_text`` — the SQL text at this stage of generation (the string you

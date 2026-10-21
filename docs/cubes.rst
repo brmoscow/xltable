@@ -751,11 +751,25 @@ context reference and debugging tools.
 Smart measures
 --------------
 
-Two typical calculations — *the same measure for the previous period* and
-*the measure without one of the dimensions* (the denominator of a share) —
-are written as one measure line with a tag instead of a second measure group
-and a Jinja script. Every derived measure is declared explicitly, with its own
-alias, name and format, like in Databricks metric views or Cube.
+Three typical calculations — *the same measure for the previous period*,
+*the measure without one of the dimensions* (the denominator of a share) and
+*the value at a date* (stock, prices, balances) — are written as one measure
+line with a tag instead of a second measure group and a Jinja script. Every
+derived measure is declared explicitly, with its own alias, name and format,
+like in Databricks metric views or Cube.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Tag
+     - On a measure it gives
+   * - :tag:`offset`
+     - the same measure for the previous period (``--offset=`-1 year```)
+   * - :tag:`exclude`
+     - the measure without the dimensions of a source — the denominator of a share
+   * - :tag:`semi`
+     - the value at the last (first) day of the period instead of the sum — stock, prices, headcount
 
 The calendar
 ^^^^^^^^^^^^
@@ -835,6 +849,69 @@ denominator is the region subtotal. The argument is the name of a
 ``--olap_source`` with ``--olap_dimensions`` (several — comma-separated);
 to exclude a single attribute, move it into its own source.
 
+.. _semi_measures:
+
+Value at a date: ``--semi``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Stock, prices, headcount, exchange rates, balances are values *at a date*: the
+sum of thirty daily stock levels means nothing — a month needs the stock at
+its last day, and a year the stock at December 31, not the sum of twelve
+months (``LastChild`` / ``LastNonEmpty`` in Analysis Services, ``LASTDATE``
+in Power BI). Tag the measure with ``--semi``:
+
+.. code-block:: sql
+
+   --olap_source Stock
+   SELECT
+   --olap_measures
+    sum(stock.qty) as stock_qty --translation=`Stock Quantity` --semi=`last`
+   ,sum(stock.qty * stock.price) as stock_amount --translation=`Stock Amount` --semi=`last`
+   FROM db.stock_daily stock
+   LEFT JOIN db.stores stores ON stock.store = stores.id
+   LEFT JOIN calendar times ON stock.day_d = times.day_d
+
+The measure shows its usual aggregate, but only over the rows of the **last
+day with data** inside the period of the cell. The period is the finest
+calendar level on the axes of the pivot table (by :tag:`date`: day, week,
+month, quarter, year); without a calendar level on the axes it is the whole
+range left by the date filters and slicers.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 65
+
+   * - Pivot table
+     - What ``Stock Quantity`` (``--semi=`last```) shows
+   * - Months on rows
+     - the stock at the last day of each month; the **total** is the stock at
+       the last day of the whole range (December 31), not the sum of the months
+   * - Year in the report filter, stores on rows
+     - the stock of every store at December 31 of that year; the total is the
+       sum over the stores at that date
+   * - Days on rows
+     - the ordinary sum for the day (the day is the period)
+   * - No calendar level, no date filter
+     - the stock at the last day that has data
+   * - ``--semi=`first```
+     - the same for the first day of the period
+
+Rules:
+
+- The values are ``last`` and ``first``; the tag goes on a measure only.
+- The measure group must be joined to the calendar (the source with
+  :tag:`date` levels) by a single equality ``fact.column = calendar.column``
+  — the same requirement as for :tag:`offset`.
+- The aggregate is any (``sum``, ``count``, ``avg``, ``max``); it is applied
+  to the rows of the chosen day.
+- Sums over the non-calendar dimensions are correct: the stock of the chain
+  is the sum of the stores at the same date. The calendar subtotals (the year
+  with months on rows) are the value at the last day of the year, **not** the
+  sum of the months.
+- Combines with :tag:`offset` and :tag:`exclude` on the same line:
+  ``--semi=`last` --offset=`-1 year``` is the stock at the end of the same
+  month a year ago.
+
 What the tag does inside
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -853,6 +930,22 @@ form work unchanged. The copy is not visible in Excel; the generated SQL is in
 the log with ``WRITE_LOG`` and on the Preview tab of the Cubes page. The
 hand-written form (``Sales last year`` source with a Jinja date shift, the
 ``Sales all products`` source) still works and is what the tags expand to.
+
+``--semi`` makes no copy: it works inside the SQL of the measure group. In
+the inner query (the fact rows with their joins, before ``GROUP BY``) every
+column of the measure gets a twin per calendar level on the axes, computed
+with a window over the rows left after ``WHERE`` — so date filters and slicers
+are respected::
+
+   CASE WHEN stock.day_d = max(stock.day_d) OVER (PARTITION BY times.month_str)
+        THEN stock.qty END as stock_qty__semi_2
+
+plus one twin with ``OVER ()`` for the totals (``stock_qty__semi_all``;
+``first`` uses ``min``). The outer aggregate picks the twin by the grouping
+set of the row: ``CASE WHEN grouping(TIMES_MONTH_STR_GR)=0 THEN
+sum(stock_qty__semi_2) … ELSE sum(stock_qty__semi_all) END``. With
+``--offset`` / ``--exclude`` on the same line the tag travels with the measure
+into the copy.
 
 Limits
 ^^^^^^
@@ -882,6 +975,18 @@ Limits
 - A cube built from one denormalized table, where the measure source and a
   ``one-table`` dimension source share the alias, cannot use the tags: give the
   dimension source its own alias.
+- ``--semi``: the "last day with data" is found once for the measure group
+  under the current filters, not per member of the other dimensions. For
+  daily snapshots this makes no difference; for sparse events (a price that
+  changes once a quarter) a store or product without a row at that day shows
+  ``0`` — keep a daily snapshot or expand the table over the calendar.
+- ``--semi``: drillthrough on the measure returns the rows of the whole period
+  of the cell, not only of the last day.
+- ``--semi``: the measure group stays in the classic SQL form (the window needs
+  the fact rows); the two-stage form is not used for it.
+- ``--semi``: ``count(*)`` and other measures without an ``alias.column``
+  reference get no twin and are aggregated over the whole period (a warning
+  in the log).
 
 .. _drillthrough:
 

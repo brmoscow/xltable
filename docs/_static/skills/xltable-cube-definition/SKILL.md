@@ -129,6 +129,13 @@ Do not copy the `<-` annotations into a real definition.
   ``--offset=`-1 year` `` (same measure a year back) or ``--exclude=`Models` ``
   (ignore that source's dimensions: share denominator) instead of a second
   measure group with Jinja.
+- **Stock, prices, headcount, balances**: values at a date — put
+  ``--semi=`last` `` on the measure (its aggregate over the last day with data
+  in the cell's period: the month shows the end-of-month stock, the year total
+  the stock at December 31), never a plain `sum` over days. Needs the calendar
+  join like `--offset`. The day is found once for the measure group under the
+  filters, not per store or product — feed a daily snapshot, not sparse
+  events.
 - **Calendar**: a Dates dimension must come from a dates table or a generated
   series (`numbers()`, `generate_series`, `UNNEST(GENERATE_DATE_ARRAY ...)`),
   never from `SELECT DISTINCT date FROM <fact>` — the CTE is prefixed to

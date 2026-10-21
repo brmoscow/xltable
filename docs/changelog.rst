@@ -37,6 +37,19 @@ Version 2.1.4 — 2026-10-18
   checker points it out (``CHK_M2M_JINJA_HINT``). See
   :ref:`many-to-many totals <m2m_totals>`.
 
+- **Semi-additive measures** — ``--semi=`last``` (or ``first``) on a measure
+  shows its aggregate over the last (first) day with data inside the period
+  of the cell instead of the sum over all days: stock, prices, headcount,
+  balances. Months on rows give the stock at the end of each month, the year
+  total the stock at December 31 — not the sum of twelve months; a year in
+  the filter with stores on rows gives every store at that date. Works in the
+  engine without a copy of the measure group (window twins of the measure
+  per calendar level), combines with ``--offset`` (the stock at the end of
+  the same month a year ago). Replaces the hand-written "max date" subquery
+  or the separate snapshot source. The syntax checker validates the tag
+  (``CHK_SEMI_VALUE``, ``CHK_SEMI_CALENDAR``). See
+  :ref:`value at a date <semi_measures>`.
+
 Version 2.1.3 — 2026-10-08
 --------------------------
 
