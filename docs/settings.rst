@@ -895,12 +895,18 @@ Parameter reference
      ``describe_cube`` returns as ``sample_values``; a level with more
      distinct values returns the first ``sample_values_max`` of them and is
      listed in ``sample_values_truncated``. Default ``30``.
+   - ``run_sql`` — the read-only SQL tool for cube authors (see
+     :ref:`mcp_authoring`); a block of sub-keys: ``enabled`` (default
+     ``false`` — the tool is not offered), ``schemas`` (allow-list of
+     schemas, default any), ``max_rows`` (default ``200``), ``timeout``
+     (seconds, default ``30``).
 
    Example:
 
    .. code-block:: json
 
-      "MCP": {"sample_values_max": 50}
+      "MCP": {"sample_values_max": 50,
+              "run_sql": {"enabled": true, "schemas": ["dwh"]}}
 
    Default: not set (defaults above)
 

@@ -7,9 +7,11 @@ measures, and run aggregated pivot queries — through the **same live XLTable
 instance, cubes and cache that serve your Excel Pivot Tables**. Ask a question
 in plain language, get numbers from the same semantic layer Excel uses.
 
-The assistant works only through cubes: it sends cube, dimension and measure
+The assistant works through cubes: it sends cube, dimension and measure
 names, and XLTable builds and executes the SQL. Raw SQL access to the
-warehouse is never exposed to the assistant.
+warehouse is not exposed to an assistant that answers questions — the only
+exception is the read-only ``run_sql`` tool for cube authors, which an
+administrator enables explicitly (see `Building cubes with an assistant`_).
 
 MCP connectivity is available in both editions: the free desktop edition
 connects anonymously on the local machine, the server edition requires the
@@ -54,6 +56,15 @@ Tools
      - Folder cube source only: generates a cube from a single warehouse
        table with the same engine as ``XLTable.exe autogen`` — see
        `Creating cubes from the chat`_.
+   * - ``check_cube``
+     - Cube authors only: validates a cube definition text with the same
+       syntax checker and parser that serve Excel, without saving it —
+       findings with line numbers. See `Building cubes with an assistant`_.
+   * - ``run_sql``
+     - Cube authors only, off by default: one read-only SQL statement against
+       the warehouse for exploring tables while building a cube — row limit,
+       timeout, optional schema allow-list, every call logged. See
+       `Building cubes with an assistant`_.
    * - ``list_databases``
      - Server edition with ``CUBE_SOURCE=database`` only: lists the databases
        (cube catalogs) of the warehouse — the ones visible to the user
@@ -304,7 +315,100 @@ in the Pivot Table (the assistant will remind you). New Excel connections and
 
 When cube definitions live in the ``olap_definition`` table
 (``CUBE_SOURCE=database``), the creation tools are not offered — the autogen
-engine writes files, and there is no cube folder to write to.
+engine writes files, and there is no cube folder to write to. The one
+exception is ``list_warehouse_tables`` for cube authors with ``run_sql``
+enabled (see below): it only reads table names.
+
+.. _mcp_authoring:
+
+Building cubes with an assistant
+--------------------------------
+
+An assistant can build a cube from a specification: study the warehouse,
+write the definition, check it — and hand it over. The division of labour is
+deliberate:
+
+- **the assistant writes the definition** — that is what language models do
+  well, and the :doc:`cube format <cubes>` is plain text;
+- **XLTable checks it** — the same parser that serves Excel reports every
+  problem with a line number *before* anyone loads the cube;
+- **a person saves and publishes it** — the assistant never writes into the
+  cubes folder or the ``olap_definition`` table through MCP. Save the text as
+  ``<name>.sql`` yourself (or let an agent with file access to the server,
+  such as Claude Code, do it) and the cube goes live like any other.
+
+Two tools cover it, offered only to **cube authors** — users in
+:confval:`ANALYST_GROUPS` or :confval:`ADMIN_GROUPS` (the same role that sees
+the :doc:`Cubes page <web_cubes>`; in the free edition the local user). Other
+users do not see them. Both work with either cube source. The connection
+instructions the assistant receives point it to the cube format page and to
+the :ref:`cube definition skill <cube_skill>` (workflow, tag reference and a
+checked example), so it knows the format before writing a line.
+
+``check_cube``
+   Takes the full definition text and returns ``status`` (``ok`` / ``error``),
+   the findings — severity, check id, line, section, message — and a hint for
+   parse errors; nothing is saved. A definition whose role blocks do not
+   include the calling user is checked as a member of its ``--olap_user_groups``
+   and comes back with a ``note`` saying so, instead of an access error. It
+   checks parsing only: the SQL of the sources is not executed, so verify the
+   figures with ``query_cube`` once the cube is saved.
+
+``run_sql``
+   One read-only SQL statement against the warehouse: table structure, keys,
+   cardinality, how facts join to dimensions, control figures to verify the
+   cube against. It is **off by default** and enabled in ``settings.json``::
+
+      "MCP": {
+          "run_sql": {
+              "enabled": true,
+              "schemas": ["dwh", "stage"],
+              "max_rows": 200,
+              "timeout": 30
+          }
+      }
+
+   - ``schemas`` — optional allow-list: only ``SELECT`` / ``WITH`` statements
+     are accepted with it, and every table in ``FROM`` / ``JOIN`` must be
+     qualified as ``schema.table`` with a listed schema (for BigQuery the
+     dataset); omitted — any statement of the kinds below, any schema the
+     warehouse account can read.
+   - ``max_rows`` — the cap on returned rows (default 200); the assistant may
+     ask for fewer with ``limit``, never for more. ``truncated`` tells it the
+     result was cut.
+   - ``timeout`` — seconds per query (default 30), enforced by the warehouse
+     connection exactly like :confval:`CREDENTIAL_DB.query_timeout`.
+
+   The statement must start with ``SELECT``, ``WITH``, ``SHOW``, ``DESCRIBE``
+   or ``EXPLAIN``; a second statement, ``SELECT … INTO``, a data-modifying
+   keyword inside the query, a backslash or an unbalanced quote is rejected
+   before reaching the warehouse (escape a quote in a literal as ``''``).
+   This guard protects against an assistant's mistake, not against a
+   determined user: **the warehouse account in** :confval:`CREDENTIAL_DB` **must be
+   read-only** — it is the same account the server uses for every cube
+   query, and ``run_sql`` has no separate one. Security roles of cubes do not
+   apply here (there is no cube), which is why the tool is limited to cube
+   authors.
+
+   Every call is written to the server log (user and query); with
+   :confval:`WRITE_LOG` the full statement is also dumped into ``log/``.
+
+A typical session: *“Here is the specification: sales by store, product and
+month, with margin. The tables are in dwh.”* The assistant lists the
+warehouse tables, profiles the candidates with ``run_sql`` (row counts,
+distinct keys, whether the join multiplies rows), writes the definition,
+runs ``check_cube`` until no ``ERROR`` remains and returns the text with the
+control figures it used. You save the file, refresh the cube in Excel or
+open it on the Cubes page, and ask the assistant to compare ``query_cube``
+with its control figures.
+
+.. warning::
+
+   With ``run_sql`` enabled, rows the assistant reads from the warehouse are
+   sent to the AI provider — the same way query results are. Use the
+   ``schemas`` allow-list to keep tables with personal or sensitive data out
+   of reach, and keep the tool disabled on servers where that is not
+   acceptable.
 
 .. _mcp_clients:
 
@@ -837,4 +941,5 @@ Privacy
 The connection and the server stay on your machine, and the warehouse
 credentials never leave ``settings.json``. Keep in mind, however, that tool
 results (cube names, schemas and query results) are sent to the AI assistant
-and processed by its cloud model.
+and processed by its cloud model. With ``run_sql`` enabled for cube authors,
+rows read from the warehouse are sent the same way — see :ref:`mcp_authoring`.

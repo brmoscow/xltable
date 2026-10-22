@@ -6,6 +6,24 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
+Version 2.1.5 — 2026-10-22
+--------------------------
+
+- **Cube authoring tools for AI assistants** — two MCP tools for cube authors
+  (:confval:`ANALYST_GROUPS` / :confval:`ADMIN_GROUPS`): ``check_cube``
+  validates a cube definition text with the Excel parser without saving it
+  (findings with line numbers), and ``run_sql`` — off by default, enabled
+  with ``MCP.run_sql`` — runs one read-only SQL statement against the
+  warehouse to explore tables and collect control figures while building a
+  cube (row cap, timeout, schema allow-list, every call logged). The
+  assistant writes the definition, XLTable checks it, a person saves it; the
+  connection instructions link the assistant to the cube format and the
+  cube definition skill. With ``run_sql`` enabled, ``list_warehouse_tables``
+  is also available with the ``olap_definition`` cube source. See
+  :ref:`mcp_authoring`.
+
+------------------------------------------------------------
+
 Version 2.1.4 — 2026-10-18
 --------------------------
 

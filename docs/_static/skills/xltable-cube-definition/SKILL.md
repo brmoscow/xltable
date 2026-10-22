@@ -28,9 +28,16 @@ Core principle: **write SQL that runs first, then tag it.** Every
    (own line, right after the first comment line) — with it the server
    validates the definition on first use and refuses a broken cube with a
    list of problems instead of serving wrong numbers. If an XLTable MCP
-   server is available, close the loop: load the definition, call
-   `describe_cube`, then `query_cube` with one slice per measure group and
-   per hierarchy; a result with `isError` means fix and reload.
+   server is available, use its cube-author tools: `run_sql` (read-only,
+   when the administrator enabled it) to learn the tables — row counts,
+   distinct keys, whether a join multiplies rows, control figures — and
+   `check_cube` with the full definition text until it reports no `ERROR`
+   (nothing is saved; only parsing is checked). Then close the loop: the
+   user saves the definition (save it yourself only if you have file
+   access to the cubes folder), call `describe_cube`, then `query_cube`
+   with one slice per measure group and per hierarchy and compare with
+   the `run_sql` control figures; a result with `isError` means fix and
+   reload.
 5. **Deliver** two artifacts: the definition as a `.sql` file (the versioned
    source of truth) and, when cubes live in the database
    (`CUBE_SOURCE=database`, the default on servers), the INSERT/UPDATE
