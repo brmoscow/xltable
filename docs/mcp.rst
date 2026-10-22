@@ -382,7 +382,12 @@ checked example), so it knows the format before writing a line.
    The statement must start with ``SELECT``, ``WITH``, ``SHOW``, ``DESCRIBE``
    or ``EXPLAIN``; a second statement, ``SELECT … INTO``, a data-modifying
    keyword inside the query, a backslash or an unbalanced quote is rejected
-   before reaching the warehouse (escape a quote in a literal as ``''``).
+   before reaching the warehouse (escape a quote in a literal as ``''``), and
+   so are the warehouse functions that read files, the network or other
+   databases (DuckDB ``read_csv``/``read_parquet``/``glob``, ClickHouse
+   ``url``/``remote``/``s3``/``file``, PostgreSQL ``pg_read_file``/``dblink``
+   and the like). With the ``schemas`` allow-list, table functions are not
+   accepted at all and subqueries are checked through.
    This guard protects against an assistant's mistake, not against a
    determined user: **the warehouse account in** :confval:`CREDENTIAL_DB` **must be
    read-only** — it is the same account the server uses for every cube
