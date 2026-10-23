@@ -6,7 +6,7 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
-Version 2.1.5 — 2026-10-22
+Version 2.1.5 — Unreleased
 --------------------------
 
 - **Cube authoring tools for AI assistants** — two MCP tools for cube authors
