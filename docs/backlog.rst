@@ -148,7 +148,8 @@ in 2026.
        Each cube is presented as a flat virtual table with hierarchy levels
        and pre-aggregated measures as columns. Authentication, row-level security
        and the shared result cache apply the same way as for Excel and MCP.
-     -
+     - Done (2.1.5) — see :doc:`sql_endpoint`; Power BI connects through
+       XMLA, not through the SQL endpoint
 
    * - 21
      - Aggregate awareness

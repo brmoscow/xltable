@@ -9,6 +9,22 @@ Stay up to date with the latest releases by following us on
 Version 2.1.5 — Unreleased
 --------------------------
 
+- **SQL endpoint: cubes as PostgreSQL tables for BI tools** — a separate
+  service (``XLTable.exe sql-endpoint`` / ``main.bin sql-endpoint``, port
+  5433) speaks the PostgreSQL wire protocol, so DataLens, Apache Superset,
+  Metabase, DBeaver, psql and any other PostgreSQL client see every cube as
+  a flat table: hierarchy levels and measures as columns. A plain
+  ``SELECT … WHERE … GROUP BY`` becomes a pivot query of the same engine —
+  the same users, cube roles, row-level security, result cache and logs as
+  in Excel, MCP and the REST API; raw SQL never reaches the warehouse. The
+  endpoint is a license feature (``"sql": true``) and is configured with the
+  :confval:`SQL_ENDPOINT` section. Power BI is not a target of the SQL
+  endpoint — it connects through XMLA. See :doc:`sql_endpoint`.
+
+- **describe_cube** (MCP and REST) now reports ``date_grain`` of calendar
+  levels (``--date``) and ``aggregate`` of every measure (``sum``, ``count``,
+  ``min``, ``max`` or ``other``).
+
 - **Cube authoring tools for AI assistants** — two MCP tools for cube authors
   (:confval:`ANALYST_GROUPS` / :confval:`ADMIN_GROUPS`): ``check_cube``
   validates a cube definition text with the Excel parser without saving it
@@ -21,6 +37,12 @@ Version 2.1.5 — Unreleased
   cube definition skill. With ``run_sql`` enabled, ``list_warehouse_tables``
   is also available with the ``olap_definition`` cube source. See
   :ref:`mcp_authoring`.
+
+- **Revoked licenses** — a license key that has been replaced by the vendor
+  (for example, reissued for a new server) is no longer accepted by this and
+  later versions: the server reports "License has been revoked by the
+  vendor". Upload the replacement license file via the admin panel. See
+  :ref:`faq_license_revoked`.
 
 ------------------------------------------------------------
 

@@ -174,6 +174,7 @@ documentation as a single file — see :doc:`ai`.
 
    mcp
    api
+   sql_endpoint
 
 .. toctree::
    :maxdepth: 1

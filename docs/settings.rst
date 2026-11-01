@@ -887,6 +887,39 @@ Parameter reference
 
    Default: on when :confval:`CREDENTIAL_ACTIVE_DIRECTORY` is set, off otherwise
 
+.. confval:: SQL_ENDPOINT
+
+   Settings of the :doc:`SQL endpoint <sql_endpoint>` — the separate
+   service that exposes cubes as PostgreSQL tables to BI tools. Off when
+   the section is missing or ``enabled`` is false.
+
+   .. code-block:: json
+
+      "SQL_ENDPOINT": {
+          "enabled": true,
+          "bind": "0.0.0.0",
+          "port": 5433,
+          "server_url": "http://127.0.0.1:5000",
+          "max_rows": 100000,
+          "tls": {"cert": "C:/xltable/cert/olap.crt", "key": "C:/xltable/cert/olap.key"}
+      }
+
+   - ``bind``, ``port`` — address and port the endpoint listens on
+     (default ``0.0.0.0:5433``).
+   - ``server_url`` — the XLTable server the endpoint forwards queries to
+     over the :doc:`REST API <api>`; default
+     ``http://127.0.0.1:<SERVER_PORT>``. Behind IIS or Apache point it at
+     the local worker or at the front-end address.
+   - ``max_rows`` — the largest pivot result one SQL query may request
+     (default ``100000``); a bigger result is an error, not a truncated
+     answer.
+   - ``tls`` — certificate and private key (PEM) for TLS. Passwords travel
+     inside TLS as plain text (that is how the PostgreSQL protocol maps onto
+     XLTable user accounts), so a bind address other than ``127.0.0.1``
+     requires ``tls``.
+
+   Default: not set (endpoint disabled)
+
 .. confval:: MCP
 
    Options of the built-in MCP server (see :doc:`mcp`). A block of sub-keys:
