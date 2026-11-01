@@ -203,6 +203,7 @@ aggregates; for a full detailed export use :doc:`export <export>`.
 Logs
 ----
 
-The endpoint writes ``log/<date>_sql_endpoint.txt`` (sign-ins, every pivot
-specification it sends, errors). The server side logs the forwarded
+The endpoint writes ``log/sql_endpoint.txt`` (rotated daily, kept for
+:confval:`LOG_RETENTION_DAYS`): sign-ins, every pivot specification it
+sends, errors. The server side logs the forwarded
 queries like any other REST API call, under the BI user's name.
