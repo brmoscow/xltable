@@ -52,7 +52,10 @@ Installation
    ``enabled`` to ``true``. Outside of ``127.0.0.1`` a TLS certificate is
    required (``tls``): the PostgreSQL protocol sends the password in clear
    text inside the encrypted connection. The same certificate as for the
-   HTTPS front can be used.
+   HTTPS front can be used. With a certificate configured the endpoint
+   refuses connections that do not negotiate TLS — a client with
+   ``sslmode=prefer`` that does not trust the certificate otherwise falls
+   back to plain text silently.
 
 2. Start the service next to the XLTable workers:
 
@@ -96,7 +99,8 @@ Connection parameters are those of a PostgreSQL database:
        tokens are not available through the PostgreSQL protocol.
    * - SSL
      - *require* (DataLens: *TLS on*, upload the CA of a self-signed
-       certificate); *disable* only for ``127.0.0.1``.
+       certificate — with *TLS off* DataLens is refused by a server that
+       has a certificate); *disable* only for ``127.0.0.1``.
 
 - **DataLens** — connection type *PostgreSQL*, host and port of the
   endpoint, the server's public address must be reachable from the DataLens
