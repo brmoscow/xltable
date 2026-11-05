@@ -1,0 +1,259 @@
+XLTABLE END USER LICENSE AGREEMENT
+==================================
+
+Version 1.0, 4 November 2026
+
+This End User License Agreement (the "Agreement") is a legal agreement
+between you, an individual or a legal entity (the "Licensee" or "you"),
+and BR Systems LLP, Astana, Republic of Kazakhstan, BIN 221040005593
+(the "Licensor"), for the XLTable software.
+
+BY SELECTING "I ACCEPT", BY INSTALLING, COPYING OR OTHERWISE USING THE
+SOFTWARE, YOU AGREE TO BE BOUND BY THIS AGREEMENT. IF YOU ACCEPT ON
+BEHALF OF AN ORGANIZATION, YOU REPRESENT THAT YOU HAVE THE AUTHORITY TO
+BIND IT. IF YOU DO NOT AGREE, DO NOT INSTALL OR USE THE SOFTWARE AND
+DELETE ALL COPIES OF IT.
+
+
+1. DEFINITIONS
+
+"Software" means the XLTable server software and XLTable Desktop,
+including executables, installers, configuration templates, sample
+files, documentation and any updates provided by the Licensor.
+
+"Free Desktop Edition" means a copy of the Software that runs in the
+free edition (configured as "EDITION": "free") and does not require a
+License File.
+
+"Server Edition" means a copy of the Software that runs in the server
+edition and requires a License File.
+
+"License File" means the license file (.lic) issued by the Licensor
+that defines the term of the license, the number of named users, the
+enabled features and the servers on which the Server Edition may run.
+
+"Order" means the contract, quotation, invoice or other written
+arrangement under which the Licensor grants a License File to the
+Licensee, including a trial license.
+
+"Named User" means one person who accesses the Software through any
+client: Microsoft Excel, a web browser, an AI assistant, the REST API or
+the SQL endpoint.
+
+
+2. LICENSE GRANT: FREE DESKTOP EDITION
+
+2.1. Subject to this Agreement, the Licensor grants you a non-exclusive,
+non-transferable, revocable, royalty-free license to install and use the
+Free Desktop Edition on one computer, by one person, for that person's
+own work, including work for the organization that person belongs to.
+
+2.2. The Free Desktop Edition is a single-user, single-computer product.
+Each person who uses the Free Desktop Edition must install their own copy
+and accept this Agreement. You may not:
+
+  (a) make the Free Desktop Edition available to any other person or
+      computer over a network - by port forwarding, tunnelling, reverse
+      proxies, remote access to the server process, or by any other means;
+
+  (b) run the Free Desktop Edition as a shared service, on a terminal
+      server, or in any way that lets more than one person use the same
+      copy;
+
+  (c) use the Free Desktop Edition in a way that works around its
+      technical restrictions, such as the loopback-only listener or the
+      edition check.
+
+2.3. The Free Desktop Edition is provided without any support obligation.
+Features reserved for the Server Edition are described in the
+documentation.
+
+
+3. LICENSE GRANT: SERVER EDITION
+
+3.1. Subject to this Agreement and the Order, the Licensor grants the
+Licensee a non-exclusive, non-transferable license to install and use the
+Server Edition within the limits defined by the License File: the license
+term, the number of Named Users, the enabled features and the servers
+identified in the License File.
+
+3.2. A trial License File grants the right to use the Server Edition for
+evaluation only, for the trial period stated in the License File.
+
+3.3. The Licensee may make a reasonable number of copies of the Server
+Edition for backup, testing and high-availability purposes, provided that
+the number of Named Users and the servers in production use stay within
+the limits of the License File.
+
+3.4. Where this Agreement and the Order conflict, the Order prevails for
+the commercial terms it covers (term, fees, number of Named Users,
+support and warranties).
+
+
+4. RESTRICTIONS
+
+Except as expressly permitted by this Agreement or by applicable law
+notwithstanding this restriction, you may not:
+
+  (a) copy the Software other than as permitted above;
+
+  (b) modify, translate, adapt or create derivative works of the
+      Software;
+
+  (c) reverse engineer, decompile, disassemble or otherwise attempt to
+      derive the source code of the Software or of its compiled modules;
+
+  (d) remove, disable, circumvent or tamper with any license, edition or
+      technical protection mechanism of the Software, including License
+      File verification, Named User seat counting, hardware binding,
+      version and term checks and license revocation;
+
+  (e) rent, lease, lend, sell, sublicense, distribute or otherwise
+      transfer the Software or any License File to a third party, or
+      provide the Software to third parties as a hosted or managed service,
+      unless the Order expressly allows it;
+
+  (f) remove or alter any proprietary notices, labels or marks on or in
+      the Software;
+
+  (g) use the Software in violation of applicable law, including export
+      control and sanctions laws that apply to you.
+
+
+5. OWNERSHIP
+
+The Software is licensed, not sold. The Licensor and its licensors retain
+all right, title and interest in and to the Software, including all
+intellectual property rights. All rights not expressly granted in this
+Agreement are reserved. If you provide suggestions or feedback about the
+Software, the Licensor may use them without any obligation to you.
+
+
+6. THIRD-PARTY COMPONENTS AND SOFTWARE
+
+6.1. The Software contains open-source and other third-party components.
+They are listed, together with their license texts, in the file
+THIRD-PARTY-NOTICES.txt in the root of the distribution. Those components
+are licensed under their own terms; where those terms conflict with this
+Agreement in respect of a component, the component's own terms govern.
+
+6.2. The Software connects to your databases and works together with
+software of other vendors (Microsoft Excel, web browsers, AI assistants,
+BI tools). That software is licensed to you separately by its vendors; the
+Licensor is not a party to those licenses and is not responsible for that
+software.
+
+
+7. YOUR DATA
+
+7.1. The Software runs in your environment and sends queries to the
+databases you configure. The Software does not transmit the contents of
+your databases, your cube definitions or your configuration to the
+Licensor. License Files are verified locally.
+
+7.2. You are responsible for the credentials you store in the Software's
+configuration, for the access rights you grant to users and AI
+assistants, for the lawful use of the data the Software gives access to,
+and for backing up your configuration and cube files.
+
+
+8. UPDATES
+
+The Licensor may provide updates of the Software. Updates are subject to
+this Agreement or to the version of the Agreement shipped with the update.
+The Licensor has no obligation to provide updates or support for the Free
+Desktop Edition; support and maintenance of the Server Edition are
+provided as set out in the Order.
+
+
+9. TERM AND TERMINATION
+
+9.1. This Agreement is effective from the moment you accept it and remains
+in force until terminated.
+
+9.2. The license for the Server Edition ends when the License File
+expires or is revoked by the Licensor. The Licensor may revoke a License
+File if the Licensee breaches this Agreement or the Order.
+
+9.3. This Agreement terminates automatically if you breach any of its
+terms. The Licensor may also terminate the Free Desktop Edition license at
+any time by discontinuing the edition, which does not affect installed
+copies that comply with this Agreement.
+
+9.4. Upon termination you must stop using the Software and delete all
+copies of it. Sections 4, 5, 6, 7.2, 9.4, 10, 11 and 12 survive
+termination.
+
+
+10. DISCLAIMER OF WARRANTY
+
+THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTIES
+OF ANY KIND, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING WITHOUT
+LIMITATION ANY WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE, TITLE AND NON-INFRINGEMENT. THE LICENSOR DOES NOT WARRANT THAT
+THE SOFTWARE WILL BE ERROR-FREE OR UNINTERRUPTED, THAT IT WILL WORK WITH
+ANY PARTICULAR DATABASE, VERSION OF MICROSOFT EXCEL OR OTHER SOFTWARE, OR
+THAT THE RESULTS IT PRODUCES WILL BE ACCURATE OR COMPLETE. YOU ARE
+RESPONSIBLE FOR VERIFYING THE RESULTS BEFORE RELYING ON THEM. ANY
+WARRANTIES FOR THE SERVER EDITION ARE SOLELY THOSE STATED IN THE ORDER.
+
+
+11. LIMITATION OF LIABILITY
+
+11.1. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE LICENSOR
+SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL
+OR PUNITIVE DAMAGES, OR FOR ANY LOSS OF PROFITS, REVENUE, DATA, BUSINESS
+OR GOODWILL, ARISING OUT OF OR IN CONNECTION WITH THIS AGREEMENT OR THE
+USE OF OR INABILITY TO USE THE SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGES.
+
+11.2. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE LICENSOR'S
+TOTAL LIABILITY UNDER THIS AGREEMENT SHALL NOT EXCEED THE AMOUNT PAID BY
+THE LICENSEE FOR THE SOFTWARE UNDER THE ORDER DURING THE TWELVE MONTHS
+PRECEDING THE EVENT GIVING RISE TO THE CLAIM. THE FREE DESKTOP EDITION IS
+PROVIDED FREE OF CHARGE, AND THE LICENSOR'S TOTAL LIABILITY FOR IT SHALL
+BE LIMITED ACCORDINGLY.
+
+11.3. Nothing in this Agreement excludes or limits liability that cannot
+be excluded or limited under applicable law.
+
+
+12. GOVERNING LAW AND DISPUTES
+
+Unless the Order provides otherwise, this Agreement is governed by the
+laws of the Republic of Kazakhstan, without regard to its conflict of law
+rules, and any dispute arising out of or in connection with this
+Agreement shall be resolved by the competent courts of Astana, Republic
+of Kazakhstan.
+
+
+13. GENERAL
+
+13.1. This Agreement, together with the Order and THIRD-PARTY-NOTICES.txt,
+constitutes the entire agreement between you and the Licensor regarding
+the Software and supersedes all prior communications on the subject.
+
+13.2. If any provision of this Agreement is held invalid or
+unenforceable, the remaining provisions remain in full force and effect.
+
+13.3. The Licensor's failure to enforce any provision is not a waiver of
+its right to do so later.
+
+13.4. You may not assign this Agreement without the Licensor's written
+consent. The Licensor may assign it to a successor of its business.
+
+13.5. The Licensor may publish an updated version of this Agreement with
+a new release of the Software; the updated version applies to that
+release and later releases from the moment you install or use them.
+
+13.6. The English version of this Agreement is the governing version.
+
+
+14. CONTACT
+
+BR Systems LLP, Astana, Republic of Kazakhstan, BIN 221040005593
+Website: https://xltable.com
+E-mail: help@xltable.com
+Documentation: https://xltable-olap.readthedocs.io/
+
+(c) BR Systems LLP. All rights reserved.

@@ -9,6 +9,14 @@ Stay up to date with the latest releases by following us on
 Version 2.1.5 — Unreleased
 --------------------------
 
+- **End User License Agreement** — every distribution now carries
+  ``EULA.txt`` in its root; the text is also published on the
+  :doc:`license` page. The Windows installer shows the agreement on its
+  first page and requires acceptance; the Linux installer prints it and
+  asks for acceptance on a fresh install (``--accept-eula`` for unattended
+  installs, re-runs and updates do not ask again); the portable zip and the
+  Windows Server package carry the file next to the executable.
+
 - **SQL endpoint: cubes as PostgreSQL tables for BI tools** — a separate
   service (``XLTable.exe sql-endpoint`` / ``main.bin sql-endpoint``, port
   5433) speaks the PostgreSQL wire protocol, so DataLens, Apache Superset,

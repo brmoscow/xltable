@@ -56,6 +56,11 @@ Unpack the installer scripts and run the install script:
 
 The script will:
 
+- On a fresh install, print the :doc:`End User License Agreement <license>`
+  (``EULA.txt`` from the distribution) and ask for acceptance; pass
+  ``--accept-eula`` to accept it without the prompt (unattended installs).
+  A re-run over an existing installation and ``update_xltable.sh`` do not
+  ask again
 - Install ``supervisor``, ``unzip``, ``ca-certificates`` and ``apache2``
 - Extract xltable to ``/usr/olap/xltable/``
 - Create ``/usr/olap/xltable/setting/settings.json`` from the example (if missing)
@@ -133,6 +138,9 @@ are kept.
    * - ``bash install_xltable.sh --migrate-from-nginx``
      - Replace the nginx front of an installation made before 2.1.1 by
        Apache (see below).
+   * - ``bash install_xltable.sh --accept-eula``
+     - Accept the :doc:`License Agreement <license>` without the
+       interactive prompt — for scripted first installs.
 
 Migrating an installation from nginx
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -300,7 +308,11 @@ Installation
       publisher"* means the file was altered after download; download it
       again from the official page.
 
-2. Walk through the wizard (Next → Install → Finish). The installer:
+2. Walk through the wizard (License Agreement → Next → Install → Finish).
+   The first page shows the :doc:`End User License Agreement <license>` —
+   select **I accept the agreement** to continue (the same text is
+   installed as ``EULA.txt`` next to ``XLTable.exe``; a silent install
+   ``/SILENT`` skips the page and counts as acceptance). The installer:
 
    - installs XLTable into ``%LOCALAPPDATA%\Programs\XLTable``;
    - creates a Start menu shortcut **XLTable Desktop** (a desktop shortcut is an

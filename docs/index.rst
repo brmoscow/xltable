@@ -218,6 +218,7 @@ documentation as a single file — see :doc:`ai`.
 
    faq
    support
+   license
    ai
    changelog
    backlog
