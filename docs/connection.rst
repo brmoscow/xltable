@@ -30,19 +30,22 @@ console has no password — it is reachable from this machine only. In the
 server edition the page sits behind the usual admin authentication, see
 :ref:`admin_panel`.
 
-On the very first start of the free edition, while the connection is not
-configured yet, the server log records the direct hint::
+A fresh installation of the free edition is already connected — to the
+built-in demo warehouse (a local DuckDB file, see :ref:`demo_data`). Save
+your own connection on this page whenever you are ready; the cubes folder
+is not touched — the demo cubes stay there as examples of the cube format.
+To get the demo back later, select **DuckDB** with the database file
+``demo/xltable_demo.duckdb`` on this page — see :ref:`demo_return`.
+
+If the connection is removed from ``settings.json`` by hand, the server log
+records the direct hint::
 
    Warehouse connection is not configured yet — set it up at
    http://127.0.0.1:5000/admin (Warehouse connection page)
 
-(the console window itself stays short — its header already shows the
-admin console address, and the browser opens on the Quick start checklist
-whose first step is exactly this form).
-
-The server and the admin console work fine before the warehouse is
-configured — cube queries simply return a clear connection error until the
-form is filled in.
+The server and the admin console work fine without a warehouse — cube
+queries simply return a clear connection error until the form is filled
+in.
 
 The form
 --------

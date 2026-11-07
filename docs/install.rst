@@ -330,9 +330,11 @@ Installation
 4. The installation runs as the **free desktop edition** out of the box: on
    an interactive first start the browser opens the **Quick start**
    checklist of the admin console (``http://127.0.0.1:5000/admin``, see
-   :ref:`start_page`), and the warehouse connection is configured right
-   there on the **Warehouse connection** page — ``settings.json`` does not
-   have to be edited by hand (see :ref:`database_connections` and
+   :ref:`start_page`). It is connected to the **built-in demo data**
+   (see :ref:`demo_data`), so Excel and AI assistants work immediately;
+   your own warehouse connection is configured right there on the
+   **Warehouse connection** page — ``settings.json`` does not have to be
+   edited by hand (see :ref:`database_connections` and
    :ref:`settings_schema` for the file reference)
 
 5. In Excel, connect to the server at ``http://127.0.0.1:5000``
@@ -352,6 +354,59 @@ cube files need no changes — see :ref:`upgrade_from_free`.
    by design. For a multi-user server that Excel users reach over the
    network, use a production installation — :ref:`install_ubuntu` or
    :ref:`install_windows` (Windows Server with IIS).
+
+.. _demo_data:
+
+Built-in demo data
+^^^^^^^^^^^^^^^^^^
+
+The desktop edition ships with a demo warehouse, so a fresh installation
+works without any warehouse of your own:
+
+- ``demo\xltable_demo.duckdb`` next to ``XLTable.exe`` — a DuckDB file
+  (about 40 MB) with a synthetic retail chain: 40 stores, 120 products,
+  10 years (2017–2026) of sales, returns, cost and profit, a monthly sales
+  plan, stock, and daily store traffic, receipts, staff hours and rent.
+  The data contains patterns to explore with Excel or an AI assistant: a
+  yearly trend with a 2020 dip, Black Friday peaks, a store that closed and
+  stores that opened, a product with a high return rate, an outlier day and
+  a gap in the data;
+- two cubes, **Demo Sales** and **Demo Store Operations** — plain ``.sql``
+  files that the server copies into the cubes folder
+  (``Documents\XLTable\cubes``, or ``cubes`` next to the executable in the
+  portable zip) on the first start, while the folder has no cubes of its
+  own; a good starting point for your own cube definitions (the reference
+  copies stay in ``demo\cubes`` next to ``XLTable.exe``);
+- the factory ``settings.json`` points :confval:`SERVER_DB` ``DuckDB`` at
+  that file (``"database": "demo/xltable_demo.duckdb"``, read-only).
+
+Moving to your own data: open **Warehouse connection**, pick the connector,
+enter the credentials and save. The demo cubes stay in the cubes folder as
+examples of the cube format — against your warehouse they fail on the first
+query (the ``demo`` schema does not exist there), so delete them or rewrite
+them for your own tables. Updates never return a demo cube you deleted, and
+uninstalling leaves the cubes folder alone.
+
+.. _demo_return:
+
+Returning to the demo data
+""""""""""""""""""""""""""
+
+The demo warehouse and the reference copies of the demo cubes stay in the
+installation folder, so the demo can be brought back at any time:
+
+1. Open **Warehouse connection**, choose the connector **DuckDB**, enter
+   ``demo/xltable_demo.duckdb`` as the database file (the path is relative
+   to the folder of ``XLTable.exe``; an absolute path works too), keep
+   **Read-only** on and save. The connection is applied without a restart.
+2. If you deleted the demo cubes, copy ``Demo Sales.sql`` and
+   ``Demo Store Operations.sql`` from ``demo\cubes`` (next to
+   ``XLTable.exe``) into your cubes folder — the path is shown on the
+   Cubes page. The server picks up the files immediately.
+
+Your own cubes are not affected either way; a cube written for your
+warehouse simply fails while the demo connection is active, and works again
+once you switch back.
 
 Update
 ^^^^^^

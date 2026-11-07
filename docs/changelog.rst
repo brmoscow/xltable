@@ -9,6 +9,15 @@ Stay up to date with the latest releases by following us on
 Version 2.1.5 — Unreleased
 --------------------------
 
+- **Built-in demo data in XLTable Desktop** — a fresh installation is
+  connected to a demo warehouse out of the box: a local DuckDB file with a
+  synthetic retail chain (40 stores, 10 years of sales, returns, plan and
+  store traffic) and two ready cubes, *Demo Sales* and *Demo Store
+  Operations*. Excel and AI assistants work right after the install, no
+  warehouse credentials needed; your own warehouse is saved on the
+  **Warehouse connection** page as before, and the demo cubes stay as
+  examples of the cube format. See :ref:`demo_data`.
+
 - **End User License Agreement** — every distribution now carries
   ``EULA.txt`` in its root; the text is also published on the
   :doc:`license` page. The Windows installer shows the agreement on its
