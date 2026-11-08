@@ -6,6 +6,18 @@ What are the minimum system requirements for installing XLTable?
 
 See :ref:`system_requirements`.
 
+Is there a live demo I can try without installing anything?
+-----------------------------------------------------------
+
+Yes — a public XLTable server with a sample retail dataset (two cubes, ten
+years of history) is open to everyone with a shared read-only login. Excel
+over XMLA, the pivot table in the browser and the MCP connector for AI
+assistants all work against it. Connection details and step-by-step
+instructions: https://xltable.com/demo.
+
+To run XLTable on your own machine instead, see :doc:`quickstart` (free
+XLTable Desktop) and the ready-to-run samples such as :doc:`duckdb_sample`.
+
 After installation, I see a message that no license is found or that xltable.lic is missing.
 -----------------------------------------------------------------------------------------------
 
@@ -13,6 +25,18 @@ You need to upload a license file. Open the Admin Panel (see :ref:`admin_panel`)
 
 Send the server ID to the vendor or partner who provided your distribution package.
 Then upload the license file you receive through the Admin Panel.
+
+.. _faq_license_revoked:
+
+The server reports "License has been revoked by the vendor".
+-------------------------------------------------------------
+
+The license file on this server has been replaced by the vendor — typically
+because a new key was issued for a new server ID, and the old one is no
+longer valid under the agreement. Newer XLTable versions carry the list of
+replaced keys and reject them. Upload the replacement license file through
+the Admin Panel; if you do not have it, contact the vendor or partner who
+provided your distribution package.
 
 I cannot connect to the XLTable server from Excel.
 ---------------------------------------------------
