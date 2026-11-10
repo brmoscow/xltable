@@ -150,7 +150,9 @@ decided by the query shape:
   axes of the pivot query;
 - ``WHERE`` conditions on levels become the filters: ``=``, ``<>``, ``IN``,
   ``NOT IN``, ``BETWEEN``, ``>=`` together with ``<=`` on the same level,
-  combined with ``AND``;
+  combined with ``AND``. A text level that holds days as ``YYYY-MM-DD`` can
+  be filtered as a date — ``CAST("Day" AS DATE) BETWEEN …`` — which is what
+  the calendar selector of DataLens sends for a ``DATE([Day])`` field;
 - measures are requested under an aggregate, under ``MEASURE(…)`` or as a
   bare column (then ``GROUP BY`` is implied by the levels in the query);
 - ``HAVING``, ``ORDER BY``, ``LIMIT``/``OFFSET`` and expressions over
