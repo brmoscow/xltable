@@ -32,7 +32,7 @@ How it works
    BI tool (PostgreSQL driver)
          │  PostgreSQL protocol, TLS, port 5433
          ▼
-   XLTable SQL endpoint  (XLTable.exe sql-endpoint / main.bin sql-endpoint)
+   XLTable SQL endpoint  (python xlmain.py sql-endpoint / main.bin sql-endpoint)
          │  REST API, loopback, the BI user's own credentials
          ▼
    XLTable server  —  authentication, roles, RLS, cache, SQL to the warehouse
@@ -59,16 +59,23 @@ Installation
 
 2. Start the service next to the XLTable workers:
 
-   - **Windows / IIS** — register ``XLTable.exe sql-endpoint`` as a Windows
-     service with `NSSM <https://nssm.cc/>`_ (``nssm install XLTableSQL
-     C:\xltable\XLTable.exe sql-endpoint``, *Startup directory* = the
-     XLTable folder) or with ``sc.exe``; the service runs under the account
-     that can read ``settings.json`` and write ``log/``.
+   - **Windows Server (IIS)** — the endpoint runs with the Python
+     environment of the IIS application, from the application folder:
+     ``.venv\Scripts\python.exe xlmain.py sql-endpoint``. Register it as a
+     Windows service with `NSSM <https://nssm.cc/>`_ (``nssm install
+     XLTableSQL C:\olap\xltable\.venv\Scripts\python.exe xlmain.py
+     sql-endpoint``, *Startup directory* = ``C:\olap\xltable``); the service
+     runs under an account that can read ``settings.json`` and write
+     ``log\``. Under IIS the application is served by the site, not on
+     :confval:`SERVER_PORT`, so set ``server_url`` in :confval:`SQL_ENDPOINT`
+     to the local address of the site, for example ``http://127.0.0.1``.
+     See the installer README, *SQL endpoint*.
    - **Ubuntu** — a supervisor program from the installer template
      ``install_ubuntu/templates/olap-sql.conf.tmpl`` (see the installer
      README, *SQL endpoint*).
-   - **Trying it out** — ``XLTable.exe sql-endpoint`` in a console prints the
-     listening address; ``Ctrl+C`` stops it.
+   - **Trying it out** — the same command in a console (``main.bin
+     sql-endpoint`` on Ubuntu) prints the listening address; ``Ctrl+C``
+     stops it.
 
 3. Open port 5433 on the firewall for the BI servers. For a cloud BI
    (DataLens) the endpoint needs a public address and a certificate the BI
