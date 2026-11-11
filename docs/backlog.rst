@@ -143,7 +143,7 @@ in 2026.
    * - 19
      - SQL endpoint
      - Expose XLTable cubes over the PostgreSQL wire protocol so that BI tools
-       (Power BI, DataLens, Apache Superset, Metabase, Tableau and others)
+       (DataLens and other tools with a PostgreSQL driver)
        can connect to cubes as regular database tables without a dedicated connector.
        Each cube is presented as a flat virtual table with hierarchy levels
        and pre-aggregated measures as columns. Authentication, row-level security

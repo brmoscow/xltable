@@ -29,8 +29,8 @@ Version 2.1.5 — 2026-11-11
 - **SQL endpoint: cubes as PostgreSQL tables for BI tools** — a separate
   service of the server edition (``main.bin sql-endpoint`` on Ubuntu,
   ``python xlmain.py sql-endpoint`` on Windows Server, port 5433) speaks
-  the PostgreSQL wire protocol, so DataLens, Apache Superset,
-  Metabase, DBeaver, psql and any other PostgreSQL client see every cube as
+  the PostgreSQL wire protocol, so DataLens, DBeaver, psql and other
+  clients with a PostgreSQL driver see every cube as
   a flat table: hierarchy levels and measures as columns. A plain
   ``SELECT … WHERE … GROUP BY`` becomes a pivot query of the same engine —
   the same users, cube roles, row-level security, result cache and logs as

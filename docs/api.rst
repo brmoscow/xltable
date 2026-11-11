@@ -14,8 +14,8 @@ As everywhere in XLTable, the API takes **names, not SQL**: the client sends
 cube, dimension and measure names, the server builds and runs the query.
 Raw SQL access to the warehouse is never exposed.
 
-BI tools that speak to databases rather than to HTTP APIs (DataLens, Apache
-Superset, Metabase, DBeaver) connect through the :doc:`SQL endpoint
+BI tools that speak to databases rather than to HTTP APIs (DataLens,
+DBeaver) connect through the :doc:`SQL endpoint
 <sql_endpoint>` instead: the same cubes as PostgreSQL tables, built on top
 of this API.
 

@@ -5,8 +5,8 @@ SQL endpoint
 
 Since 2.1.5 XLTable can serve its cubes to BI tools as PostgreSQL tables.
 The *SQL endpoint* is a separate service that speaks the PostgreSQL wire
-protocol: DataLens, Apache Superset, Metabase, DBeaver, ``psql`` — any
-client with a PostgreSQL driver — connects to it as to a regular database
+protocol: DataLens, DBeaver, ``psql`` — a client with a PostgreSQL
+driver — connects to it as to a regular database
 and sees every cube as a flat table whose columns are the hierarchy levels
 and the measures. A plain ``SELECT … WHERE … GROUP BY`` is translated into a
 pivot query of the same engine that serves Excel, AI assistants and the
@@ -116,12 +116,6 @@ Connection parameters are those of a PostgreSQL database:
   subnets. Create a dataset from a cube table; set the aggregation of each
   measure field to *Sum* (or *None* to take the cube's own aggregate — see
   below), of dimension fields to *None*.
-- **Apache Superset** — database *PostgreSQL*, SQLAlchemy URI
-  ``postgresql://user:password@host:5433/db``. Add cube tables as datasets;
-  metrics are ``SUM("Measure")`` for additive measures and
-  ``MEASURE("Measure")`` for the others.
-- **Metabase** — database type *PostgreSQL*. Tables appear with their
-  columns; the query builder's *Sum of* works for additive measures.
 - **DBeaver, psql, other SQL clients** — a PostgreSQL connection; the cube
   tables are in schema ``public``.
 
