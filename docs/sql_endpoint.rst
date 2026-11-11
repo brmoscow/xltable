@@ -180,11 +180,15 @@ aggregate function in the query must match the measure:
 - ``min`` / ``max`` measures accept ``MIN`` / ``MAX``;
 - any measure accepts ``MEASURE("m")`` and the bare column ``"m"`` — the
   value the cube computes for the group;
-- averages, distinct counts, ratios and other non-additive measures are
-  available only through ``MEASURE("m")`` or the bare column: ``AVG("Avg
-  Price")`` or ``SUM("Avg Price")`` is rejected with an error that names the
-  measure, because a BI-side re-aggregation of such a measure would be a
-  wrong number shown with confidence.
+- averages, distinct counts, ratios, semi-additive balances (``--semi``) and
+  other non-additive measures are available only through ``MEASURE("m")`` or
+  the bare column: ``AVG("Avg Price")`` or ``SUM("Avg Price")`` is rejected
+  with an error that names the measure, because a BI-side re-aggregation of
+  such a measure would be a wrong number shown with confidence;
+- for the same reason a non-additive measure cannot be regrouped by an
+  expression over a level: ``GROUP BY date_trunc('month', "Day")`` with
+  ``MEASURE("Avg Price")`` is rejected — group by the level of the cube
+  (``"Month"``) instead. Additive measures are regrouped freely.
 
 ``COUNT(*)`` is not supported — use a count measure of the cube.
 
