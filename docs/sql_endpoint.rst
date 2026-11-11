@@ -160,6 +160,15 @@ decided by the query shape:
   result; an outer ``SELECT * FROM (…) AS t LIMIT n`` that BI tools wrap
   around a query is fine.
 
+A table preview — plain columns with ``LIMIT`` up to 1000 and no
+``GROUP BY``, aggregates or ``ORDER BY``, as the dataset editor of DataLens
+or the data tab of DBeaver send it — is not computed at the full granularity
+of the cube. The endpoint first picks a few members of the finest level of
+every hierarchy in the query that have data and then asks the engine for
+that slice only. The rows are real cells of the cube with correct values;
+which rows come back is arbitrary, as with any ``LIMIT`` without
+``ORDER BY``.
+
 Measures and aggregates
 ~~~~~~~~~~~~~~~~~~~~~~~
 
