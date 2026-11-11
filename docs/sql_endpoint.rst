@@ -82,9 +82,11 @@ Installation
    trusts — a self-signed one works when its CA is uploaded in the BI
    connection settings.
 
-The endpoint is a license feature: the license must carry ``"sql": true``
-(the admin console shows *SQL endpoint: included*). Seats are the usual
-named users: the account a BI tool signs in with takes one seat.
+The endpoint is a feature of the server edition under its own license flag:
+the license must carry ``"sql": true`` (the admin console shows *SQL
+endpoint: included*). XLTable Desktop (the free edition) does not include
+it. Seats are the usual named users: the account a BI tool signs in with
+takes one seat.
 
 Connecting a BI tool
 --------------------

@@ -6,7 +6,7 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
-Version 2.1.5 — Unreleased
+Version 2.1.5 — 2026-11-11
 --------------------------
 
 - **Built-in demo data in XLTable Desktop** — a fresh installation is
@@ -27,8 +27,9 @@ Version 2.1.5 — Unreleased
   Windows Server package carry the file next to the executable.
 
 - **SQL endpoint: cubes as PostgreSQL tables for BI tools** — a separate
-  service (``XLTable.exe sql-endpoint`` / ``main.bin sql-endpoint``, port
-  5433) speaks the PostgreSQL wire protocol, so DataLens, Apache Superset,
+  service of the server edition (``main.bin sql-endpoint`` on Ubuntu,
+  ``python xlmain.py sql-endpoint`` on Windows Server, port 5433) speaks
+  the PostgreSQL wire protocol, so DataLens, Apache Superset,
   Metabase, DBeaver, psql and any other PostgreSQL client see every cube as
   a flat table: hierarchy levels and measures as columns. A plain
   ``SELECT … WHERE … GROUP BY`` becomes a pivot query of the same engine —
