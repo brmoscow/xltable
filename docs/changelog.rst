@@ -52,6 +52,14 @@ Version 2.1.5 — 2026-11-11
   is also available with the ``olap_definition`` cube source. See
   :ref:`mcp_authoring`.
 
+- **Fixed: Greenplum — error on the first connection from Excel** — with a
+  Greenplum / PostgreSQL warehouse the first connection attempt could fail
+  with "Cannot read the list of cubes in database 'pg_catalog'" and succeed
+  on the second one (since 2.1.3). System schemas
+  (``pg_catalog``, ``information_schema``, ``pg_toast`` and the like,
+  ``gp_toolkit``) are no longer listed as databases, and a schema without a
+  cube table is again reported as a database with no cubes.
+
 ------------------------------------------------------------
 
 Version 2.1.4 — 2026-10-18
