@@ -1,13 +1,18 @@
 FAQ
-====================================
+===
+
+.. _faq_general:
+
+Getting started and compatibility
+---------------------------------
 
 What are the minimum system requirements for installing XLTable?
-----------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 See :ref:`system_requirements`.
 
 Is there a live demo I can try without installing anything?
------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Yes — a public XLTable server with a sample retail dataset (two cubes, ten
 years of history) is open to everyone with a shared read-only login. Excel
@@ -18,8 +23,132 @@ instructions: https://xltable.com/demo.
 To run XLTable on your own machine instead, see :doc:`quickstart` (free
 XLTable Desktop) and the ready-to-run samples such as :doc:`duckdb_sample`.
 
+Does XLTable work with Excel for Mac?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Not for PivotTables. Excel for Mac cannot open Analysis Services (XMLA)
+connections — a Microsoft limitation that applies to SSAS and to every XMLA
+server, not only XLTable.
+
+Options for Mac users:
+
+- open the same cubes as a pivot table in the browser — the
+  :doc:`web pivot table <reports>` looks and behaves like the Excel pivot
+  table and needs nothing installed;
+- ask the same cubes questions in an AI chat — Claude Desktop and other MCP
+  clients run on macOS and connect to the XLTable server (see
+  :ref:`mcp_clients`);
+- run Excel for Windows in a virtual machine (Parallels) or on a remote
+  desktop;
+- use a Windows PC.
+
+Which Excel and Office versions are supported?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Excel for Windows 2016 or later, including Microsoft 365, with the Analysis
+Services OLE DB provider (MSOLAP) — it ships with Office in most
+installations. Excel connects through the standard *From Analysis Services*
+dialog; no add-in is installed (see :doc:`excel`).
+
+Excel for Mac and Excel for the web cannot open XMLA connections (see the
+previous question) — their users work with the same cubes in the
+:doc:`web pivot table <reports>`. The XLTable server runs on Linux or Windows — see
+:ref:`system_requirements`.
+
+Can XLTable be connected from LibreOffice or OpenOffice?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Not as a Pivot Table client: of desktop spreadsheets only Excel for Windows
+connects over XMLA. Users without Excel work with the same cubes in the
+browser — see :doc:`reports`.
+
+Is a trial installation on Microsoft Windows available? Why would a Windows server be needed?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Yes, a Windows Server distribution is available on request.
+
+Installation instructions: :ref:`install_windows`.
+
+For pilots, Linux deployment is usually simpler. Windows is typically chosen when IT policy requires IIS and Microsoft domain integration.
+
+How does XLTable perform on large cubes (billions of rows)?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+XLTable stores no data and pre-aggregates nothing itself: every PivotTable
+action becomes one SQL query pushed down to the warehouse, so the speed is
+that of ClickHouse, Snowflake or BigQuery on your data. Three things keep it
+fast:
+
+- the **shared SQL result cache** — an identical query from several users
+  (or several sessions) runs in the database once per ``SQL_CACHE_TTL`` and
+  the others are served within milliseconds (see :ref:`cache_layers`);
+- the **two-stage SQL form** — the fact table is aggregated by its keys
+  before dimension names are joined, so ClickHouse projections and StarRocks
+  materialized views can serve the query; on a one-billion-row ClickHouse
+  table typical PivotTable queries went from seconds to well under a second
+  (see :ref:`sql_form_two_stage`);
+- the warehouse's own **partition pruning** — filters reach the fact table
+  directly, without a copy of the data in between.
+
+Size the warehouse for your PivotTable workload as you would for any BI
+tool; XLTable itself needs the resources listed in :ref:`system_requirements`.
+
+.. _faq_licensing:
+
+Licensing
+---------
+
+What is the license cost and trial period length?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Pricing information is available at:
+https://xltable.com/#pricing
+
+How are licensed users counted?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+XLTable licenses are per **named user**, not per concurrent connection.
+A licensed seat is assigned to a user on their first request and stays
+assigned to that user — signing out, closing Excel or clearing the server
+cache does not free the seat. A seat is released:
+
+- automatically, after a period of user inactivity defined by the license
+  (30 days by default) — so seats of employees who left are recycled without
+  administrator involvement;
+- manually, by an administrator on the **Seats** page of the admin panel
+  (the **Release** button, which also signs that user out).
+
+When all seats are taken, a new user receives a clear "Named user limit
+reached" message in Excel; existing users are unaffected. The admin panel
+shows who occupies the seats and when each user was last active. To add
+seats, contact the vendor for an updated license file.
+
+MCP access (AI assistants) is a license feature flag (``"mcp": true``), not
+a separate seat count: when the license includes MCP, seats are still counted
+per named user regardless of the interface — a user connecting from both
+Excel and an AI assistant occupies one seat. A license without the flag means
+MCP is disabled while Excel keeps working. See :doc:`mcp` for details.
+
+The web pivot table works the same way: it is a license feature flag
+(``"web": true``), and a user who opens a report in the browser takes the
+same named seat as in Excel — one person in Excel, the browser and an AI
+assistant occupies one seat. See :doc:`reports`.
+
+Is the license tied to a specific server?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Yes. The license file is bound to the machine it was issued for: the
+**License** page of the admin panel shows a *server ID* (a fingerprint of the
+machine), which you send to the vendor when requesting a license. A license
+issued for one server ID does not work on another machine — when migrating
+the server to new hardware, changing its hostname or moving to another VM,
+request a replacement license file for the new server ID (the admin panel of
+the new installation shows it even before a license is uploaded). The
+license also carries an expiry date and a maximum product version; both are
+shown on the **License** tab.
+
 After installation, I see a message that no license is found or that xltable.lic is missing.
------------------------------------------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You need to upload a license file. Open the Admin Panel (see :ref:`admin_panel`).
 
@@ -29,7 +158,7 @@ Then upload the license file you receive through the Admin Panel.
 .. _faq_license_revoked:
 
 The server reports "License has been revoked by the vendor".
--------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The license file on this server has been replaced by the vendor — typically
 because a new key was issued for a new server ID, and the old one is no
@@ -38,18 +167,37 @@ replaced keys and reject them. Upload the replacement license file through
 the Admin Panel; if you do not have it, contact the vendor or partner who
 provided your distribution package.
 
+.. _faq_excel:
+
+Connecting Excel
+----------------
+
 I cannot connect to the XLTable server from Excel.
----------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 I get errors such as "Connection failed, target computer actively refused it," timeout errors, or an error on the first step of the connection wizard.
 
 - Check the connection guide: :doc:`excel`
-- Run diagnostics: :doc:`support`
 - In the Excel server field, always use the full URL with protocol: ``http://...`` or ``https://...``.
-- Also verify access to XLTable over ports 80/443.
+- Verify the server address is reachable from the client machine: port 80
+  or 443 behind the web front, or the server's own port (5000 by default)
+  when Excel connects to it directly.
+- On a Linux server, check that the front is running: ``sudo systemctl
+  status apache2`` (``nginx`` on installations made before 2.1.1); its log
+  is ``/var/log/apache2/olap_error.log``.
+- Check that XLTable is running: ``sudo supervisorctl status``.
+- If it still fails, enable logging and send the log to support — see
+  :ref:`enable_logging`.
+
+I get an authentication error in Excel.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Verify the username and password in ``settings.json`` under the ``USERS`` key.
+- If using Active Directory, verify the ``CREDENTIAL_ACTIVE_DIRECTORY`` settings.
+- Changes to ``settings.json`` are picked up automatically within a few seconds of saving.
 
 Excel asks for a password although single sign-on (AD) is configured.
-----------------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Single sign-on works over Kerberos only, and Kerberos is strict about how
 the server is addressed:
@@ -71,7 +219,7 @@ the server is addressed:
   know the ``DOMAIN\user`` form.
 
 Excel shows an XML parsing error, or curl returns HTTP 500 from the server.
-----------------------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Validate ``settings.json`` against the documented schema: :ref:`settings_schema`.
 
@@ -80,59 +228,8 @@ Changes are picked up automatically within a few seconds of saving (a file with
 a JSON syntax error is ignored and logged, the previous configuration keeps
 working) — test the Excel connection again after saving (see :doc:`excel`).
 
-Can I store cube metadata in one ClickHouse instance and actual data in another?
-----------------------------------------------------------------------------------
-
-Yes. Connections are defined in ``settings.json`` (``CREDENTIAL_DB`` block), while cube definitions are stored in the ``olap_definition`` table.
-
-More details:
-
-- :ref:`database_connections`
-- :ref:`cube_definition_storage`
-
-XLTable cannot connect to ClickHouse databases.
------------------------------------------------
-
-Check ``CREDENTIAL_DB`` parameters (``host``, ``port``, ``secure``) using the examples in :ref:`database_connections`.
-
-If ClickHouse accepts only TLS/HTTPS, install the correct certificate chain on the XLTable server and try again.
-
-The connection fails with ``SSL: CERTIFICATE_VERIFY_FAILED`` (self-signed certificate in certificate chain).
-------------------------------------------------------------------------------------------------------------
-
-The warehouse uses TLS with a certificate signed by a private CA — typical
-for managed cloud ClickHouse (for example, Yandex Cloud). The error may be
-shown under a generic "Host is unreachable" heading, but the ``SSLError``
-text is the real cause.
-
-Fix it **without turning TLS off**:
-
-- install the provider's CA certificate on the machine running XLTable
-  (cloud providers publish it in their connection guide), or
-- as a fallback, set **Verify certificate = no** while keeping
-  **Secure (TLS) = yes** — the traffic stays encrypted, only the
-  certificate check is skipped.
-
-Do not set ``Secure = no`` to silence this error: that sends your warehouse
-password and data over the network unencrypted.
-
-The Create cube wizard fails at the classification step with a database error (``Not enough privileges`` / ``ACCESS_DENIED``).
---------------------------------------------------------------------------------------------------------------------------------
-
-The table list of the wizard shows **all** tables and views of the
-warehouse — including those your account cannot read. Generating a cube
-requires the ``SELECT`` right on the chosen table (the wizard profiles its
-columns), so a table you have no access to fails at the classification
-step with the warehouse's own error text. Pick a table your account can
-read, or ask your administrator for a ``SELECT`` grant on it.
-
-A successfully generated cube is saved as a plain ``.sql`` file into the
-cubes folder (with the installer — ``Documents\XLTable\cubes``); the
-**Cubes** page of the web application (:doc:`web_cubes`) lists every cube
-the server sees.
-
 Excel shows "Cannot read the list of cubes in database …" instead of the cube list.
-------------------------------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The server connected to the warehouse but could not read the
 ``olap_definition`` table of the selected database; the text after the
@@ -156,8 +253,98 @@ the next request after the cause is fixed reads the list again.
    Snowflake a database the account cannot read is listed with no cubes
    rather than with an error — check the grant on ``OLAP_DEFINITION``.
 
+I opened the server address in a browser and see a page, not data.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+That is expected: the server address itself (``https://server/``) is the
+data endpoint for Excel and AI assistants. Since 2.1.1 a browser gets a
+short page that says so and points to the admin console (``/admin``,
+administrators only), the MCP endpoint (``/mcp``) and the documentation.
+Excel connects to the same address through the Data Connection Wizard. To
+work with the cubes in the browser, open the web application at
+``https://server/reports`` — see :doc:`reports`.
+
+The Pivot Table shows no data.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Confirm the ``olap_definition`` table exists in the database and contains at least one cube definition.
+- Enable logging and check the generated SQL queries for errors.
+- Verify the database credentials in ``CREDENTIAL_DB`` have read access to the relevant tables.
+
+The Pivot Table reports "too many data cells".
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- The result size limit is measured in cells of the pivoted table (rows ×
+  columns × measures), set by the required ``MAX_CELLS`` key in
+  ``settings.json`` (100,000 in the shipped configuration). Adjust it if
+  needed (the legacy ``MAX_ROWS`` key is still accepted).
+- Add filters in the Pivot Table to reduce the result set.
+- A separate message appears when the columns area produces more than
+  16,384 columns (the Excel sheet limit) — move fields from columns to rows
+  or apply filters.
+
+.. _faq_server:
+
+Server and database connection
+------------------------------
+
+The XLTable service does not start on Linux.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This also covers a service that does not come up by itself after a server
+reboot. On Linux the service runs under Supervisor — check its status and
+logs:
+
+.. code-block:: bash
+
+   sudo supervisorctl status 'olap:*'
+   sudo tail -f /var/log/supervisor/olap*.log
+
+Also check the execute permissions of the binary file. The service
+management commands are described in :ref:`service_management`.
+
+The XLTable service does not start on Windows.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+XLTable on Windows Server runs under IIS (FastCGI):
+
+- Check that the IIS application pool is started (IIS Manager → Application Pools).
+- Verify the FastCGI application is registered with the correct paths to
+  ``python.exe`` and ``wfastcgi.py`` (see :ref:`install_windows`).
+- Check the Windows Event Log and the XLTable ``log`` folder for error output.
+
+XLTable Desktop on Windows 10 / 11 is not a service: it is started from the
+Start menu and runs while its console window stays open — see
+:doc:`quickstart`.
+
+XLTable cannot connect to ClickHouse databases.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Check ``CREDENTIAL_DB`` parameters (``host``, ``port``, ``secure``) using the examples in :ref:`database_connections`.
+
+If ClickHouse accepts only TLS/HTTPS, install the correct certificate chain on the XLTable server and try again.
+
+The connection fails with ``SSL: CERTIFICATE_VERIFY_FAILED`` (self-signed certificate in certificate chain).
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The warehouse uses TLS with a certificate signed by a private CA — typical
+for managed cloud ClickHouse (for example, Yandex Cloud). The error may be
+shown under a generic "Host is unreachable" heading, but the ``SSLError``
+text is the real cause.
+
+Fix it **without turning TLS off**:
+
+- install the provider's CA certificate on the machine running XLTable
+  (cloud providers publish it in their connection guide), or
+- as a fallback, set **Verify certificate = no** while keeping
+  **Secure (TLS) = yes** — the traffic stays encrypted, only the
+  certificate check is skipped.
+
+Do not set ``Secure = no`` to silence this error: that sends your warehouse
+password and data over the network unencrypted.
+
 Where is the specific ClickHouse database configured?
------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The target database and connection parameters are configured in ``settings.json``, in the ``CREDENTIAL_DB`` block:
 
@@ -166,34 +353,18 @@ The target database and connection parameters are configured in ``settings.json`
 
 If the ``olap_definition`` table does not exist, create it as shown in :ref:`cube_definition_storage`.
 
-Can we add extra columns with technical information to the olap_definition table?
-----------------------------------------------------------------------------------
+Can I store cube metadata in one ClickHouse instance and actual data in another?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Yes, this is safe and does not affect cube operation. XLTable never selects
-the whole table: it only reads the ``id`` column (to list the cubes) and the
-``definition`` column (to load a cube definition), always referencing these
-columns by name. Any additional columns — owner, change date, comments,
-versioning info and so on — are simply ignored by the server.
+Yes. Connections are defined in ``settings.json`` (``CREDENTIAL_DB`` block), while cube definitions are stored in the ``olap_definition`` table.
 
-The only requirements:
+More details:
 
-- keep the existing ``id`` and ``definition`` columns unchanged (names and types);
-- make sure the database user XLTable connects with keeps read access to the table.
-
-How can I see SQL queries that XLTable sends to the database?
---------------------------------------------------------------
-
-Set ``WRITE_LOG=true`` in ``settings.json`` (picked up automatically, no
-restart needed) and check XLTable logs:
-
-- :ref:`enable_logging`
-- :ref:`settings_schema`
-
-You can also find the queries on the database side: every query is tagged
-with the ``app:xltable`` marker — see :ref:`query_history_marker`.
+- :ref:`database_connections`
+- :ref:`cube_definition_storage`
 
 How do I specify multiple users in settings.json?
--------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Use this format:
 
@@ -208,10 +379,182 @@ Use this format:
      "user2": ["group_name"]
    }
 
+What access is usually required for a contractor to configure a cube?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Typical access includes:
+
+- SSH/admin access to the XLTable server
+- XLTable access to ClickHouse
+- permissions on ``olap_definition`` for cube upload/update
+- network access for Excel users to XLTable over 80/443 (or via VPN)
+
+Step-by-step docs:
+
+- :doc:`install`
+- :doc:`excel`
+
+.. _faq_cubes:
+
+Cubes and modeling
+------------------
+
+The Create cube wizard fails at the classification step with a database error (``Not enough privileges`` / ``ACCESS_DENIED``).
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The table list of the wizard shows **all** tables and views of the
+warehouse — including those your account cannot read. Generating a cube
+requires the ``SELECT`` right on the chosen table (the wizard profiles its
+columns), so a table you have no access to fails at the classification
+step with the warehouse's own error text. Pick a table your account can
+read, or ask your administrator for a ``SELECT`` grant on it.
+
+A successfully generated cube is saved as a plain ``.sql`` file into the
+cubes folder (with the installer — ``Documents\XLTable\cubes``); the
+**Cubes** page of the web application (:doc:`web_cubes`) lists every cube
+the server sees.
+
+Can we add extra columns with technical information to the olap_definition table?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Yes, this is safe and does not affect cube operation. XLTable never selects
+the whole table: it only reads the ``id`` column (to list the cubes) and the
+``definition`` column (to load a cube definition), always referencing these
+columns by name. Any additional columns — owner, change date, comments,
+versioning info and so on — are simply ignored by the server.
+
+The only requirements:
+
+- keep the existing ``id`` and ``definition`` columns unchanged (names and types);
+- make sure the database user XLTable connects with keeps read access to the table.
+
+Why are cube changes not visible to users after updating the cube?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+An edited cube definition is picked up automatically within
+``METADATA_CACHE_TTL`` (600 seconds by default). To apply it immediately, use
+**Clear Metadata Cache** in the Admin Panel (``http://<server>/admin``) —
+users stay signed in — or click Refresh in Excel for an individual user.
+
+How does XLTable generate SQL from a cube definition: are all CTEs executed or only the required ones?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+XLTable generates a query based on the current context of the fields selected in Excel. Only the required tables and fields are used, not the entire model.
+
+For CTEs, only the parts actually used in the query participate in execution.
+
+Useful documentation sections:
+
+- :ref:`cte`
+- :ref:`sql_generation_logic`
+
+Why is the number of rows returned by XLTable higher than in another analytics system with a similar report layout?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Row counts may differ due to different result granularity.
+XLTable can include intermediate totals, not only leaf-level rows.
+Compare systems with identical dimensions, filters, and subtotal settings.
+
+See :ref:`sql_generation_logic`.
+
+We need to combine two attributes from different tables into one dimension, but an error occurs.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For attributes from different tables, create separate dimensions and join sources using LEFT JOIN in the cube definition.
+
+Working example: :ref:`unified_example`.
+
+ClickHouse does not allow nesting window functions inside aggregates like MDX in Microsoft tools. How can we replicate multi-step measure logic?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+First check whether Excel already does it: **share of total, share of the
+parent row, running total, rank** and *difference from the previous item*
+are **Show Values As** calculations of the pivot table, computed by Excel
+from the numbers it already has — nothing is added to the cube
+(:ref:`excel_show_values_as`).
+
+For an expression over already-aggregated values — a ratio, a share via a
+window function, growth between two measure groups — a calculated field is
+usually enough: it is computed in the outer SELECT, after aggregation. For
+logic that must change the generated SQL itself, use Jinja scripts in the
+cube definition: they inject filters and transform SQL before execution.
+
+Documentation:
+
+- :ref:`excel_show_values_as`
+- :ref:`calculated_fields`
+- :ref:`jinja_scripts`
+- :ref:`jinja_var`
+
+The client is migrating from Microsoft SQL Server and SSAS. Can we avoid creating extra objects in ClickHouse?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Yes. You can reduce the number of intermediate ClickHouse objects by moving part of the logic into the XLTable cube definition (SQL + tags).
+
+References:
+
+- SSAS comparison: :ref:`ssas_comparison`
+- Cube definition rules: :doc:`cubes`
+
+.. _faq_performance:
+
+Performance, cache and query logs
+---------------------------------
+
+Queries are slow.
+^^^^^^^^^^^^^^^^^
+
+- Enable ``WRITE_LOG`` to inspect the generated SQL and identify bottlenecks.
+- Pre-aggregate data in the database where possible.
+- Reduce the number of dimensions selected in the Pivot Table.
+
+Excel queries run too long or timeout; a ClickHouse view is slow while a physical table is faster.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Enable logging first and verify the actual SQL query.
+To improve performance, reduce the number of fields/dimensions in the model and PivotTable.
+For heavy sources, use narrower views or materialized tables in ClickHouse.
+
+Data in storage updates frequently; we need to refresh cache. Is configurable cache TTL planned?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The cache TTL is configurable: the ``METADATA_CACHE_TTL`` setting (600 seconds
+by default) limits how long cube metadata and query results are served from
+the cache before being re-read from the database, and ``SQL_CACHE_TTL``
+(default: the ``METADATA_CACHE_TTL`` value) limits how long SQL query results
+are shared between users. See :doc:`cache` and :ref:`settings_schema`.
+
+To refresh immediately, use the standard methods:
+
+- Refresh in Excel (Refresh / Refresh All)
+- Clear Metadata Cache in the Admin Panel
+- ``POST /api/cache/clear`` from your ETL pipeline — clear the cache
+  automatically right after the warehouse data is updated, so users get
+  fresh data without waiting out the TTL (see :ref:`cache_api`)
+
+Documentation:
+
+- :doc:`cache`
+- :ref:`refreshing_data`
+- :ref:`admin_panel`
+- :ref:`cache_api`
+
+How can I see SQL queries that XLTable sends to the database?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Set ``WRITE_LOG=true`` in ``settings.json`` (picked up automatically, no
+restart needed) and check XLTable logs:
+
+- :ref:`enable_logging`
+- :ref:`settings_schema`
+
+You can also find the queries on the database side: every query is tagged
+with the ``app:xltable`` marker — see :ref:`query_history_marker`.
+
 .. _query_history_marker:
 
 How can I view the query history of XLTable users in the database?
-------------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Every SQL query generated by XLTable carries a marker comment that
 identifies the application and the XLTable user who requested the data:
@@ -320,320 +663,3 @@ live in (replace ``region-eu`` with your region):
 **DuckDB** — the embedded database has no server-side query history; use
 ``WRITE_LOG=true`` in ``settings.json`` to see the queries in XLTable logs
 instead.
-
-Data in storage updates frequently; we need to refresh cache. Is configurable cache TTL planned?
---------------------------------------------------------------------------------------------------
-
-The cache TTL is configurable: the ``METADATA_CACHE_TTL`` setting (600 seconds
-by default) limits how long cube metadata and query results are served from
-the cache before being re-read from the database, and ``SQL_CACHE_TTL``
-(default: the ``METADATA_CACHE_TTL`` value) limits how long SQL query results
-are shared between users. See :doc:`cache` and :ref:`settings_schema`.
-
-To refresh immediately, use the standard methods:
-
-- Refresh in Excel (Refresh / Refresh All)
-- Clear Metadata Cache in the Admin Panel
-- ``POST /api/cache/clear`` from your ETL pipeline — clear the cache
-  automatically right after the warehouse data is updated, so users get
-  fresh data without waiting out the TTL (see :ref:`cache_api`)
-
-Documentation:
-
-- :doc:`cache`
-- :ref:`refreshing_data`
-- :ref:`admin_panel`
-- :ref:`cache_api`
-
-Why are cube changes not visible to users after updating the cube?
-------------------------------------------------------------------
-
-An edited cube definition is picked up automatically within
-``METADATA_CACHE_TTL`` (600 seconds by default). To apply it immediately, use
-**Clear Metadata Cache** in the Admin Panel (``http://<server>/admin``) —
-users stay signed in — or click Refresh in Excel for an individual user.
-
-Excel queries run too long or timeout; a ClickHouse view is slow while a physical table is faster.
-----------------------------------------------------------------------------------------------------
-
-Enable logging first and verify the actual SQL query.
-To improve performance, reduce the number of fields/dimensions in the model and PivotTable.
-For heavy sources, use narrower views or materialized tables in ClickHouse.
-
-Why is the number of rows returned by XLTable higher than in another analytics system with a similar report layout?
----------------------------------------------------------------------------------------------------------------------
-
-Row counts may differ due to different result granularity.
-XLTable can include intermediate totals, not only leaf-level rows.
-Compare systems with identical dimensions, filters, and subtotal settings.
-
-See :ref:`sql_generation_logic`.
-
-How does XLTable generate SQL from a cube definition: are all CTEs executed or only the required ones?
--------------------------------------------------------------------------------------------------------
-
-XLTable generates a query based on the current context of the fields selected in Excel. Only the required tables and fields are used, not the entire model.
-
-For CTEs, only the parts actually used in the query participate in execution.
-
-Useful documentation sections:
-
-- :ref:`cte`
-- :ref:`sql_generation_logic`
-
-The XLTable service does not start automatically after server reboot.
-----------------------------------------------------------------------
-
-Check the service management instructions: :ref:`service_management`.
-
-On Linux, the default setup is often supervisor. Check:
-
-- status: ``sudo supervisorctl status 'olap:*'``
-- logs: ``sudo tail -f /var/log/supervisor/olap*.log``
-- execute permissions for the binary file
-
-What access is usually required for a contractor to configure a cube?
-----------------------------------------------------------------------
-
-Typical access includes:
-
-- SSH/admin access to the XLTable server
-- XLTable access to ClickHouse
-- permissions on ``olap_definition`` for cube upload/update
-- network access for Excel users to XLTable over 80/443 (or via VPN)
-
-Step-by-step docs:
-
-- :doc:`install`
-- :doc:`excel`
-
-The client is migrating from Microsoft SQL Server and SSAS. Can we avoid creating extra objects in ClickHouse?
----------------------------------------------------------------------------------------------------------------
-
-Yes. You can reduce the number of intermediate ClickHouse objects by moving part of the logic into the XLTable cube definition (SQL + tags).
-
-References:
-
-- SSAS comparison: :ref:`ssas_comparison`
-- Cube definition rules: :doc:`cubes`
-
-We need to combine two attributes from different tables into one dimension, but an error occurs.
--------------------------------------------------------------------------------------------------
-
-For attributes from different tables, create separate dimensions and join sources using LEFT JOIN in the cube definition.
-
-Working example: :ref:`unified_example`.
-
-ClickHouse does not allow nesting window functions inside aggregates like MDX in Microsoft tools. How can we replicate multi-step measure logic?
----------------------------------------------------------------------------------------------------------------------------------------------------
-
-First check whether Excel already does it: **share of total, share of the
-parent row, running total, rank** and *difference from the previous item*
-are **Show Values As** calculations of the pivot table, computed by Excel
-from the numbers it already has — nothing is added to the cube
-(:ref:`excel_show_values_as`).
-
-For an expression over already-aggregated values — a ratio, a share via a
-window function, growth between two measure groups — a calculated field is
-usually enough: it is computed in the outer SELECT, after aggregation. For
-logic that must change the generated SQL itself, use Jinja scripts in the
-cube definition: they inject filters and transform SQL before execution.
-
-Documentation:
-
-- :ref:`excel_show_values_as`
-- :ref:`calculated_fields`
-- :ref:`jinja_scripts`
-- :ref:`jinja_var`
-
-Does XLTable work with Excel for Mac?
---------------------------------------
-
-Not for PivotTables. Excel for Mac cannot open Analysis Services (XMLA)
-connections — a Microsoft limitation that applies to SSAS and to every XMLA
-server, not only XLTable.
-
-Options for Mac users:
-
-- open the same cubes as a pivot table in the browser — the
-  :doc:`web pivot table <reports>` looks and behaves like the Excel pivot
-  table and needs nothing installed;
-- ask the same cubes questions in an AI chat — Claude Desktop and other MCP
-  clients run on macOS and connect to the XLTable server (see
-  :ref:`mcp_clients`);
-- run Excel for Windows in a virtual machine (Parallels) or on a remote
-  desktop;
-- use a Windows PC.
-
-How does XLTable perform on large cubes (billions of rows)?
-------------------------------------------------------------
-
-XLTable stores no data and pre-aggregates nothing itself: every PivotTable
-action becomes one SQL query pushed down to the warehouse, so the speed is
-that of ClickHouse, Snowflake or BigQuery on your data. Three things keep it
-fast:
-
-- the **shared SQL result cache** — an identical query from several users
-  (or several sessions) runs in the database once per ``SQL_CACHE_TTL`` and
-  the others are served within milliseconds (see :ref:`cache_layers`);
-- the **two-stage SQL form** — the fact table is aggregated by its keys
-  before dimension names are joined, so ClickHouse projections and StarRocks
-  materialized views can serve the query; on a one-billion-row ClickHouse
-  table typical PivotTable queries went from seconds to well under a second
-  (see :ref:`sql_form_two_stage`);
-- the warehouse's own **partition pruning** — filters reach the fact table
-  directly, without a copy of the data in between.
-
-Size the warehouse for your PivotTable workload as you would for any BI
-tool; XLTable itself needs the resources listed in :ref:`system_requirements`.
-
-Which Excel and Office versions are supported?
------------------------------------------------
-
-Excel for Windows 2016 or later, including Microsoft 365, with the Analysis
-Services OLE DB provider (MSOLAP) — it ships with Office in most
-installations. Excel connects through the standard *From Analysis Services*
-dialog; no add-in is installed (see :doc:`excel`).
-
-Excel for Mac and Excel for the web cannot open XMLA connections (see the
-previous question) — their users work with the same cubes in the
-:doc:`web pivot table <reports>`. The XLTable server runs on Linux or Windows — see
-:ref:`system_requirements`.
-
-What is the license cost and trial period length?
---------------------------------------------------
-
-Pricing information is available at:
-https://xltable.com/#pricing
-
-How are licensed users counted?
---------------------------------
-
-XLTable licenses are per **named user**, not per concurrent connection.
-A licensed seat is assigned to a user on their first request and stays
-assigned to that user — signing out, closing Excel or clearing the server
-cache does not free the seat. A seat is released:
-
-- automatically, after a period of user inactivity defined by the license
-  (30 days by default) — so seats of employees who left are recycled without
-  administrator involvement;
-- manually, by an administrator on the **Seats** page of the admin panel
-  (the **Release** button, which also signs that user out).
-
-When all seats are taken, a new user receives a clear "Named user limit
-reached" message in Excel; existing users are unaffected. The admin panel
-shows who occupies the seats and when each user was last active. To add
-seats, contact the vendor for an updated license file.
-
-MCP access (AI assistants) is a license feature flag (``"mcp": true``), not
-a separate seat count: when the license includes MCP, seats are still counted
-per named user regardless of the interface — a user connecting from both
-Excel and an AI assistant occupies one seat. A license without the flag means
-MCP is disabled while Excel keeps working. See :doc:`mcp` for details.
-
-The web pivot table works the same way: it is a license feature flag
-(``"web": true``), and a user who opens a report in the browser takes the
-same named seat as in Excel — one person in Excel, the browser and an AI
-assistant occupies one seat. See :doc:`reports`.
-
-Is the license tied to a specific server?
-------------------------------------------
-
-Yes. The license file is bound to the machine it was issued for: the
-**License** page of the admin panel shows a *server ID* (a fingerprint of the
-machine), which you send to the vendor when requesting a license. A license
-issued for one server ID does not work on another machine — when migrating
-the server to new hardware, changing its hostname or moving to another VM,
-request a replacement license file for the new server ID (the admin panel of
-the new installation shows it even before a license is uploaded). The
-license also carries an expiry date and a maximum product version; both are
-shown on the **License** tab.
-
-Is a trial installation on Microsoft Windows available? Why would a Windows server be needed?
------------------------------------------------------------------------------------------------
-
-Yes, a Windows Server distribution is available on request.
-
-Installation instructions: :ref:`install_windows`.
-
-For pilots, Linux deployment is usually simpler. Windows is typically chosen when IT policy requires IIS and Microsoft domain integration.
-
-Can XLTable be connected from LibreOffice or OpenOffice?
-----------------------------------------------------------
-
-Not as a Pivot Table client: of desktop spreadsheets only Excel for Windows
-connects over XMLA. Users without Excel work with the same cubes in the
-browser — see :doc:`reports`.
-
-I opened the server address in a browser and see a page, not data.
--------------------------------------------------------------------
-
-That is expected: the server address itself (``https://server/``) is the
-data endpoint for Excel and AI assistants. Since 2.1.1 a browser gets a
-short page that says so and points to the admin console (``/admin``,
-administrators only), the MCP endpoint (``/mcp``) and the documentation.
-Excel connects to the same address through the Data Connection Wizard. To
-work with the cubes in the browser, open the web application at
-``https://server/reports`` — see :doc:`reports`.
-
-Excel cannot connect to the server.
-------------------------------------
-
-- Verify the server address is reachable from the client machine (port 80 or 443).
-- Check that the front is running: ``sudo systemctl status apache2``
-  (``nginx`` on installations made before 2.1.1); its log is
-  ``/var/log/apache2/olap_error.log``.
-- Check that XLTable is running: ``sudo supervisorctl status``.
-
-I get an authentication error in Excel.
------------------------------------------
-
-- Verify the username and password in ``settings.json`` under the ``USERS`` key.
-- If using Active Directory, verify the ``CREDENTIAL_ACTIVE_DIRECTORY`` settings.
-- Changes to ``settings.json`` are picked up automatically within a few seconds of saving.
-
-The Pivot Table shows no data.
---------------------------------
-
-- Confirm the ``olap_definition`` table exists in the database and contains at least one cube definition.
-- Enable logging and check the generated SQL queries for errors.
-- Verify the database credentials in ``CREDENTIAL_DB`` have read access to the relevant tables.
-
-Queries are slow.
-------------------
-
-- Enable ``WRITE_LOG`` to inspect the generated SQL and identify bottlenecks.
-- Pre-aggregate data in the database where possible.
-- Reduce the number of dimensions selected in the Pivot Table.
-
-The Pivot Table reports "too many data cells".
------------------------------------------------
-
-- The result size limit is measured in cells of the pivoted table (rows ×
-  columns × measures), set by the required ``MAX_CELLS`` key in
-  ``settings.json`` (100,000 in the shipped configuration). Adjust it if
-  needed (the legacy ``MAX_ROWS`` key is still accepted).
-- Add filters in the Pivot Table to reduce the result set.
-- A separate message appears when the columns area produces more than
-  16,384 columns (the Excel sheet limit) — move fields from columns to rows
-  or apply filters.
-
-The XLTable service does not start on Linux.
----------------------------------------------
-
-Check the service status and the Supervisor logs:
-
-.. code-block:: bash
-
-   sudo supervisorctl status 'olap:*'
-   sudo tail -f /var/log/supervisor/olap*.log
-
-The XLTable service does not start on Windows.
-------------------------------------------------
-
-XLTable on Windows runs under IIS (FastCGI):
-
-- Check that the IIS application pool is started (IIS Manager → Application Pools).
-- Verify the FastCGI application is registered with the correct paths to
-  ``python.exe`` and ``wfastcgi.py`` (see :ref:`install_windows`).
-- Check the Windows Event Log and the XLTable ``log`` folder for error output.

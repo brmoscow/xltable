@@ -974,9 +974,17 @@ Limits
   the axes shows the value only on the last day of the month and ``0`` on the
   other days.
 - Copied source Jinja: only ``alias.`` references are rewritten
-  (``sales.`` becomes ``sales__offset_m1y.``); scripts matching the
-  ``FROM db.sales sales`` text or reading ``context.sql.sources["sales"]`` do
-  not apply to the copy.
+  (``sales.`` becomes ``sales__offset_m1y.``); scripts reading
+  ``context.sql.sources["sales"]`` do not apply to the copy. A ``replace``
+  anchored on the ``FROM db.sales sales`` text is worse than inert: in the
+  copy that text is found as a *prefix* of the renamed alias
+  (``sales__offset_m1y``), the replace fires halfway and breaks the copy's
+  SQL. Anchor such a replace on ``FROM db.sales `` **without the alias** —
+  e.g. row-level security as a filtered subquery,
+  ``replace("FROM db.sales ", "FROM (SELECT * FROM db.sales WHERE store_id IN
+  (SELECT store_id FROM db.user_stores WHERE login = " ~ context.user.sql ~
+  ")) ")`` — the alias stays outside the replaced text, so the same script
+  works for the source and for its copies.
 - ``alias.`` is also rewritten inside string literals of the copy's SQL.
 - Drillthrough on a visible :tag:`exclude` measure works when the excluded
   dimension is not on the cell's axes or filters; with the dimension in the

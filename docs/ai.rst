@@ -12,9 +12,10 @@ page you give them and miss the rest. Instead, give the assistant the
 
 This file contains every page of this documentation (installation, cube
 reference, Jinja templating, Excel connectivity, samples, FAQ) in one
-LLM-friendly document. It is small enough to fit into the context window of
-any modern AI model and is regenerated automatically on every release, so it
-is always up to date.
+LLM-friendly document. It fits into the context window of the current
+large-context models and is regenerated automatically on every release, so
+it is always up to date. For an assistant with a smaller context window use
+the `Machine-readable index`_ below instead.
 
 Example prompt
 --------------

@@ -46,7 +46,14 @@ def setup(app):
 html_theme = 'furo'
 html_title = f'XLTable {release}'
 html_static_path = ['_static']
-html_css_files = ['custom.css']
+html_css_files = [
+    # IBM Plex Sans / Mono; with the fonts unreachable (a closed network)
+    # the page falls back to the system fonts of the stack below.
+    'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500'
+    '&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400'
+    '&display=swap',
+    'custom.css',
+]
 html_favicon = '_static/xllogo_icon.png'
 
 # Google Analytics (gtag.js)
@@ -55,7 +62,15 @@ html_js_files = [
     'ga.js',
 ]
 
-# Brand color #0060b7 sampled from the XLTable logo
+# Brand color #0060b7 sampled from the XLTable logo. The table header band
+# #dce6f1 is the header fill of an Excel pivot table: tables in the docs
+# look like the product. The menu is set in the text colour, only the open
+# page is coloured.
+_font_sans = ('"IBM Plex Sans", -apple-system, BlinkMacSystemFont, '
+              '"Segoe UI", Helvetica, Arial, sans-serif')
+_font_mono = ('"IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, '
+              'Monaco, "Liberation Mono", monospace')
+
 html_theme_options = {
     'light_logo': 'xllogo_light.png',
     'dark_logo': 'xllogo_white.png',
@@ -63,10 +78,19 @@ html_theme_options = {
     'light_css_variables': {
         'color-brand-primary': '#0060b7',
         'color-brand-content': '#0060b7',
+        'font-stack': _font_sans,
+        'font-stack--monospace': _font_mono,
+        'color-table-header-background': '#dce6f1',
+        'color-sidebar-caption-text': 'var(--color-foreground-primary)',
+        'color-sidebar-link-text--top-level':
+            'var(--color-foreground-secondary)',
+        'color-sidebar-item-background--current': '#e3edf8',
     },
     'dark_css_variables': {
         'color-brand-primary': '#6cb0f0',
         'color-brand-content': '#6cb0f0',
+        'color-table-header-background': '#1c2a3d',
+        'color-sidebar-item-background--current': '#16263a',
     },
 }
 
@@ -88,8 +112,11 @@ llms_txt_title = 'XLTable'
 llms_txt_summary = (
     'XLTable is an OLAP server that connects native Excel Pivot Tables '
     'directly to modern analytical databases (ClickHouse, BigQuery, '
-    'Snowflake, Trino, Greenplum, StarRocks, Databricks) over XMLA. '
-    'It provides a semantic and security layer: cubes with measures, '
-    'dimensions, hierarchies and roles are defined in plain SQL with '
-    'optional Jinja templating.'
+    'Snowflake, Trino, Greenplum, StarRocks, Databricks, DuckDB) over '
+    'XMLA. The same cubes are served to a pivot table in the browser, to '
+    'AI assistants through a built-in MCP server and a REST API, and to BI '
+    'tools through a PostgreSQL-compatible SQL endpoint. It provides a '
+    'semantic and security layer: cubes with measures, dimensions, '
+    'hierarchies and roles are defined in plain SQL with optional Jinja '
+    'templating.'
 )

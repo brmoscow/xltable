@@ -1,8 +1,9 @@
 # XLTable Documentation
 
 Documentation source for [XLTable](https://xltable.com) — an OLAP server that
-connects Excel Pivot Tables directly to modern analytical databases
-(ClickHouse, BigQuery, Snowflake, Trino, StarRocks, Databricks, Greenplum).
+connects Excel Pivot Tables, a pivot table in the browser, AI assistants and
+BI tools directly to modern analytical databases (ClickHouse, BigQuery,
+Snowflake, Trino, StarRocks, Databricks, Greenplum, DuckDB).
 
 Published at: https://xltable-olap.readthedocs.io
 

@@ -1,11 +1,167 @@
-/* Landing page cards: keep titles compact and add a subtle hover lift */
-.sd-card {
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+/* XLTable documentation — overrides on top of the Furo theme.
+   Fonts and colour variables are set in conf.py (html_theme_options);
+   this file holds what variables cannot express. */
+
+/* ---------------------------------------------------------------- type */
+
+h1, h2, h3, h4 {
+    font-weight: 600;
 }
-.sd-card:hover {
-    transform: translateY(-2px);
+h1 {
+    font-size: 2.25em;
+    letter-spacing: -0.02em;
+}
+h2 {
+    font-size: 1.6em;
+    letter-spacing: -0.01em;
+}
+h3 {
+    font-size: 1.25em;
+}
+h4 {
+    font-size: 1.05em;
+}
+
+/* ------------------------------------------------------------- sidebar */
+
+/* Section captions in sentence case and in the text colour: they are
+   headings of the menu, not decoration. */
+.sidebar-tree .caption,
+.sidebar-tree :not(.caption) > .caption-text {
+    text-transform: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* The open page is the only coloured item of the menu. */
+.sidebar-tree .current-page > .reference {
+    color: var(--color-brand-primary);
+    font-weight: 600;
+}
+
+/* -------------------------------------------------------------- tables */
+
+/* Tables follow the look of the product: a flat grid with the pale blue
+   header band of an Excel pivot table. */
+table.docutils {
+    box-shadow: none;
+    border: 1px solid var(--color-table-border);
+    border-radius: 6px;
+}
+table.docutils th {
+    text-align: left;
+    font-weight: 600;
+}
+
+/* ---------------------------------------------------------------- code */
+
+.highlight,
+div.literal-block-wrapper {
+    border-radius: 6px;
+}
+article .highlight {
+    border: 1px solid var(--color-background-border);
+}
+
+/* --------------------------------------------------------------- cards */
+
+/* Card grids start at the edge of the text column, like everything else. */
+article .sd-container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Flat cards: a hairline border, no shadow; the border answers the
+   pointer. */
+.sd-card {
+    border: 1px solid var(--color-background-border) !important;
+    border-radius: 8px;
+    box-shadow: none !important;
+    background: var(--color-background-primary);
+}
+.sd-card:hover,
+.sd-card:focus-within {
+    border-color: var(--color-brand-primary) !important;
+}
+.sd-card .sd-card-title {
+    font-weight: 600;
+    margin-bottom: 0.35rem;
 }
 .sd-card .sd-card-title .octicon {
     color: var(--color-brand-primary);
     margin-right: 0.35em;
+}
+.sd-card .sd-card-body {
+    color: var(--color-foreground-secondary);
+}
+.sd-card .sd-card-body .sd-card-title {
+    color: var(--color-foreground-primary);
+}
+.sd-card .sd-card-body p:last-child {
+    margin-bottom: 0;
+}
+
+/* Buttons take the brand colour. */
+:root,
+body {
+    --sd-color-primary: #0060b7;
+    --sd-color-primary-highlight: #004f96;
+    --sd-color-primary-text: #ffffff;
+}
+body[data-theme="dark"] {
+    --sd-color-primary: #6cb0f0;
+    --sd-color-primary-highlight: #8cc2f4;
+    --sd-color-primary-text: #0b1522;
+}
+@media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) {
+        --sd-color-primary: #6cb0f0;
+        --sd-color-primary-highlight: #8cc2f4;
+        --sd-color-primary-text: #0b1522;
+    }
+}
+.sd-btn {
+    border-radius: 6px;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+}
+
+/* -------------------------------------------------------- landing page */
+
+p.landing-lead {
+    font-size: 1.3em;
+    line-height: 1.45;
+    color: var(--color-foreground-secondary);
+    margin-top: 0.25rem;
+}
+p.landing-lead strong {
+    color: var(--color-foreground-primary);
+    font-weight: 600;
+}
+
+.landing-actions {
+    margin-top: 1.25rem;
+    margin-bottom: 0.25rem !important;
+}
+p.landing-note {
+    font-size: 0.9em;
+    color: var(--color-foreground-secondary);
+}
+
+/* The screenshot of the product: a frame and room around it. */
+img.landing-shot {
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--color-background-border);
+    border-radius: 6px;
+}
+
+/* Database tiles: a name and nothing else. */
+.landing-sources .sd-card-body {
+    padding: 0.7rem 0.9rem;
+}
+.landing-sources .sd-card-title {
+    margin-bottom: 0;
+    font-size: 0.95em;
+    font-weight: 500;
 }

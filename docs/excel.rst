@@ -4,8 +4,9 @@ Connecting Excel
 XLTable exposes a standard XMLA endpoint, so connecting Excel to XLTable
 is identical to connecting to Microsoft SQL Server Analysis Services (SSAS).
 
-Any Excel feature that works with SSAS works with XLTable — Pivot Tables,
-Power Query, slicers, named sets, MDX formulas and more.
+Excel works with XLTable the way it works with SSAS — Pivot Tables, slicers,
+named sets, MDX formulas and more. The exceptions are noted on this page:
+the Power Query importer (step 2 below) and timelines (see `Slicers`_).
 
 ------------------------------------------------------------
 
@@ -91,7 +92,7 @@ use the following OLEDB connection string:
 Replace ``http://your_server_ip`` with the actual server address.
 
 This connection string is used by Excel through the MSOLAP provider.
-XLTable currently targets Excel as its client application.
+Of the XMLA clients, XLTable currently targets Excel.
 
 ------------------------------------------------------------
 
@@ -264,4 +265,7 @@ in the result, so both columns fill in.
 Troubleshooting connection issues
 -----------------------------------
 
-See the :doc:`support` page for common connection problems and solutions.
+Common connection problems and their solutions are collected in the FAQ —
+see :ref:`faq_excel`: Excel cannot connect, authentication errors, a password
+prompt with single sign-on configured, an empty Pivot Table, "too many data
+cells". To collect logs for a problem report, see :ref:`enable_logging`.

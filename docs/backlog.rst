@@ -2,7 +2,8 @@ Backlog
 =======
 
 This section lists features and improvements planned for development
-in 2026.
+in 2026. Completed items come first, in the order of the releases they
+shipped in; planned items follow.
 
 .. list-table::
    :header-rows: 1
@@ -114,6 +115,25 @@ in 2026.
        are stored in the database.
      - Done (2.1.3)
 
+   * - 16
+     - DAX support
+     - Complex measures without DAX: the previous period and the share of total
+       are tags on the measure (:ref:`smart_measures`); running totals, ranks and
+       percent of parent are available in Excel through *Show Values As*. DAX as a
+       query language for Power BI remains a separate topic.
+     - Done (2.1.3)
+
+   * - 19
+     - SQL endpoint
+     - Expose XLTable cubes over the PostgreSQL wire protocol so that BI tools
+       (DataLens and other tools with a PostgreSQL driver)
+       can connect to cubes as regular database tables without a dedicated connector.
+       Each cube is presented as a flat virtual table with hierarchy levels
+       and pre-aggregated measures as columns. Authentication, row-level security
+       and the shared result cache apply the same way as for Excel and MCP.
+     - Done (2.1.5) — see :doc:`sql_endpoint`; Power BI connects through
+       XMLA, not through the SQL endpoint
+
    * - 14
      - Native data types in dimension attributes
      - Currently all dimension attributes are cast to string. Planned support for integer and date types,
@@ -126,30 +146,11 @@ in 2026.
        (for example, sort month names by month number).
      -
 
-   * - 16
-     - DAX support
-     - Complex measures without DAX: the previous period and the share of total
-       are tags on the measure (:ref:`smart_measures`); running totals, ranks and
-       percent of parent are available in Excel through *Show Values As*. DAX as a
-       query language for Power BI remains a separate topic.
-     - Done (2.1.3)
-
    * - 17
      - Built-in Jinja functions
      - A library of built-in Jinja functions available in cube SQL templates
        for common transformations, date handling, and formatting operations.
      -
-
-   * - 19
-     - SQL endpoint
-     - Expose XLTable cubes over the PostgreSQL wire protocol so that BI tools
-       (DataLens and other tools with a PostgreSQL driver)
-       can connect to cubes as regular database tables without a dedicated connector.
-       Each cube is presented as a flat virtual table with hierarchy levels
-       and pre-aggregated measures as columns. Authentication, row-level security
-       and the shared result cache apply the same way as for Excel and MCP.
-     - Done (2.1.5) — see :doc:`sql_endpoint`; Power BI connects through
-       XMLA, not through the SQL endpoint
 
    * - 21
      - Aggregate awareness

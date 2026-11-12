@@ -2,73 +2,129 @@
 XLTable Documentation
 =====================
 
-**Semantic Layer for Big Data.**
+.. rst-class:: landing-lead
 
-Self-service analytics on big data — governed by IT, loved by users.
+**Semantic Layer for Big Data.** Self-service analytics on big data —
+governed by IT, loved by users.
 
 XLTable is an XMLA-compatible OLAP semantic layer for modern analytical
 databases. Business users explore data in native **Excel Pivot Tables**, in
-a **pivot table in the browser**, or ask questions in plain language through
-AI assistants — no SQL for end users, no data copies, no add-ins, no BI tools
-in between. Excel is the main front end, the browser and AI work on the same
-cubes with the same numbers, your warehouse stays the single source of truth,
-and XLTable deploys inside your perimeter: IT defines models, access rights
-and performance centrally, while business users keep working in the tool they
-know best.
+a **pivot table in the browser**, through **AI assistants** or in BI tools —
+no SQL for end users, no data copies, no add-ins. Every client works on the
+same cubes with the same numbers and access rights, and all queries run
+inside your warehouse.
 
-.. grid:: 1 2 2 3
+.. grid:: auto
+   :gutter: 2
+   :class-container: landing-actions
+
+   .. grid-item::
+
+      .. button-ref:: quickstart
+         :ref-type: doc
+         :color: primary
+
+         Install XLTable Desktop
+
+   .. grid-item::
+
+      .. button-link:: https://xltable.com/demo
+         :color: primary
+         :outline:
+
+         Open the live demo
+
+   .. grid-item::
+
+      .. button-ref:: overview
+         :ref-type: doc
+         :color: primary
+         :outline:
+
+         What is XLTable
+
+.. rst-class:: landing-note
+
+XLTable Desktop is free and comes with demo data: the first Pivot Table
+takes a couple of minutes, no administrator rights needed. The live demo is
+a public server with sample cubes — nothing to install.
+
+.. image:: _static/xltable_pivot.png
+   :alt: An Excel Pivot Table on an XLTable cube — sales by region, city and store across quarters, with the measures and dimensions of the cube in the field list
+   :align: center
+   :width: 640px
+   :class: landing-shot
+
+Working with cubes
+------------------
+
+.. grid:: 1 2 2 2
    :gutter: 3
 
-   .. grid-item-card:: :octicon:`rocket;1em` Quickstart
-      :link: quickstart
+   .. grid-item-card:: :octicon:`table;1em` Connecting Excel
+      :link: excel
       :link-type: doc
 
-      Install XLTable Desktop and open your first Pivot
-      Table on your warehouse — no administrator rights needed.
+      Native Pivot Tables over XMLA, no add-in: authentication modes,
+      data refresh, slicers, drill through and file export.
 
-   .. grid-item-card:: :octicon:`book;1em` About XLTable
-      :link: overview
+   .. grid-item-card:: :octicon:`browser;1em` Web pivot table
+      :link: reports
       :link-type: doc
 
-      Architecture, comparison with SSAS, deployment steps
-      and system requirements.
+      The same cubes as a pivot table in the browser — built to work
+      like Excel, with saved reports shared by link.
 
-   .. grid-item-card:: :octicon:`server;1em` Installation
-      :link: install
+   .. grid-item-card:: :octicon:`hubot;1em` AI assistants (MCP)
+      :link: mcp
       :link-type: doc
 
-      Installation on Linux and Windows, licensing,
-      authentication and Active Directory.
+      Ask questions in plain language — Claude and other MCP clients
+      answer from the same cubes as Excel; the same cubes over
+      :doc:`REST <api>` for scripts and portals.
+
+   .. grid-item-card:: :octicon:`graph;1em` BI tools (SQL endpoint)
+      :link: sql_endpoint
+      :link-type: doc
+
+      Cubes as PostgreSQL tables: DataLens and other tools with a
+      PostgreSQL driver query them with plain SQL.
+
+Building cubes and running the server
+-------------------------------------
+
+.. grid:: 1 2 2 2
+   :gutter: 3
 
    .. grid-item-card:: :octicon:`stack;1em` OLAP cubes
       :link: cubes
       :link-type: doc
 
       Measures, dimensions, hierarchies, security roles and
-      drillthrough — plain SQL plus :doc:`Jinja templating <jinja>`.
+      drillthrough — plain SQL plus :doc:`Jinja templating <jinja>`;
+      :doc:`cube structure and status <web_cubes>` in the browser.
 
-   .. grid-item-card:: :octicon:`table;1em` Connecting Excel
-      :link: excel
+   .. grid-item-card:: :octicon:`list-unordered;1em` Cube definition reference
+      :link: reference
       :link-type: doc
 
-      Connect Pivot Tables over XMLA, authentication modes,
-      data refresh, drill through and file export.
+      Every SQL tag of a cube definition with examples, and the
+      unified example cube the samples are built on.
 
-   .. grid-item-card:: :octicon:`browser;1em` Web pivot table
-      :link: reports
+   .. grid-item-card:: :octicon:`server;1em` Installation
+      :link: install
       :link-type: doc
 
-      The same cubes as a pivot table in the browser — built to
-      work like Excel, with saved reports shared by link and
-      :doc:`cube structure and status <web_cubes>` for analysts.
+      The server edition for a team: Linux and Windows Server,
+      licensing, authentication and Active Directory.
 
-   .. grid-item-card:: :octicon:`hubot;1em` AI assistants (MCP)
-      :link: mcp
+   .. grid-item-card:: :octicon:`gear;1em` Configuration
+      :link: settings
       :link-type: doc
 
-      Ask questions in plain language — Claude and other MCP
-      clients answer from the same cubes as Excel; the same cubes
-      over :doc:`REST <api>` for scripts and portals.
+      Every parameter of ``settings.json``, with
+      :doc:`database connections <databases>` and
+      :doc:`caching <cache>` on their own pages.
 
 Supported data sources
 ----------------------
@@ -76,30 +132,48 @@ Supported data sources
 All heavy computation runs inside your database — XLTable pushes queries down
 to your warehouse, with no extracts and no in-memory copies. A read-only
 service account is all it needs — see :doc:`databases` for connection
-examples.
+examples. Each database below opens its ready-to-run sample: a script with
+test data and a cube.
 
-.. list-table::
-   :header-rows: 1
-   :widths: 40 60
+.. grid:: 2 4 4 4
+   :gutter: 2
+   :class-container: landing-sources
 
-   * - Database
-     - Ready-to-run sample
-   * - ClickHouse (22.5+)
-     - :doc:`clickhouse_sample`
-   * - BigQuery
-     - :doc:`bigquery_sample`
-   * - Snowflake
-     - :doc:`snowflake_sample`
-   * - Trino
-     - :doc:`trino_sample`
-   * - Greenplum
-     - :doc:`greenplum_sample`
-   * - StarRocks
-     - :doc:`starrocks_sample`
-   * - Databricks
-     - :doc:`databricks_sample`
-   * - DuckDB
-     - :doc:`duckdb_sample`
+   .. grid-item-card:: ClickHouse
+      :link: clickhouse_sample
+      :link-type: doc
+
+   .. grid-item-card:: BigQuery
+      :link: bigquery_sample
+      :link-type: doc
+
+   .. grid-item-card:: Snowflake
+      :link: snowflake_sample
+      :link-type: doc
+
+   .. grid-item-card:: Trino
+      :link: trino_sample
+      :link-type: doc
+
+   .. grid-item-card:: Greenplum
+      :link: greenplum_sample
+      :link-type: doc
+
+   .. grid-item-card:: StarRocks
+      :link: starrocks_sample
+      :link-type: doc
+
+   .. grid-item-card:: Databricks
+      :link: databricks_sample
+      :link-type: doc
+
+   .. grid-item-card:: DuckDB
+      :link: duckdb_sample
+      :link-type: doc
+
+.. rst-class:: landing-note
+
+ClickHouse is supported from version 22.5.
 
 Why XLTable?
 ------------
@@ -107,10 +181,10 @@ Why XLTable?
 - Native Excel Pivot Tables on big data — drag-and-drop over the standard
   SSAS/XMLA workflow, no SQL, no retraining
 - Centralized semantic layer: dimensions, measures, hierarchies, calculated fields
-- One model, three ways to explore: the same cube answers Excel Pivot Tables,
-  the :doc:`pivot table in the browser <reports>` and AI assistants
-  (:doc:`MCP connector <mcp>`) — with the same numbers and the same access
-  rights
+- One model, every client: the same cube answers Excel Pivot Tables, the
+  :doc:`pivot table in the browser <reports>`, AI assistants
+  (:doc:`MCP connector <mcp>`) and BI tools (:doc:`SQL endpoint
+  <sql_endpoint>`) — with the same numbers and the same access rights
 - Code-first: cube definitions are plain SQL files — keep them in Git, review
   changes in pull requests, deploy through your CI/CD flow
 - Fine-grained access control down to rows and members, Active Directory / LDAP integration
@@ -118,9 +192,14 @@ Why XLTable?
   inside your perimeter
 - Query result caching for a fast Excel experience
 - Self-hosted on Linux or Windows, on-premise or in the cloud
+- Free desktop edition for one analyst, server edition for a team — the same
+  cube files work in both (see :ref:`editions`)
 
 Getting help
 ------------
+
+Common questions and troubleshooting are collected in the :doc:`faq`; how to
+collect logs for a problem report is described in :doc:`support`.
 
 .. grid:: 1 3 3 3
    :gutter: 3
@@ -153,39 +232,15 @@ documentation as a single file — see :doc:`ai`.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Using Excel
+   :caption: Working with cubes
    :hidden:
 
    excel
-   export
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Web application
-   :hidden:
-
+   Large results and file export <export>
    reports
-   web_cubes
-
-.. toctree::
-   :maxdepth: 1
-   :caption: AI assistants and API
-   :hidden:
-
-   mcp
+   AI assistants (MCP) <mcp>
+   BI tools (SQL endpoint) <sql_endpoint>
    api
-   sql_endpoint
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Administration
-   :hidden:
-
-   install
-   databases
-   connection
-   cache
-   settings
 
 .. toctree::
    :maxdepth: 1
@@ -195,30 +250,29 @@ documentation as a single file — see :doc:`ai`.
    cubes
    jinja
    reference
+   web_cubes
    ossie
+   samples
 
 .. toctree::
    :maxdepth: 1
-   :caption: Sample data
+   :caption: Administration
    :hidden:
 
-   clickhouse_sample
-   bigquery_sample
-   snowflake_sample
-   trino_sample
-   greenplum_sample
-   starrocks_sample
-   databricks_sample
-   duckdb_sample
+   install
+   databases
+   Warehouse connection page <connection>
+   cache
+   settings
 
 .. toctree::
    :maxdepth: 1
-   :caption: Project
+   :caption: Help and releases
    :hidden:
 
    faq
    support
-   license
    ai
    changelog
    backlog
+   license

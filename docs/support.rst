@@ -20,6 +20,19 @@ number. The same string is the first line of every log file.
 Troubleshooting
 ---------------
 
+Solutions to the common problems are collected in the :doc:`faq`:
+
+- :ref:`faq_excel` — Excel cannot connect, authentication errors, an empty
+  Pivot Table;
+- :ref:`faq_server` — the service does not start, the warehouse connection
+  fails;
+- :ref:`faq_licensing` — license messages and seats;
+- :ref:`faq_performance` — slow queries, cache refresh, finding the SQL
+  XLTable sends.
+
+If the answer is not there, enable logging as described below and send the
+log files with your question.
+
 .. _enable_logging:
 
 Enable logging

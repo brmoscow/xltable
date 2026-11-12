@@ -684,6 +684,7 @@ Administrators can define:
 - Mapping of users to groups
 
 This mode is suitable for:
+
 - test environments
 - small installations
 - isolated deployments without domain infrastructure
@@ -730,6 +731,7 @@ using Microsoft Active Directory.
    binding as before and this enforcement does not apply.
 
 Active Directory integration allows you to:
+
 - Authenticate users automatically (single sign-on, no password prompt)
 - Map AD users and groups to XLTable roles
 - Centralize access management
