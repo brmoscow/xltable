@@ -6,6 +6,88 @@ Stay up to date with the latest releases by following us on
 
 ------------------------------------------------------------
 
+Version 2.1.6 — 2026-11-19
+--------------------------
+
+- **Row-level security from a warehouse table** — a value of a role's
+  :tag:`olap_access_filters` line can be the connected user:
+  ``acl_login in ({{ context.user.sql }})``. Describe the "login → store"
+  (or "login → product group") mapping table in the cube as a dimension with
+  a login field, join it to a dimension or to the measure sources, and filter
+  the login by the user — as dimension security tied to ``UserName()`` in
+  Analysis Services. The rights live in the warehouse and change without
+  editing the cube; the filter is an ordinary access filter, so it covers
+  pivot queries in both SQL forms, filter dropdowns, drillthrough, MCP, the
+  REST API and the SQL endpoint, and the source copies made by :tag:`offset`
+  and :tag:`exclude` (for a measure that excludes the very dimension the
+  rights are given by, join the mapping table to the measure source — the
+  two ways of joining are compared in the documentation). The
+  ``--olap_jinja`` scripts that joined the fact to a user-mapping table are
+  no longer needed. See :ref:`access_filters_user`.
+
+- **Fixed: export to file and cube roles** — an export to file made within
+  ten minutes after another user's export of the same cube could be built
+  with that user's cube role (visible fields and access filters). The export
+  now reads the cube definition for the exporting user every time. Pivot
+  queries, drillthrough, MCP and the REST API were not affected. If you use
+  cube roles together with export to file, update to this version.
+
+- **Fewer connections to the warehouse** — the server now opens a warehouse
+  connection only when a request actually reads from the warehouse; the
+  service requests of Excel (metadata, pivots answered from the cache,
+  session start) do not need one. This lowers the load on ClickHouse,
+  Greenplum, StarRocks and DuckDB; Snowflake, BigQuery and Databricks already
+  reused their connections. If the warehouse is unreachable, the error is now
+  reported by the first request that reads metadata or data rather than by
+  every request.
+
+- **Installations for hundreds of simultaneous users (Ubuntu)** — the
+  installer now sizes the server for the machine. It starts one worker
+  process per CPU core (no more than the memory in gigabytes and no more
+  than 16 by default; up to 64 with ``XLTABLE_INSTANCES``, the former
+  maximum was 10 and the default 4) — on our test server going from 4 to 8
+  processes doubled the throughput. The Apache front serves up to 800
+  requests at the same time instead of the 150 of a stock Apache
+  (``XLTABLE_FRONT_WORKERS`` raises it further) and gives each request to
+  the least busy process. A server process accepts up to 500 connections
+  instead of 100 (:confval:`SERVER_CONNECTION_LIMIT`). An existing
+  installation keeps its process count; re-run
+  ``install_xltable.sh`` to get the new front settings. See
+  :ref:`install_ubuntu`.
+
+- **Faster under many users: sign-in with the Redis cache and the license
+  seat check** — with :confval:`CACHE_BACKEND` ``redis`` a sign-in now reads
+  only the sessions of the user who signs in, so its time does not depend on
+  the number of users. The check of a named license seat is a single read
+  for a user who already has a seat, which raised the throughput of a server
+  with the default SQLite cache by about 20% in our test. The "last seen"
+  time on the license page is now updated at most once an hour.
+
+- **Large pivot tables: about twice as fast, with less waiting for other
+  users** — on our test server a pivot table of one million cells is built
+  in 1.0 s instead of 2.1 s (many columns) and in 3.3 s instead of 7.5 s
+  (many rows). Most of this work no longer blocks the worker process, so the
+  requests of other users are served alongside it. With 400 simultaneous
+  clients the server answers about 20% more requests on ordinary reports and
+  about 1.5 times more when every client also opens a heavy report, and its
+  processes take less than half the memory. The response Excel receives is
+  byte for byte the same. Nothing has to be configured: the native module
+  that does this work is part of every distribution — Ubuntu, XLTable
+  Desktop and Windows Server. See :ref:`native_module`.
+
+- **Large responses in the debug log** — with :confval:`WRITE_LOG` turned
+  on, every response to Excel larger than 1 MB adds a ``Large response:``
+  line to the server log: size, processing time, the time spent waiting for
+  the warehouse, rows and cells of the pivot table, the cube and the user.
+  The lines show how often heavy reports are requested; the threshold is
+  :confval:`LOG_LARGE_RESPONSE_MB`.
+
+- **Fixed: simultaneous first start of several worker processes** — on a
+  fresh installation some worker processes could stop while creating the
+  export store; the initialization now retries.
+
+------------------------------------------------------------
+
 Version 2.1.5 — 2026-11-11
 --------------------------
 

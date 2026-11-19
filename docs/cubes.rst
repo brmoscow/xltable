@@ -984,7 +984,12 @@ Limits
   ``replace("FROM db.sales ", "FROM (SELECT * FROM db.sales WHERE store_id IN
   (SELECT store_id FROM db.user_stores WHERE login = " ~ context.user.sql ~
   ")) ")`` — the alias stays outside the replaced text, so the same script
-  works for the source and for its copies.
+  works for the source and for its copies. For row-level security itself no
+  script is needed: describe the mapping table as a dimension and filter its
+  login field (:ref:`access_filters_user`) — the copies keep that join.
+- An access filter on a dimension does not restrict a measure that excludes
+  **that** dimension: the copy has no join to it. Give the rights through a
+  table joined to the measure source instead (:ref:`access_filters_user`).
 - ``alias.`` is also rewritten inside string literals of the copy's SQL.
 - Drillthrough on a visible :tag:`exclude` measure works when the excluded
   dimension is not on the cell's axes or filters; with the dimension in the
@@ -1263,6 +1268,109 @@ combined: the union of the allowed values, and the union of the excluded
 values. Combining ``in`` and ``not in`` on the same field applies both
 conditions (the allowed list minus the excluded values).
 
+.. _access_filters_user:
+
+Row-level security from a warehouse table
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When the rows a user may see are listed in a warehouse table — a
+"login → store" or "login → product group" mapping that changes without
+editing the cube — describe that table in the cube as a dimension with a
+**login** field, join it, and filter the login by the connected user:
+
+.. code-block:: sql
+   :force:
+
+   --olap_source Stores
+   SELECT
+   --olap_dimensions
+    stores.name as stores_name --translation=`Store`
+   FROM db.stores stores
+   LEFT JOIN db.user_stores acl ON stores.id = acl.store_id
+
+   --olap_source Access
+   SELECT
+   --olap_dimensions
+    acl.login as acl_login --translation=`Login` --hide
+   FROM db.user_stores acl
+
+   --olap_user_role
+   --olap_user_groups
+   store_managers
+   ...
+   --olap_access_filters
+   acl_login in ({{ context.user.sql }})
+
+``{{ context.user.sql }}`` written as a filter value stands for the login of
+the connected user — the same name as in :doc:`jinja` scripts. Everything else
+is the ordinary access filter described above: the filter is on a field of the
+cube, so the server joins the mapping table wherever a path to it exists and
+adds ``acl.login = '<login>'`` to the query. This is the model of Analysis
+Services, where dimension security is an allowed set on a dimension attribute
+tied to ``UserName()``.
+
+Writing the value:
+
+- no quotes around ``{{ context.user.sql }}`` — in quotes it would be a
+  literal text, and such a line stops the cube from loading;
+- it is the only substitution: the filter line is not rendered as a Jinja
+  template, any other ``{{ … }}`` or ``{% … %}`` stops the cube from loading;
+- it can stand next to ordinary values:
+  ``acl_login in ({{ context.user.sql }}, `service`)`` — with more than one
+  login in the list, join the mapping table as ``many-to-many`` (see below);
+- the login is substituted as the server knows the connected user — the same
+  value as ``context.user.name`` in scripts — and the warehouse compares it
+  with the table as an ordinary string. Keep the logins in the table in
+  exactly that form, letter case included: a login that differs only in case
+  matches no rows;
+- a cube with such a filter is refused to a connection without a user name.
+
+Where to join the mapping table — choose **one** place:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 34 33 33
+
+   * -
+     - Joined to the dimension (as above)
+     - Joined to each measure source by its key
+   * - Filter dropdowns and slicers of that dimension
+     - show only the allowed members
+     - show all members; data only for the allowed ones
+   * - Measure groups covered
+     - every group joined to that dimension
+     - each group needs its own ``LEFT JOIN``
+   * - Measures with :tag:`exclude` of that dimension
+     - are **not** restricted: the copy drops the join to the dimension and
+       the path to the mapping table with it
+     - stay restricted: the join to the mapping table is kept
+   * - Two-stage SQL form (:ref:`sql_form_two_stage`)
+     - the source falls back to the classic form (a dictionary of a
+       dictionary)
+     - works: the restriction becomes a condition on the fact key in stage 1
+
+Join to the dimension by default; join to the measure sources when the cube
+relies on pre-aggregates and the two-stage form, or when a measure excludes
+the very dimension the rights are given by. Do not join in both places — the
+table would enter the query twice under one alias.
+
+Rules worth knowing:
+
+- Mark the login field with ``--hide``: it is a technical field, and a field
+  used in an access filter is otherwise added to the role's field list.
+- With a plain ``LEFT JOIN`` every key must reach the query **once**: the
+  mapping table has to be unique by the pair "login, key", and the filter has
+  to allow a single login. A duplicate row, or a key granted to two of the
+  logins listed in the filter, doubles the fact rows and the totals. If
+  either is possible, add ``--relationship=`many-to-many``` to the join: the
+  table is read through ``SELECT DISTINCT``. Such a join keeps the source in
+  the classic SQL form.
+- A measure group with no join path to the mapping table is not restricted,
+  as with any access filter.
+- Results are cached per user — the login is part of the SQL text — so a
+  change in the mapping table takes effect when the cached results expire or
+  on Refresh, like any other change of warehouse data.
+
 Do not confuse the two visibility mechanisms: the ``--hide`` tag hides a field
 **globally**, for everyone (typically a helper measure used only inside calculated
 fields), whereas the ``..._visible`` tags control visibility **per role** — each role
@@ -1306,7 +1414,9 @@ names is among the user's groups. When several roles apply, they are
 - ``in`` filters on the same field add up to a larger allowed set, and
   ``not in`` filters add up to a larger excluded set;
 - ``in`` and ``not in`` on the same field apply together (the allowed list
-  minus the excluded values).
+  minus the excluded values);
+- a filter by the connected user (:ref:`access_filters_user`) follows the
+  same rules — it is an ordinary filter whose value is the login.
 
 There is **no default role**. As soon as a cube contains at least one
 ``--olap_user_role`` block, a user whose groups match none of the blocks is

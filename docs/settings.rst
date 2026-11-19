@@ -278,6 +278,44 @@ Parameter reference
 
    Default: ``16``
 
+.. confval:: SERVER_CONNECTION_LIMIT
+
+   How many client connections one server process keeps open (standalone
+   deployment only). Connections above the limit are not accepted until a
+   slot is free; an idle keep-alive connection holds its slot for up to two
+   minutes. A load balancer in front of the worker processes keeps a pool
+   of connections to each of them, so the limit must cover that pool — the
+   Apache front of the Ubuntu installer is sized for the default. Values
+   above ``500`` are not supported. Requires a service restart.
+
+   Example:
+
+   .. code-block:: json
+
+      "SERVER_CONNECTION_LIMIT": 300
+
+   Default: ``500``
+
+.. confval:: LOG_LARGE_RESPONSE_MB
+
+   Size, in megabytes, above which a response to Excel is noted in the
+   debug log (works only with :confval:`WRITE_LOG` turned on). Each such
+   response adds one line starting with ``Large response:`` — its size, the
+   processing time and how much of it was spent waiting for the warehouse,
+   the number of rows and cells of the pivot table, the cube and the user.
+   Building a large response keeps one server process busy, so these lines
+   show how often heavy reports are requested and whether they are worth
+   narrowing with filters. ``0`` turns the lines off. Applied without a
+   restart.
+
+   Example:
+
+   .. code-block:: json
+
+      "LOG_LARGE_RESPONSE_MB": 5
+
+   Default: ``1``
+
 .. confval:: USERS
 
    Defines the list of users for local authentication.

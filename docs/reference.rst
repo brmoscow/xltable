@@ -175,13 +175,20 @@ to share a direct reference to it.
    and ``not in`` values never appear in results or filter dropdowns.
    How to verify the filters as the restricted user: :ref:`cube_user_roles`.
 
+   A value can be the connected user: ``{{ context.user.sql }}`` written
+   without quotes stands for the user's login (the only substitution allowed
+   in this block). Put it on the login field of a rights table described in
+   the cube as a dimension — see :ref:`access_filters_user`.
+
    Example:
 
    .. code-block:: sql
+      :force:
 
       --olap_access_filters
       regions_name in (`North`, `South`)
       stores_name not in (`Test Store`)
+      acl_login in ({{ context.user.sql }})
 
 .. tag:: olap_ai_instructions
 

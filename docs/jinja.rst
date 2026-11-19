@@ -110,6 +110,13 @@ injection:
    {{ sql_text | replace("WHERE", "WHERE managers.login = " ~ context.user.sql ~ " AND ") }}
    {% endif %}
 
+When the rows a user may see are listed in a warehouse table (login → stores,
+login → product groups), no script is needed: describe that table in the cube
+as a dimension with a login field and filter it by the connected user in
+:tag:`olap_access_filters` — see :ref:`access_filters_user`. Unlike a
+``replace`` in a script, such a filter can also narrow filter dropdowns and
+does not break in the source copies made by :tag:`offset` and :tag:`exclude`.
+
 Relative date filtering — limit data to the current year using the ``now`` key:
 
 .. code-block:: jinja

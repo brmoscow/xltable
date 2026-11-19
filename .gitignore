@@ -194,3 +194,5 @@ cython_debug/
 .cursorindexingignore
 .vscode
 temp.txt
+# Local editor / Claude Code settings
+.claude/

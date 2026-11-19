@@ -11,7 +11,7 @@ import os
 project = 'XLTable'
 copyright = '2026, BR Systems LLP, Astana, Kazakhstan'
 author = 'BR Systems LLP'
-release = '2.1.5'
+release = '2.1.6'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -43,6 +43,11 @@ def setup(app):
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
+# Offline build (XLTABLE_OFFLINE=1, see build_offline.py): a copy of the
+# docs for a customer without internet access, opened from disk. Nothing
+# is loaded from the network: no Google Fonts, no Google Analytics.
+OFFLINE = os.environ.get('XLTABLE_OFFLINE') == '1'
+
 html_theme = 'furo'
 html_title = f'XLTable {release}'
 html_static_path = ['_static']
@@ -61,6 +66,10 @@ html_js_files = [
     ('https://www.googletagmanager.com/gtag/js?id=G-0F2P9FSN3D', {'async': 'async'}),
     'ga.js',
 ]
+
+if OFFLINE:
+    html_css_files = ['custom.css']
+    html_js_files = []
 
 # Brand color #0060b7 sampled from the XLTable logo. The table header band
 # #dce6f1 is the header fill of an Excel pivot table: tables in the docs

@@ -46,11 +46,13 @@ Copy the XLTable distribution zip and the installer to the server:
 
    scp xltable-*-ubuntu.zip install_ubuntu.zip user@server:/usr/olap/
 
-Unpack the installer scripts and run the install script:
+Unpack the installer scripts and run the install script (a clean Ubuntu image
+has no ``unzip`` — install it first):
 
 .. code-block:: bash
 
    cd /usr/olap
+   sudo apt-get update && sudo apt-get install -y unzip
    unzip -o install_ubuntu.zip
    bash install_xltable.sh
 
@@ -81,15 +83,27 @@ The script will:
 .. note::
 
    Several worker processes are what lets heavy reports from many concurrent
-   users be built in parallel: Python limits one process to one CPU core for
-   result building, so the instance count is effectively the number of large
-   reports the server can render at the same time. All instances share the
-   same cache and ``settings.json``. To change the count, re-run the installer
-   with the desired number — the existing configuration and settings are kept:
+   users be built in parallel: one process builds results on one CPU core,
+   so the instance count is effectively the number of large reports the
+   server can render at the same time. All instances share the
+   same cache and ``settings.json``. By default the installer starts one
+   instance per CPU core, but no more than the memory in gigabytes and no
+   more than 16; throughput grows with the instance count. To change the
+   count (up to 64), re-run the installer with the desired number — the
+   existing configuration and settings are kept:
 
    .. code-block:: bash
 
       XLTABLE_INSTANCES=6 bash install_xltable.sh
+
+   The Apache front serves up to 800 requests at the same time (400 with a
+   single instance) and gives each request to the least busy instance.
+   For more simultaneous clients raise the number with
+   ``XLTABLE_FRONT_WORKERS`` — a later re-run keeps the raised value:
+
+   .. code-block:: bash
+
+      XLTABLE_FRONT_WORKERS=1200 bash install_xltable.sh --front-only
 
 Installer modes
 ^^^^^^^^^^^^^^^
@@ -261,6 +275,41 @@ Service Management
 
 ``olap:*`` addresses every worker process of the service; it also works on
 installations that still run the old single-process configuration.
+
+.. _native_module:
+
+Large pivot tables: the native module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Every distribution includes a native module next to the server files:
+``xlt_cells.so`` on Ubuntu, ``xlt_cells.pyd`` on Windows (XLTable Desktop and
+Windows Server). It writes the largest parts of a response to Excel —
+the text of cells and of row and column headers — and does not block the
+worker process while it works, so the requests of other users are served
+alongside a large pivot table. Nothing has to be installed or
+configured: the module is loaded at start.
+
+The module only writes text; what a pivot table shows and in what order is
+decided by the server as before, and the response is byte for byte the same
+with and without the module. If the module cannot be loaded or fails on a
+request, the server writes that text itself — slower, with the same result.
+
+At start every server process writes one line to the log that tells how it
+builds responses:
+
+.. code-block:: text
+
+   Response builder: native module xlt_cells
+   Response builder: built-in (this distribution has no native module)
+   Response builder: built-in — native module xlt_cells failed to load: <reason>
+   Response builder: built-in (native module is switched off by XLT_NATIVE_CELLS=0)
+
+The third line is a warning: the module is in the distribution but could not
+be loaded, and the server works the slower way.
+
+To switch the module off (for example, to compare the two ways on your own
+reports), set the ``XLT_NATIVE_CELLS=0`` environment variable for the server
+processes and restart them.
 
 ------------------------------------------------------------
 
@@ -745,6 +794,18 @@ Single sign-on is available on both server platforms:
   Kerberos-capable load balancer) validates the ticket and passes the user
   name to XLTable; see `Single sign-on on Linux: an authenticating front`_
   below.
+
+.. figure:: _static/xltable_ad_groups.svg
+   :width: 100%
+   :alt: Block diagram of Active Directory sign-in and AD-group authorization in XLTable
+
+   How XLTable works with AD: the front authenticates the user (Kerberos
+   ticket or a domain password checked against the KDC) and passes only the
+   verified user name; XLTable reads the user's groups from the domain with
+   the service account, and the groups decide everything else —
+   ``access_groups`` admit to the server, ``ADMIN_GROUPS`` to the admin
+   console, and :ref:`cube roles <cube_user_roles>` select the visible
+   fields and the row-level filters added to every SQL query.
 
 To enable Active Directory authentication, configure the corresponding
 section in the ``settings.json`` file.
